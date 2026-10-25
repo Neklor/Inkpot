@@ -88,6 +88,15 @@ MainWindow::MainWindow(QWidget *parent)
     setDirty(false);
 }
 
+MainWindow::~MainWindow()
+{
+    // Szene und Ansicht sind Kinder dieses Fensters und werden erst nach
+    // diesem Rumpf abgebaut. Dabei löscht die Szene ihre Objekte und sendet
+    // weiterhin Signale - die dürfen dieses Fenster dann nicht mehr erreichen.
+    QObject::disconnect(m_scene, nullptr, this, nullptr);
+    QObject::disconnect(m_view, nullptr, this, nullptr);
+}
+
 void MainWindow::createActions()
 {
     QMenu *fileMenu = menuBar()->addMenu(tr("&Datei"));
