@@ -37,6 +37,9 @@ public:
     // Mittelpunkt des Griffs für ein gegebenes Rechteck.
     static QPointF anchorPoint(Position position, const QRectF &rect);
 
+    // Der Griff auf der anderen Seite; sein Punkt bleibt beim Ziehen stehen.
+    static Position opposite(Position position);
+
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 

@@ -2,6 +2,7 @@
 
 #include <QColor>
 #include <QGraphicsPathItem>
+#include <QPen>
 #include <QVector>
 
 #include "InkObject.h"
@@ -26,6 +27,9 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
+    QColor color() const override { return pen().color(); }
+    bool setColor(const QColor &color) override;
 
     QString typeName() const override { return QStringLiteral("stroke"); }
     QString displayName() const override;

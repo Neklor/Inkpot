@@ -37,6 +37,7 @@
 #include "Icons.h"
 #include "ImageItem.h"
 #include "NewCanvasDialog.h"
+#include "TextItem.h"
 
 namespace {
 
@@ -76,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_scene, &CanvasScene::objectsChanged, this, &MainWindow::updateObjectInfo);
     connect(m_scene, &CanvasScene::edited, this, [this] { setDirty(true); });
     connect(m_scene, &CanvasScene::selectionChanged, this, &MainWindow::updateObjectInfo);
+    connect(m_scene, &CanvasScene::objectPropertiesChanged, this, &MainWindow::updateObjectControls);
     connect(m_view, &CanvasView::zoomChanged, this, &MainWindow::updateZoomInfo);
 
     resize(1200, 820);
@@ -215,9 +217,11 @@ void MainWindow::createToolBar()
     createToolAction(toolBar, tr("Auswahl"), Icons::pointer(symbolColor), QStringLiteral("S"),
                      tr("Objekte auswählen, verschieben, skalieren und löschen"),
                      int(CanvasView::Tool::Select));
-    createToolAction(toolBar, tr("Pinsel"), Icons::brush(symbolColor), QStringLiteral("B"),
+    createToolAction(toolBar, tr("Pinsel"), Icons::brush(m_view->toolColor(), symbolColor),
+                     QStringLiteral("B"),
                      tr("Freihand malen - jeder Strich wird ein eigenes Objekt"),
                      int(CanvasView::Tool::Brush));
+    m_brushAction = m_toolGroup->actions().last();
     createToolAction(toolBar, tr("Linie"), Icons::line(symbolColor), QStringLiteral("L"),
                      tr("Gerade Linie ziehen"),
                      int(CanvasView::Tool::Line));
@@ -233,7 +237,8 @@ void MainWindow::createToolBar()
     toolBar->addSeparator();
 
     m_colorButton = new QToolButton(this);
-    m_colorButton->setToolTip(tr("Farbe für Pinsel, Linie und Text"));
+    m_colorButton->setToolTip(tr("Farbe wählen — färbt die ausgewählten Objekte um und gilt "
+                                 "für neue"));
     m_colorButton->setAutoRaise(true);
     m_colorButton->setIconSize(QSize(24, 24));
     connect(m_colorButton, &QToolButton::clicked, this, &MainWindow::chooseToolColor);
@@ -247,10 +252,23 @@ void MainWindow::createToolBar()
     m_toolSizeSpin->setDecimals(1);
     m_toolSizeSpin->setValue(m_view->toolSize());
     m_toolSizeSpin->setSuffix(tr(" px"));
-    m_toolSizeSpin->setToolTip(tr("Strichstärke, Radierer-Durchmesser und Schriftgröße"));
+    m_toolSizeSpin->setToolTip(tr("Strichstärke von Pinsel und Linie, Durchmesser des Radiergummis"));
     connect(m_toolSizeSpin, &QDoubleSpinBox::valueChanged, this,
             [this](double value) { m_view->setToolSize(value); });
     toolBar->addWidget(m_toolSizeSpin);
+
+    toolBar->addWidget(new QLabel(tr("  Schrift: "), this));
+    m_fontSizeSpin = new QDoubleSpinBox(this);
+    m_fontSizeSpin->setRange(1.0, 2000.0);
+    m_fontSizeSpin->setSingleStep(1.0);
+    m_fontSizeSpin->setDecimals(1);
+    m_fontSizeSpin->setValue(m_view->fontPointSize());
+    m_fontSizeSpin->setSuffix(tr(" pt"));
+    m_fontSizeSpin->setToolTip(tr("Schriftgröße des ausgewählten Textes; ohne Auswahl die "
+                                  "Größe für neue Beschriftungen"));
+    connect(m_fontSizeSpin, &QDoubleSpinBox::valueChanged, this,
+            &MainWindow::applyFontSizeToSelection);
+    toolBar->addWidget(m_fontSizeSpin);
 }
 
 void MainWindow::createStatusBar()
@@ -282,12 +300,20 @@ void MainWindow::createStatusBar()
     statusBar()->addWidget(m_heightSpin);
 
     m_lockButton = new QToolButton(this);
-    m_lockButton->setText(tr("Verhältnis halten"));
     m_lockButton->setCheckable(true);
-    m_lockButton->setToolTip(tr("Seitenverhältnis beim Verändern der Größe beibehalten"));
+    m_lockButton->setAutoRaise(true);
+    m_lockButton->setIconSize(QSize(18, 18));
     connect(m_lockButton, &QToolButton::toggled, this, [this](bool checked) {
         m_scene->setAspectRatioLocked(checked);
+        const QColor symbolColor = palette().color(QPalette::ButtonText);
+        m_lockButton->setIcon(checked ? Icons::lockClosed(symbolColor)
+                                      : Icons::lockOpen(symbolColor));
+        m_lockButton->setToolTip(checked
+                                     ? tr("Seitenverhältnis ist festgehalten — zum Lösen klicken")
+                                     : tr("Seitenverhältnis festhalten"));
     });
+    m_lockButton->setIcon(Icons::lockOpen(palette().color(QPalette::ButtonText)));
+    m_lockButton->setToolTip(tr("Seitenverhältnis festhalten"));
     statusBar()->addWidget(m_lockButton);
 
     m_ratioLabel = new QLabel(this);
@@ -651,22 +677,77 @@ void MainWindow::updateZoomInfo(double factor)
 
 void MainWindow::chooseToolColor()
 {
-    const QColor color = QColorDialog::getColor(m_view->toolColor(), this, tr("Farbe wählen"));
+    // Ist etwas ausgewählt, zeigt der Dialog dessen Farbe als Ausgangswert.
+    const QColor current = m_scene->selectedObjectColor().isValid()
+                               ? m_scene->selectedObjectColor()
+                               : m_view->toolColor();
+
+    const QColor color = QColorDialog::getColor(current, this, tr("Farbe wählen"),
+                                                QColorDialog::ShowAlphaChannel);
     if (!color.isValid())
         return;
+
+    // Die Farbe gilt ab jetzt für neue Objekte und zugleich für die Auswahl.
     m_view->setToolColor(color);
+    if (m_scene->setSelectedObjectsColor(color)) {
+        const int count = m_scene->selectedItems().size();
+        statusBar()->showMessage(tr("Farbe von %n Objekt(en) geändert", nullptr, count), 3000);
+    }
     updateColorButton();
+}
+
+void MainWindow::applyFontSizeToSelection(double pointSize)
+{
+    if (m_updatingControls)
+        return;
+
+    if (TextItem *text = m_scene->singleSelectedText()) {
+        text->setFontPointSize(pointSize);
+        m_scene->notifyEdited();
+        return;
+    }
+
+    // Ohne ausgewählten Text gilt die Größe für die nächste Beschriftung.
+    m_view->setFontPointSize(pointSize);
+}
+
+void MainWindow::updateObjectControls()
+{
+    m_updatingControls = true;
+
+    // Der Farbknopf zeigt die Farbe der Auswahl. Die Malfarbe selbst bleibt
+    // unberührt: ein Objekt anzuklicken soll den Pinsel nicht umfärben.
+    updateColorButton();
+
+    // Schriftgröße des ausgewählten Textes anzeigen, auch während des Ziehens.
+    if (TextItem *text = m_scene->singleSelectedText())
+        m_fontSizeSpin->setValue(text->fontPointSize());
+    else
+        m_fontSizeSpin->setValue(m_view->fontPointSize());
+
+    m_updatingControls = false;
 }
 
 void MainWindow::updateColorButton()
 {
+    // Ist etwas ausgewählt, zeigt der Knopf dessen Farbe, sonst die Farbe,
+    // mit der neue Objekte entstehen.
+    const QColor selected = m_scene->selectedObjectColor();
+    const QColor shown = selected.isValid() ? selected : m_view->toolColor();
+
     QPixmap pixmap(24, 24);
-    pixmap.fill(m_view->toolColor());
+    pixmap.fill(shown);
     QPainter painter(&pixmap);
     painter.setPen(QPen(QColor(0x40, 0x40, 0x44), 1.0));
     painter.drawRect(0, 0, 23, 23);
     painter.end();
     m_colorButton->setIcon(QIcon(pixmap));
+
+    // Die Borsten des Pinselsymbols zeigen immer die Malfarbe, nicht die
+    // Farbe der Auswahl - gemalt wird schließlich mit ihr.
+    if (m_brushAction)
+        m_brushAction->setIcon(Icons::brush(m_view->toolColor(),
+                                            palette().color(QPalette::ButtonText)));
 }
 
 QString MainWindow::aspectRatioText(const QSize &size)

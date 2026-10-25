@@ -6,7 +6,9 @@
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
 #include <QStyleOptionGraphicsItem>
+#include <QTextCharFormat>
 #include <QTextCursor>
+#include <QTextDocument>
 
 #include "CanvasScene.h"
 
@@ -36,6 +38,47 @@ QString TextItem::displayName() const
 bool TextItem::isEditing() const
 {
     return textInteractionFlags() != Qt::NoTextInteraction;
+}
+
+qreal TextItem::fontPointSize() const
+{
+    return font().pointSizeF();
+}
+
+void TextItem::setFontPointSize(qreal pointSize)
+{
+    const qreal clamped = qBound(1.0, pointSize, 2000.0);
+
+    QFont updated = font();
+    if (qFuzzyCompare(updated.pointSizeF(), clamped))
+        return;
+    updated.setPointSizeF(clamped);
+    applyFont(updated);
+
+    // Bereits getippter Text trägt eigene Zeichenformate; die Schrift des
+    // Dokuments allein würde ihn nicht erreichen.
+    QTextCursor cursor(document());
+    cursor.select(QTextCursor::Document);
+    QTextCharFormat format;
+    format.setFontPointSize(clamped);
+    cursor.mergeCharFormat(format);
+}
+
+bool TextItem::setColor(const QColor &color)
+{
+    if (!color.isValid())
+        return false;
+
+    setDefaultTextColor(color);
+
+    QTextCursor cursor(document());
+    cursor.select(QTextCursor::Document);
+    QTextCharFormat format;
+    format.setForeground(color);
+    cursor.mergeCharFormat(format);
+
+    update();
+    return true;
 }
 
 void TextItem::beginEditing()

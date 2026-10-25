@@ -59,6 +59,21 @@ QPointF ResizeHandle::anchorPoint(Position position, const QRectF &rect)
     return rect.center();
 }
 
+ResizeHandle::Position ResizeHandle::opposite(Position position)
+{
+    switch (position) {
+    case TopLeft:     return BottomRight;
+    case Top:         return Bottom;
+    case TopRight:    return BottomLeft;
+    case Right:       return Left;
+    case BottomRight: return TopLeft;
+    case Bottom:      return Top;
+    case BottomLeft:  return TopRight;
+    case Left:        return Right;
+    }
+    return TopLeft;
+}
+
 QRectF ResizeHandle::boundingRect() const
 {
     const qreal half = kHandleSize / 2.0 + 1.0;

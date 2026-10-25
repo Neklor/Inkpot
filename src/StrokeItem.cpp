@@ -28,6 +28,17 @@ QString StrokeItem::displayName() const
     return QCoreApplication::translate("StrokeItem", "Pinselstrich");
 }
 
+bool StrokeItem::setColor(const QColor &color)
+{
+    if (!color.isValid())
+        return false;
+    QPen newPen = pen();
+    newPen.setColor(color);
+    setPen(newPen);
+    update();
+    return true;
+}
+
 void StrokeItem::beginAt(const QPointF &scenePos)
 {
     setPos(scenePos);

@@ -31,10 +31,14 @@ public:
     QColor toolColor() const { return m_toolColor; }
     void setToolColor(const QColor &color);
 
-    // Dient je nach Werkzeug als Strichstärke, Radierer-Durchmesser oder
-    // Schriftgröße.
+    // Strichstärke des Pinsels und der Linie, zugleich Durchmesser des
+    // Radiergummis.
     qreal toolSize() const { return m_toolSize; }
     void setToolSize(qreal size);
+
+    // Schriftgröße für neu angelegte Beschriftungen.
+    qreal fontPointSize() const { return m_fontPointSize; }
+    void setFontPointSize(qreal pointSize);
 
     double zoomFactor() const;
     void setZoomFactor(double factor);
@@ -61,6 +65,7 @@ private:
     Tool m_tool = Tool::Select;
     QColor m_toolColor = Qt::black;
     qreal m_toolSize = 4.0;
+    qreal m_fontPointSize = 24.0;
 
     StrokeItem *m_activeStroke = nullptr;
     bool m_erasing = false;

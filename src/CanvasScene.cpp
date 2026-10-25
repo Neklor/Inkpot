@@ -62,7 +62,10 @@ CanvasScene::CanvasScene(QObject *parent)
     updateObjectHandles();
     updateSceneRect();
 
-    connect(this, &QGraphicsScene::selectionChanged, this, [this] { updateObjectHandles(); });
+    connect(this, &QGraphicsScene::selectionChanged, this, [this] {
+        updateObjectHandles();
+        emit objectPropertiesChanged();
+    });
 
     // Verschobene oder veränderte Objekte brauchen neu gesetzte Griffe. Das
     // Flag verhindert, dass das Setzen der Griffe sich selbst auslöst.
@@ -265,6 +268,10 @@ void CanvasScene::beginObjectScale()
         return;
     m_scaleStartRect = m_scaleTarget->sceneBoundingRect();
     m_scaleStartTransform = m_scaleTarget->transform();
+
+    m_scaleStartFontSize = 0.0;
+    if (auto *text = dynamic_cast<TextItem *>(m_scaleTarget))
+        m_scaleStartFontSize = text->fontPointSize();
 }
 
 void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const QPointF &scenePos)
@@ -306,6 +313,30 @@ void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const Q
         break;
     }
 
+    if (auto *text = dynamic_cast<TextItem *>(m_scaleTarget)) {
+        // Text wird nicht verzerrt, sondern wächst über die Schriftgröße.
+        // Seitliche Griffe richten sich nach der Breite, alle anderen nach
+        // der Höhe.
+        const bool widthDrives = position == ResizeHandle::Left
+                                 || position == ResizeHandle::Right;
+        const qreal factor = widthDrives
+                                 ? target.width() / m_scaleStartRect.width()
+                                 : target.height() / m_scaleStartRect.height();
+
+        text->setFontPointSize(m_scaleStartFontSize * factor);
+
+        // Die gegenüberliegende Kante bleibt stehen.
+        const QPointF fixedPoint =
+            ResizeHandle::anchorPoint(ResizeHandle::opposite(position), m_scaleStartRect);
+        const QPointF movedPoint =
+            ResizeHandle::anchorPoint(ResizeHandle::opposite(position), text->sceneBoundingRect());
+        text->setPos(text->pos() + (fixedPoint - movedPoint));
+
+        updateObjectHandles();
+        emit objectPropertiesChanged();
+        return;
+    }
+
     const qreal factorX = target.width() / m_scaleStartRect.width();
     const qreal factorY = target.height() / m_scaleStartRect.height();
 
@@ -327,6 +358,7 @@ void CanvasScene::endObjectScale()
         return;
     m_scaleTarget = nullptr;
     updateObjectHandles();
+    emit objectPropertiesChanged();
     emit edited();
 }
 
@@ -429,6 +461,42 @@ void CanvasScene::selectAllObjects()
     const QList<QGraphicsItem *> all = objects();
     for (QGraphicsItem *item : all)
         item->setSelected(true);
+}
+
+bool CanvasScene::setSelectedObjectsColor(const QColor &color)
+{
+    if (!color.isValid())
+        return false;
+
+    bool changedAny = false;
+    const QList<QGraphicsItem *> selection = selectedItems();
+    for (QGraphicsItem *item : selection) {
+        auto *object = dynamic_cast<InkObject *>(item);
+        if (object && object->setColor(color))
+            changedAny = true;
+    }
+
+    if (changedAny) {
+        emit objectPropertiesChanged();
+        emit edited();
+    }
+    return changedAny;
+}
+
+QColor CanvasScene::selectedObjectColor() const
+{
+    const QList<QGraphicsItem *> selection = selectedItems();
+    for (QGraphicsItem *item : selection) {
+        auto *object = dynamic_cast<InkObject *>(item);
+        if (object && object->color().isValid())
+            return object->color();
+    }
+    return QColor();
+}
+
+TextItem *CanvasScene::singleSelectedText() const
+{
+    return dynamic_cast<TextItem *>(singleSelectedObject());
 }
 
 void CanvasScene::eraseWithPath(const QPainterPath &scenePath)

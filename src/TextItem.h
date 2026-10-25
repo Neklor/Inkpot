@@ -20,6 +20,14 @@ public:
     // Setzt die Schrift und sorgt dabei für saubere Graustufen-Glättung.
     void applyFont(const QFont &font);
 
+    // Schriftgröße in Punkt. Über die Anfasspunkte wird genau dieser Wert
+    // verändert, damit Text nicht verzerrt, sondern wirklich größer wird.
+    qreal fontPointSize() const;
+    void setFontPointSize(qreal pointSize);
+
+    QColor color() const override { return defaultTextColor(); }
+    bool setColor(const QColor &color) override;
+
     void beginEditing();
     void endEditing();
     bool isEditing() const;

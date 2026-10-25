@@ -82,6 +82,11 @@ void CanvasView::setToolSize(qreal size)
     m_toolSize = qBound(0.5, size, 200.0);
 }
 
+void CanvasView::setFontPointSize(qreal pointSize)
+{
+    m_fontPointSize = qBound(1.0, pointSize, 2000.0);
+}
+
 double CanvasView::zoomFactor() const
 {
     return transform().m11();
@@ -146,7 +151,7 @@ void CanvasView::placeTextAt(const QPointF &scenePos)
 
     auto *item = new TextItem;
     QFont font = item->font();
-    font.setPointSizeF(qMax<qreal>(m_toolSize * 3.0, 6.0));
+    font.setPointSizeF(m_fontPointSize);
     item->applyFont(font);
     item->setDefaultTextColor(m_toolColor);
     item->setPos(scenePos);

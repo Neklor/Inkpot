@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QColor>
 #include <QJsonObject>
 #include <QPainterPath>
 #include <QRectF>
@@ -30,6 +31,11 @@ public:
     // schreibt und liest die Szene für alle Objekte einheitlich.
     virtual void write(QJsonObject &json) const = 0;
     virtual bool read(const QJsonObject &json) = 0;
+
+    // Farbe des Objekts. Nicht jedes Objekt hat eine (ein Bild etwa nicht);
+    // dann ist die Farbe ungültig und setColor() meldet false.
+    virtual QColor color() const { return QColor(); }
+    virtual bool setColor(const QColor &color) { Q_UNUSED(color); return false; }
 
     // Radieren innerhalb eines Objekts: der Bereich wird maskiert, die
     // ursprüngliche Form bleibt erhalten und kann später wieder

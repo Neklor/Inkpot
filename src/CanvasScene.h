@@ -54,6 +54,11 @@ public:
     void selectAllObjects();
     QGraphicsItem *singleSelectedObject() const;
 
+    // Eigenschaften der Auswahl.
+    bool setSelectedObjectsColor(const QColor &color);
+    QColor selectedObjectColor() const;
+    class TextItem *singleSelectedText() const;
+
     // Radieren innerhalb der Objekte.
     void eraseWithPath(const QPainterPath &scenePath);
 
@@ -75,6 +80,7 @@ public:
 signals:
     void pageRectChanged();
     void objectsChanged();
+    void objectPropertiesChanged();   // Farbe oder Schriftgröße der Auswahl
     void edited();          // es gibt ungespeicherte Änderungen
 
 protected:
@@ -102,4 +108,5 @@ private:
     QGraphicsItem *m_scaleTarget = nullptr;
     QRectF m_scaleStartRect;
     QTransform m_scaleStartTransform;
+    qreal m_scaleStartFontSize = 0.0;
 };

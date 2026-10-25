@@ -59,6 +59,8 @@ private:
     void updateZoomInfo(double factor);
     void chooseToolColor();
     void updateColorButton();
+    void updateObjectControls();
+    void applyFontSizeToSelection(double pointSize);
     void createToolAction(QToolBar *toolBar, const QString &name, const QIcon &icon,
                           const QString &shortcut, const QString &hint, int tool);
 
@@ -79,6 +81,8 @@ private:
     QAction *m_pasteAction = nullptr;
     QToolButton *m_colorButton = nullptr;
     QDoubleSpinBox *m_toolSizeSpin = nullptr;
+    QDoubleSpinBox *m_fontSizeSpin = nullptr;
+    QAction *m_brushAction = nullptr;
     QActionGroup *m_toolGroup = nullptr;
 
     QString m_currentFile;

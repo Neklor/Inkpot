@@ -22,6 +22,11 @@ Objekte erhält; der Export erzeugt ein flaches Bild.
 * Werkzeuge: Auswahl, Pinsel, Linie, Radiergummi, Text
 * Objektfähigkeit: Auswählen, Verschieben, Skalieren über acht eigene
   Anfasspunkte, Mehrfachauswahl per Gummiband, Löschen
+* Die Farbwahl wirkt auf die ausgewählten Objekte und gilt zugleich für
+  neue; Bilder haben keine Farbe und bleiben unberührt
+* Textobjekte haben ein Feld für die Schriftgröße. Zieht man an den
+  Anfasspunkten, ändert sich die Schriftgröße selbst statt einer Verzerrung,
+  und das Feld zeigt den Wert laufend mit
 * Der Radiergummi arbeitet innerhalb der Objekte: er legt eine Maske an,
   statt die Form zu zerstören — die ursprüngliche Geometrie bleibt in der
   Projektdatei erhalten
@@ -54,6 +59,7 @@ cmake --build build
 | Radiergummi | `E` |
 | Text | `T` |
 | Text später ändern | Doppelklick mit dem Auswahlwerkzeug |
+| Farbe eines Objekts ändern | Objekt auswählen, dann den Farbknopf |
 | Auswahl löschen | `Entf` |
 | Alles auswählen | `Strg+A` |
 | Zoomen | `Strg+Mausrad`, `Strg++`, `Strg+-` |
