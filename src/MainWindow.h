@@ -1,0 +1,83 @@
+#pragma once
+
+#include <QMainWindow>
+#include <QSize>
+#include <QString>
+
+class CanvasScene;
+class CanvasView;
+
+class QAction;
+class QActionGroup;
+class QDoubleSpinBox;
+class QLabel;
+class QSpinBox;
+class QToolButton;
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+
+protected:
+    void closeEvent(QCloseEvent *event) override;
+
+private:
+    // Datei-Menue
+    void newCanvas(const QSize &size);
+    void newCustomCanvas();
+    void open();
+    bool save();
+    bool saveAs();
+    void exportImage();
+    void copyToClipboard();
+    void pasteFromClipboard();
+    void print();
+
+    // Bearbeiten-Menue
+    void deleteSelection();
+
+    // Aufbau
+    void createActions();
+    void createToolBar();
+    void createStatusBar();
+
+    // Zustand
+    bool maybeSave();
+    bool loadFile(const QString &path);
+    bool loadImageFile(const QString &path);
+    bool saveFile(const QString &path);
+    void setCurrentFile(const QString &path);
+    void setDirty(bool dirty);
+    void updateWindowTitle();
+    void updateSizeControls();
+    void updateObjectInfo();
+    void updateZoomInfo(double factor);
+    void chooseBrushColor();
+    void updateColorButton();
+
+    static QString aspectRatioText(const QSize &size);
+
+    CanvasScene *m_scene = nullptr;
+    CanvasView *m_view = nullptr;
+
+    QSpinBox *m_widthSpin = nullptr;
+    QSpinBox *m_heightSpin = nullptr;
+    QToolButton *m_lockButton = nullptr;
+    QLabel *m_ratioLabel = nullptr;
+    QLabel *m_objectLabel = nullptr;
+    QLabel *m_zoomLabel = nullptr;
+
+    QAction *m_saveAction = nullptr;
+    QAction *m_deleteAction = nullptr;
+    QAction *m_pasteAction = nullptr;
+    QToolButton *m_colorButton = nullptr;
+    QDoubleSpinBox *m_widthBrushSpin = nullptr;
+    QActionGroup *m_toolGroup = nullptr;
+
+    QString m_currentFile;
+    bool m_dirty = false;
+    bool m_updatingControls = false;
+};
