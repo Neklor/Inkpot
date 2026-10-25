@@ -10,7 +10,7 @@
 NewCanvasDialog::NewCanvasDialog(const QSize &initialSize, QWidget *parent)
     : QDialog(parent)
 {
-    setWindowTitle(tr("Neue Arbeitsflaeche"));
+    setWindowTitle(tr("Neue Arbeitsfläche"));
 
     m_widthSpin = new QSpinBox(this);
     m_widthSpin->setRange(16, 20000);
@@ -22,7 +22,7 @@ NewCanvasDialog::NewCanvasDialog(const QSize &initialSize, QWidget *parent)
     m_heightSpin->setSuffix(tr(" px"));
     m_heightSpin->setValue(initialSize.height());
 
-    m_lockCheck = new QCheckBox(tr("Seitenverhaeltnis beibehalten"), this);
+    m_lockCheck = new QCheckBox(tr("Seitenverhältnis beibehalten"), this);
     m_ratioLabel = new QLabel(this);
 
     if (initialSize.height() > 0)
@@ -30,9 +30,9 @@ NewCanvasDialog::NewCanvasDialog(const QSize &initialSize, QWidget *parent)
 
     auto *form = new QFormLayout;
     form->addRow(tr("Breite:"), m_widthSpin);
-    form->addRow(tr("Hoehe:"), m_heightSpin);
+    form->addRow(tr("Höhe:"), m_heightSpin);
     form->addRow(QString(), m_lockCheck);
-    form->addRow(tr("Verhaeltnis:"), m_ratioLabel);
+    form->addRow(tr("Verhältnis:"), m_ratioLabel);
 
     auto *buttons = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this);
     connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);

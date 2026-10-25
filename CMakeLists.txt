@@ -32,6 +32,11 @@ qt_add_executable(inkpot
     src/ImageItem.h
     src/NewCanvasDialog.cpp
     src/NewCanvasDialog.h
+    src/TextItem.cpp
+    src/TextItem.h
+    src/Icons.cpp
+    src/Icons.h
+    src/InkObject.cpp
     src/InkObject.h
 )
 

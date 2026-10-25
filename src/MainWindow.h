@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QIcon>
 #include <QMainWindow>
 #include <QSize>
 #include <QString>
@@ -12,6 +13,7 @@ class QActionGroup;
 class QDoubleSpinBox;
 class QLabel;
 class QSpinBox;
+class QToolBar;
 class QToolButton;
 
 class MainWindow : public QMainWindow
@@ -55,8 +57,10 @@ private:
     void updateSizeControls();
     void updateObjectInfo();
     void updateZoomInfo(double factor);
-    void chooseBrushColor();
+    void chooseToolColor();
     void updateColorButton();
+    void createToolAction(QToolBar *toolBar, const QString &name, const QIcon &icon,
+                          const QString &shortcut, const QString &hint, int tool);
 
     static QString aspectRatioText(const QSize &size);
 
@@ -74,7 +78,7 @@ private:
     QAction *m_deleteAction = nullptr;
     QAction *m_pasteAction = nullptr;
     QToolButton *m_colorButton = nullptr;
-    QDoubleSpinBox *m_widthBrushSpin = nullptr;
+    QDoubleSpinBox *m_toolSizeSpin = nullptr;
     QActionGroup *m_toolGroup = nullptr;
 
     QString m_currentFile;

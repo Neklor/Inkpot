@@ -7,7 +7,7 @@ class QCheckBox;
 class QLabel;
 class QSpinBox;
 
-// Dialog fuer "Neu > Benutzerdefinierte Groesse".
+// Dialog für "Neu > Benutzerdefinierte Größe".
 class NewCanvasDialog : public QDialog
 {
     Q_OBJECT

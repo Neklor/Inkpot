@@ -1,12 +1,15 @@
 #include "StrokeItem.h"
 
+#include <cmath>
+
 #include <QCoreApplication>
+#include <QPainter>
 #include <QJsonArray>
 #include <QPainterPathStroker>
 #include <QPen>
 
 namespace {
-// Mindestbreite fuer die Trefferflaeche, damit sich auch duenne Striche
+// Mindestbreite für die Trefferflaeche, damit sich auch dünne Striche
 // bequem anklicken lassen.
 constexpr qreal kMinimumHitWidth = 10.0;
 }
@@ -46,6 +49,33 @@ void StrokeItem::extendTo(const QPointF &scenePos)
     rebuildPath();
 }
 
+void StrokeItem::setLineEnd(const QPointF &scenePos)
+{
+    const QPointF local = mapFromScene(scenePos);
+    if (m_points.isEmpty())
+        m_points.append(QPointF(0.0, 0.0));
+
+    // Eine Gerade besteht genau aus Start- und Endpunkt.
+    if (m_points.size() < 2)
+        m_points.append(local);
+    else
+        m_points[1] = local;
+    while (m_points.size() > 2)
+        m_points.removeLast();
+
+    rebuildPath();
+}
+
+qreal StrokeItem::length() const
+{
+    qreal total = 0.0;
+    for (int i = 1; i < m_points.size(); ++i) {
+        const QPointF delta = m_points.at(i) - m_points.at(i - 1);
+        total += std::hypot(delta.x(), delta.y());
+    }
+    return total;
+}
+
 void StrokeItem::rebuildPath()
 {
     QPainterPath path;
@@ -60,7 +90,7 @@ void StrokeItem::rebuildPath()
         // sichtbaren Punkt setzt.
         path.lineTo(m_points.first() + QPointF(0.01, 0.0));
     } else {
-        // Ueber die Mittelpunkte interpolieren ergibt weiche Linien.
+        // Über die Mittelpunkte interpolieren ergibt weiche Linien.
         for (int i = 1; i < m_points.size() - 1; ++i) {
             const QPointF mid = (m_points.at(i) + m_points.at(i + 1)) / 2.0;
             path.quadTo(m_points.at(i), mid);
@@ -87,15 +117,25 @@ QPainterPath StrokeItem::shape() const
     stroker.setWidth(hitWidth());
     stroker.setCapStyle(Qt::RoundCap);
     stroker.setJoinStyle(Qt::RoundJoin);
-    return stroker.createStroke(path());
+    return withoutErasedArea(stroker.createStroke(path()));
 }
 
-void StrokeItem::write(QJsonObject &json, const QPointF &origin) const
+void StrokeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    const QPointF relative = pos() - origin;
-    json[QStringLiteral("x")] = relative.x();
-    json[QStringLiteral("y")] = relative.y();
-    json[QStringLiteral("z")] = zValue();
+    if (!hasErasedArea()) {
+        QGraphicsPathItem::paint(painter, option, widget);
+        return;
+    }
+
+    // Radierte Stellen werden ausgeblendet, der Strich selbst bleibt erhalten.
+    painter->save();
+    painter->setClipPath(visibleClipPath(boundingRect()), Qt::IntersectClip);
+    QGraphicsPathItem::paint(painter, option, widget);
+    painter->restore();
+}
+
+void StrokeItem::write(QJsonObject &json) const
+{
     json[QStringLiteral("color")] = pen().color().name(QColor::HexArgb);
     json[QStringLiteral("width")] = pen().widthF();
 
@@ -133,7 +173,6 @@ bool StrokeItem::read(const QJsonObject &json)
     if (m_points.isEmpty())
         return false;
 
-    setPos(json.value(QStringLiteral("x")).toDouble(), json.value(QStringLiteral("y")).toDouble());
     rebuildPath();
     return true;
 }

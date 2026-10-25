@@ -4,14 +4,18 @@
 
 #include "InkObject.h"
 
-// Ein eingefuegtes oder geoeffnetes Bild als Objekt.
+// Ein eingefügtes oder geöffnetes Bild als Objekt.
 class ImageItem : public QGraphicsPixmapItem, public InkObject
 {
 public:
     explicit ImageItem(const QPixmap &pixmap = QPixmap());
 
+    QPainterPath shape() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
+
     QString typeName() const override { return QStringLiteral("image"); }
     QString displayName() const override;
-    void write(QJsonObject &json, const QPointF &origin) const override;
+    QGraphicsItem *asItem() override { return this; }
+    void write(QJsonObject &json) const override;
     bool read(const QJsonObject &json) override;
 };

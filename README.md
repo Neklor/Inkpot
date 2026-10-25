@@ -14,11 +14,19 @@ Objekte erhält; der Export erzeugt ein flaches Bild.
 * Datei-Menü: Neu (Standardgrößen und benutzerdefiniert), Öffnen, Speichern,
   Speichern unter, Exportieren, In die Zwischenablage kopieren, Einfügen,
   Drucken, Beenden
-* Arbeitsfläche mit acht Anfasspunkten; Größe jederzeit in der Fußzeile
-  ablesbar und dort direkt eingebbar, mit Schalter zum Festhalten des
-  Seitenverhältnisses und Anzeige des Verhältnisses (z. B. 4:3, 16:9)
-* Objektfähigkeit: Auswählen, Verschieben, Mehrfachauswahl per Gummiband,
-  Löschen
+* Arbeitsfläche liegt fest in der linken oberen Ecke und wächst nach rechts
+  und unten — Anfasspunkte sitzen an der rechten und unteren Kante. Die Größe
+  steht in der Fußzeile und ist dort direkt eingebbar, mit Schalter zum
+  Festhalten des Seitenverhältnisses und Anzeige des Verhältnisses
+  (z. B. 4:3, 16:9)
+* Werkzeuge: Auswahl, Pinsel, Linie, Radiergummi, Text
+* Objektfähigkeit: Auswählen, Verschieben, Skalieren über acht eigene
+  Anfasspunkte, Mehrfachauswahl per Gummiband, Löschen
+* Der Radiergummi arbeitet innerhalb der Objekte: er legt eine Maske an,
+  statt die Form zu zerstören — die ursprüngliche Geometrie bleibt in der
+  Projektdatei erhalten
+* Alle Symbole werden zur Laufzeit gezeichnet, das Projekt braucht keine
+  Bilddateien
 
 ## Bauen
 
@@ -40,8 +48,12 @@ cmake --build build
 
 | Aktion | Eingabe |
 | --- | --- |
-| Auswahlwerkzeug | `S` |
+| Auswahl | `S` |
 | Pinsel | `B` |
+| Linie | `L` |
+| Radiergummi | `E` |
+| Text | `T` |
+| Text später ändern | Doppelklick mit dem Auswahlwerkzeug |
 | Auswahl löschen | `Entf` |
 | Alles auswählen | `Strg+A` |
 | Zoomen | `Strg+Mausrad`, `Strg++`, `Strg+-` |
@@ -56,10 +68,12 @@ cmake --build build
 | `src/MainWindow.*` | Menüs, Werkzeugleiste, Fußzeile, Datei-Operationen |
 | `src/CanvasScene.*` | Arbeitsfläche, Objektverwaltung, Projektformat |
 | `src/CanvasView.*` | Ansicht, Werkzeuge, Zoom |
-| `src/ResizeHandle.*` | Anfasspunkte der Arbeitsfläche |
-| `src/StrokeItem.*` | Objekt: Pinselstrich |
+| `src/ResizeHandle.*` | Anfasspunkte für Arbeitsfläche und Objekte |
+| `src/StrokeItem.*` | Objekt: Pinselstrich und Linie |
 | `src/ImageItem.*` | Objekt: Bild |
-| `src/InkObject.h` | Gemeinsame Objekt-Schnittstelle |
+| `src/TextItem.*` | Objekt: Beschriftung |
+| `src/InkObject.*` | Gemeinsame Objekt-Schnittstelle samt Radier-Maske |
+| `src/Icons.*` | Zur Laufzeit gezeichnete Symbole |
 | `src/NewCanvasDialog.*` | Dialog für benutzerdefinierte Größe |
 
 ## Lizenz

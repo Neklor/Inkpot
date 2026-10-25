@@ -34,6 +34,7 @@
 
 #include "CanvasScene.h"
 #include "CanvasView.h"
+#include "Icons.h"
 #include "ImageItem.h"
 #include "NewCanvasDialog.h"
 
@@ -42,7 +43,7 @@ namespace {
 const char *kProjectSuffix = "inkpot";
 const char *kProjectFilter = "Inkpot-Projekt (*.inkpot)";
 
-// Standardgroessen fuer "Datei > Neu".
+// Standardgrößen für "Datei > Neu".
 struct Preset {
     const char *label;
     int width;
@@ -50,12 +51,12 @@ struct Preset {
 };
 
 const Preset kPresets[] = {
-    { "800 \xC3\x97 600 (4:3)",            800,  600 },
-    { "1024 \xC3\x97 768 (4:3)",          1024,  768 },
-    { "1280 \xC3\x97 720 (HD, 16:9)",     1280,  720 },
-    { "1920 \xC3\x97 1080 (Full HD)",     1920, 1080 },
-    { "1080 \xC3\x97 1080 (Quadrat)",     1080, 1080 },
-    { "2480 \xC3\x97 3508 (A4, 300 dpi)", 2480, 3508 },
+    { "800 × 600 (4:3)",            800,  600 },
+    { "1024 × 768 (4:3)",          1024,  768 },
+    { "1280 × 720 (HD, 16:9)",     1280,  720 },
+    { "1920 × 1080 (Full HD)",     1920, 1080 },
+    { "1080 × 1080 (Quadrat)",     1080, 1080 },
+    { "2480 × 3508 (A4, 300 dpi)", 2480, 3508 },
 };
 
 }   // namespace
@@ -96,11 +97,11 @@ void MainWindow::createActions()
         connect(action, &QAction::triggered, this, [this, size] { newCanvas(size); });
     }
     newMenu->addSeparator();
-    QAction *customAction = newMenu->addAction(tr("&Benutzerdefinierte Groesse ..."));
+    QAction *customAction = newMenu->addAction(tr("&Benutzerdefinierte Größe ..."));
     customAction->setShortcut(QKeySequence::New);
     connect(customAction, &QAction::triggered, this, &MainWindow::newCustomCanvas);
 
-    QAction *openAction = fileMenu->addAction(tr("&Oeffnen ..."));
+    QAction *openAction = fileMenu->addAction(tr("&Öffnen ..."));
     openAction->setShortcut(QKeySequence::Open);
     connect(openAction, &QAction::triggered, this, &MainWindow::open);
 
@@ -114,7 +115,7 @@ void MainWindow::createActions()
 
     QAction *exportAction = fileMenu->addAction(tr("&Exportieren ..."));
     exportAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+E")));
-    exportAction->setStatusTip(tr("Die Arbeitsflaeche als Bilddatei speichern"));
+    exportAction->setStatusTip(tr("Die Arbeitsfläche als Bilddatei speichern"));
     connect(exportAction, &QAction::triggered, this, &MainWindow::exportImage);
 
     fileMenu->addSeparator();
@@ -123,7 +124,7 @@ void MainWindow::createActions()
     copyAction->setShortcut(QKeySequence::Copy);
     connect(copyAction, &QAction::triggered, this, &MainWindow::copyToClipboard);
 
-    m_pasteAction = fileMenu->addAction(tr("&Einfuegen"));
+    m_pasteAction = fileMenu->addAction(tr("&Einfügen"));
     m_pasteAction->setShortcut(QKeySequence::Paste);
     connect(m_pasteAction, &QAction::triggered, this, &MainWindow::pasteFromClipboard);
 
@@ -141,11 +142,11 @@ void MainWindow::createActions()
 
     QMenu *editMenu = menuBar()->addMenu(tr("&Bearbeiten"));
 
-    m_deleteAction = editMenu->addAction(tr("Auswahl &loeschen"));
+    m_deleteAction = editMenu->addAction(tr("Auswahl &löschen"));
     m_deleteAction->setShortcut(QKeySequence::Delete);
     connect(m_deleteAction, &QAction::triggered, this, &MainWindow::deleteSelection);
 
-    QAction *selectAllAction = editMenu->addAction(tr("&Alles auswaehlen"));
+    QAction *selectAllAction = editMenu->addAction(tr("&Alles auswählen"));
     selectAllAction->setShortcut(QKeySequence::SelectAll);
     connect(selectAllAction, &QAction::triggered, this, [this] { m_scene->selectAllObjects(); });
 
@@ -155,7 +156,7 @@ void MainWindow::createActions()
 
     QMenu *viewMenu = menuBar()->addMenu(tr("&Ansicht"));
 
-    QAction *zoomInAction = viewMenu->addAction(tr("Ver&groessern"));
+    QAction *zoomInAction = viewMenu->addAction(tr("Ver&größern"));
     zoomInAction->setShortcut(QKeySequence::ZoomIn);
     connect(zoomInAction, &QAction::triggered, m_view, &CanvasView::zoomIn);
 
@@ -163,7 +164,7 @@ void MainWindow::createActions()
     zoomOutAction->setShortcut(QKeySequence::ZoomOut);
     connect(zoomOutAction, &QAction::triggered, m_view, &CanvasView::zoomOut);
 
-    QAction *resetZoomAction = viewMenu->addAction(tr("&Originalgroesse"));
+    QAction *resetZoomAction = viewMenu->addAction(tr("&Originalgröße"));
     resetZoomAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+0")));
     connect(resetZoomAction, &QAction::triggered, m_view, &CanvasView::resetZoom);
 
@@ -172,75 +173,108 @@ void MainWindow::createActions()
     connect(fitAction, &QAction::triggered, m_view, &CanvasView::fitPageInView);
 }
 
+void MainWindow::createToolAction(QToolBar *toolBar, const QString &name, const QIcon &icon,
+                                  const QString &shortcut, const QString &hint, int tool)
+{
+    QAction *action = toolBar->addAction(icon, name);
+    action->setCheckable(true);
+    action->setShortcut(QKeySequence(shortcut));
+    action->setToolTip(QStringLiteral("%1 (%2)\n%3").arg(name, shortcut, hint));
+    action->setStatusTip(hint);
+    connect(action, &QAction::triggered, this, [this, tool] {
+        m_view->setTool(static_cast<CanvasView::Tool>(tool));
+    });
+    m_toolGroup->addAction(action);
+}
+
 void MainWindow::createToolBar()
 {
     QToolBar *toolBar = addToolBar(tr("Werkzeuge"));
     toolBar->setMovable(false);
-    toolBar->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
+    toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
+    toolBar->setIconSize(QSize(24, 24));
+
+    // Symbole folgen der Textfarbe des Themes.
+    const QColor symbolColor = palette().color(QPalette::ButtonText);
+
+    QAction *newAction = toolBar->addAction(Icons::plus(symbolColor), tr("Neu"));
+    newAction->setToolTip(tr("Neue Arbeitsfläche (Strg+N)"));
+    newAction->setStatusTip(tr("Neue Arbeitsfläche anlegen"));
+    connect(newAction, &QAction::triggered, this, &MainWindow::newCustomCanvas);
+
+    QAction *openAction = toolBar->addAction(Icons::folder(symbolColor), tr("Öffnen"));
+    openAction->setToolTip(tr("Öffnen (Strg+O)"));
+    openAction->setStatusTip(tr("Projekt oder Bild öffnen"));
+    connect(openAction, &QAction::triggered, this, &MainWindow::open);
+
+    toolBar->addSeparator();
 
     m_toolGroup = new QActionGroup(this);
     m_toolGroup->setExclusive(true);
 
-    QAction *selectAction = toolBar->addAction(tr("Auswahl"));
-    selectAction->setCheckable(true);
-    selectAction->setChecked(true);
-    selectAction->setShortcut(QKeySequence(QStringLiteral("S")));
-    selectAction->setStatusTip(tr("Objekte auswaehlen, verschieben und loeschen"));
-    connect(selectAction, &QAction::triggered, this,
-            [this] { m_view->setTool(CanvasView::Tool::Select); });
-    m_toolGroup->addAction(selectAction);
+    createToolAction(toolBar, tr("Auswahl"), Icons::pointer(symbolColor), QStringLiteral("S"),
+                     tr("Objekte auswählen, verschieben, skalieren und löschen"),
+                     int(CanvasView::Tool::Select));
+    createToolAction(toolBar, tr("Pinsel"), Icons::brush(symbolColor), QStringLiteral("B"),
+                     tr("Freihand malen - jeder Strich wird ein eigenes Objekt"),
+                     int(CanvasView::Tool::Brush));
+    createToolAction(toolBar, tr("Linie"), Icons::line(symbolColor), QStringLiteral("L"),
+                     tr("Gerade Linie ziehen"),
+                     int(CanvasView::Tool::Line));
+    createToolAction(toolBar, tr("Radiergummi"), Icons::eraser(symbolColor), QStringLiteral("E"),
+                     tr("Innerhalb von Objekten radieren"),
+                     int(CanvasView::Tool::Eraser));
+    createToolAction(toolBar, tr("Text"), Icons::text(symbolColor), QStringLiteral("T"),
+                     tr("Beschriftung setzen - Doppelklick bearbeitet sie später"),
+                     int(CanvasView::Tool::Text));
 
-    QAction *brushAction = toolBar->addAction(tr("Pinsel"));
-    brushAction->setCheckable(true);
-    brushAction->setShortcut(QKeySequence(QStringLiteral("B")));
-    brushAction->setStatusTip(tr("Malen - jeder Strich wird ein eigenes Objekt"));
-    connect(brushAction, &QAction::triggered, this,
-            [this] { m_view->setTool(CanvasView::Tool::Brush); });
-    m_toolGroup->addAction(brushAction);
+    m_toolGroup->actions().first()->setChecked(true);
 
     toolBar->addSeparator();
 
     m_colorButton = new QToolButton(this);
-    m_colorButton->setText(tr("Farbe"));
-    m_colorButton->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    connect(m_colorButton, &QToolButton::clicked, this, &MainWindow::chooseBrushColor);
+    m_colorButton->setToolTip(tr("Farbe für Pinsel, Linie und Text"));
+    m_colorButton->setAutoRaise(true);
+    m_colorButton->setIconSize(QSize(24, 24));
+    connect(m_colorButton, &QToolButton::clicked, this, &MainWindow::chooseToolColor);
     toolBar->addWidget(m_colorButton);
     updateColorButton();
 
-    toolBar->addWidget(new QLabel(tr("  Breite:"), this));
-    m_widthBrushSpin = new QDoubleSpinBox(this);
-    m_widthBrushSpin->setRange(0.5, 200.0);
-    m_widthBrushSpin->setSingleStep(0.5);
-    m_widthBrushSpin->setDecimals(1);
-    m_widthBrushSpin->setValue(m_view->brushWidth());
-    m_widthBrushSpin->setSuffix(tr(" px"));
-    connect(m_widthBrushSpin, &QDoubleSpinBox::valueChanged, this,
-            [this](double value) { m_view->setBrushWidth(value); });
-    toolBar->addWidget(m_widthBrushSpin);
+    toolBar->addWidget(new QLabel(tr(" Größe: "), this));
+    m_toolSizeSpin = new QDoubleSpinBox(this);
+    m_toolSizeSpin->setRange(0.5, 200.0);
+    m_toolSizeSpin->setSingleStep(0.5);
+    m_toolSizeSpin->setDecimals(1);
+    m_toolSizeSpin->setValue(m_view->toolSize());
+    m_toolSizeSpin->setSuffix(tr(" px"));
+    m_toolSizeSpin->setToolTip(tr("Strichstärke, Radierer-Durchmesser und Schriftgröße"));
+    connect(m_toolSizeSpin, &QDoubleSpinBox::valueChanged, this,
+            [this](double value) { m_view->setToolSize(value); });
+    toolBar->addWidget(m_toolSizeSpin);
 }
 
 void MainWindow::createStatusBar()
 {
-    statusBar()->addWidget(new QLabel(tr("Arbeitsflaeche:"), this));
+    statusBar()->addWidget(new QLabel(tr("Arbeitsfläche:"), this));
 
     m_widthSpin = new QSpinBox(this);
     m_widthSpin->setRange(16, 20000);
     m_widthSpin->setSuffix(tr(" px"));
     m_widthSpin->setKeyboardTracking(false);
-    m_widthSpin->setToolTip(tr("Breite der Arbeitsflaeche"));
+    m_widthSpin->setToolTip(tr("Breite der Arbeitsfläche"));
     connect(m_widthSpin, &QSpinBox::valueChanged, this, [this](int value) {
         if (!m_updatingControls)
             m_scene->setPageWidth(value);
     });
     statusBar()->addWidget(m_widthSpin);
 
-    statusBar()->addWidget(new QLabel(QStringLiteral("\xC3\x97"), this));
+    statusBar()->addWidget(new QLabel(QStringLiteral("×"), this));
 
     m_heightSpin = new QSpinBox(this);
     m_heightSpin->setRange(16, 20000);
     m_heightSpin->setSuffix(tr(" px"));
     m_heightSpin->setKeyboardTracking(false);
-    m_heightSpin->setToolTip(tr("Hoehe der Arbeitsflaeche"));
+    m_heightSpin->setToolTip(tr("Höhe der Arbeitsfläche"));
     connect(m_heightSpin, &QSpinBox::valueChanged, this, [this](int value) {
         if (!m_updatingControls)
             m_scene->setPageHeight(value);
@@ -248,16 +282,16 @@ void MainWindow::createStatusBar()
     statusBar()->addWidget(m_heightSpin);
 
     m_lockButton = new QToolButton(this);
-    m_lockButton->setText(tr("Verhaeltnis halten"));
+    m_lockButton->setText(tr("Verhältnis halten"));
     m_lockButton->setCheckable(true);
-    m_lockButton->setToolTip(tr("Seitenverhaeltnis beim Veraendern der Groesse beibehalten"));
+    m_lockButton->setToolTip(tr("Seitenverhältnis beim Verändern der Größe beibehalten"));
     connect(m_lockButton, &QToolButton::toggled, this, [this](bool checked) {
         m_scene->setAspectRatioLocked(checked);
     });
     statusBar()->addWidget(m_lockButton);
 
     m_ratioLabel = new QLabel(this);
-    m_ratioLabel->setToolTip(tr("Seitenverhaeltnis der Arbeitsflaeche"));
+    m_ratioLabel->setToolTip(tr("Seitenverhältnis der Arbeitsfläche"));
     statusBar()->addWidget(m_ratioLabel);
 
     m_objectLabel = new QLabel(this);
@@ -275,12 +309,11 @@ void MainWindow::newCanvas(const QSize &size)
         return;
 
     m_scene->clearObjects();
-    m_scene->setPageRect(QRectF(QPointF(0.0, 0.0), QSizeF(size)));
+    m_scene->setPageSize(size);
     m_view->resetZoom();
-    m_view->centerOn(m_scene->pageRect().center());
     setCurrentFile(QString());
     setDirty(false);
-    statusBar()->showMessage(tr("Neue Arbeitsflaeche %1 \xC3\x97 %2")
+    statusBar()->showMessage(tr("Neue Arbeitsfläche %1 × %2")
                                  .arg(size.width()).arg(size.height()), 4000);
 }
 
@@ -310,7 +343,7 @@ void MainWindow::open()
                                     tr("Bilder (%1)").arg(imagePatterns.join(QLatin1Char(' '))),
                                     tr("Alle Dateien (*)"));
 
-    const QString path = QFileDialog::getOpenFileName(this, tr("Oeffnen"), QString(), filter);
+    const QString path = QFileDialog::getOpenFileName(this, tr("Öffnen"), QString(), filter);
     if (path.isEmpty())
         return;
 
@@ -364,7 +397,7 @@ void MainWindow::exportImage()
         return;
 
     if (QFileInfo(path).suffix().isEmpty()) {
-        // Endung aus dem gewaehlten Filter ergaenzen.
+        // Endung aus dem gewählten Filter ergaenzen.
         QString suffix = formats.first().second;
         for (const auto &format : formats) {
             if (format.first == selectedFilter) {
@@ -387,7 +420,7 @@ void MainWindow::exportImage()
 
 void MainWindow::copyToClipboard()
 {
-    // Mit Auswahl: nur die ausgewaehlten Objekte, sonst die ganze Arbeitsflaeche.
+    // Mit Auswahl: nur die ausgewählten Objekte, sonst die ganze Arbeitsfläche.
     QImage image = m_scene->renderSelection();
     if (image.isNull())
         image = m_scene->renderPage(Qt::white);
@@ -413,14 +446,14 @@ void MainWindow::pasteFromClipboard()
     m_scene->addObject(item);
     m_scene->clearSelection();
     item->setSelected(true);
-    statusBar()->showMessage(tr("Bild als neues Objekt eingefuegt"), 3000);
+    statusBar()->showMessage(tr("Bild als neues Objekt eingefügt"), 3000);
 }
 
 void MainWindow::print()
 {
     QPrinter printer(QPrinter::HighResolution);
     QPrintDialog dialog(&printer, this);
-    dialog.setWindowTitle(tr("Arbeitsflaeche drucken"));
+    dialog.setWindowTitle(tr("Arbeitsfläche drucken"));
     if (dialog.exec() != QDialog::Accepted)
         return;
 
@@ -432,7 +465,7 @@ void MainWindow::print()
     if (!painter.isActive())
         return;
 
-    // Seitenfuellend einpassen, Seitenverhaeltnis bleibt erhalten.
+    // Seitenfuellend einpassen, Seitenverhältnis bleibt erhalten.
     const QRect target = painter.viewport();
     QSize size = image.size();
     size.scale(target.size(), Qt::KeepAspectRatio);
@@ -448,12 +481,12 @@ void MainWindow::print()
 void MainWindow::deleteSelection()
 {
     if (m_scene->selectedItems().isEmpty()) {
-        statusBar()->showMessage(tr("Kein Objekt ausgewaehlt"), 3000);
+        statusBar()->showMessage(tr("Kein Objekt ausgewählt"), 3000);
         return;
     }
     const int count = m_scene->selectedItems().size();
     m_scene->removeSelectedObjects();
-    statusBar()->showMessage(tr("%n Objekt(e) geloescht", nullptr, count), 3000);
+    statusBar()->showMessage(tr("%n Objekt(e) gelöscht", nullptr, count), 3000);
 }
 
 // ------------------------------------------------------------------- Zustand
@@ -465,7 +498,7 @@ bool MainWindow::maybeSave()
 
     const QMessageBox::StandardButton answer = QMessageBox::warning(
         this, tr("Inkpot"),
-        tr("Die Zeichnung wurde geaendert.\nMoechtest Du die Aenderungen speichern?"),
+        tr("Die Zeichnung wurde geändert.\nMöchtest Du die Änderungen speichern?"),
         QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
 
     switch (answer) {
@@ -482,7 +515,7 @@ bool MainWindow::loadFile(const QString &path)
 {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
-        QMessageBox::warning(this, tr("Oeffnen"),
+        QMessageBox::warning(this, tr("Öffnen"),
                              tr("Die Datei %1 konnte nicht gelesen werden.")
                                  .arg(QFileInfo(path).fileName()));
         return false;
@@ -493,15 +526,15 @@ bool MainWindow::loadFile(const QString &path)
     file.close();
 
     if (parseError.error != QJsonParseError::NoError || !document.isObject()) {
-        QMessageBox::warning(this, tr("Oeffnen"),
-                             tr("Die Datei %1 ist beschaedigt: %2")
+        QMessageBox::warning(this, tr("Öffnen"),
+                             tr("Die Datei %1 ist beschädigt: %2")
                                  .arg(QFileInfo(path).fileName(), parseError.errorString()));
         return false;
     }
 
     QString error;
     if (!m_scene->fromJson(document.object(), &error)) {
-        QMessageBox::warning(this, tr("Oeffnen"), error);
+        QMessageBox::warning(this, tr("Öffnen"), error);
         return false;
     }
 
@@ -514,7 +547,7 @@ bool MainWindow::loadFile(const QString &path)
     setDirty(false);
     updateSizeControls();
     updateObjectInfo();
-    statusBar()->showMessage(tr("%1 geoeffnet").arg(QFileInfo(path).fileName()), 4000);
+    statusBar()->showMessage(tr("%1 geöffnet").arg(QFileInfo(path).fileName()), 4000);
     return true;
 }
 
@@ -524,15 +557,15 @@ bool MainWindow::loadImageFile(const QString &path)
     reader.setAutoTransform(true);
     const QImage image = reader.read();
     if (image.isNull()) {
-        QMessageBox::warning(this, tr("Oeffnen"),
+        QMessageBox::warning(this, tr("Öffnen"),
                              tr("Das Bild %1 konnte nicht geladen werden: %2")
                                  .arg(QFileInfo(path).fileName(), reader.errorString()));
         return false;
     }
 
-    // Das Bild wird ein Objekt auf einer passend grossen Arbeitsflaeche.
+    // Das Bild wird ein Objekt auf einer passend grossen Arbeitsfläche.
     m_scene->clearObjects();
-    m_scene->setPageRect(QRectF(QPointF(0.0, 0.0), QSizeF(image.size())));
+    m_scene->setPageSize(image.size());
 
     auto *item = new ImageItem(QPixmap::fromImage(image));
     item->setPos(0.0, 0.0);
@@ -600,14 +633,14 @@ void MainWindow::updateSizeControls()
     m_heightSpin->setValue(size.height());
     m_updatingControls = false;
 
-    m_ratioLabel->setText(tr("Verhaeltnis: %1").arg(aspectRatioText(size)));
+    m_ratioLabel->setText(tr("Verhältnis: %1").arg(aspectRatioText(size)));
 }
 
 void MainWindow::updateObjectInfo()
 {
     const int total = m_scene->objectCount();
     const int selected = m_scene->selectedItems().size();
-    m_objectLabel->setText(selected > 0 ? tr("Objekte: %1 (%2 ausgewaehlt)").arg(total).arg(selected)
+    m_objectLabel->setText(selected > 0 ? tr("Objekte: %1 (%2 ausgewählt)").arg(total).arg(selected)
                                         : tr("Objekte: %1").arg(total));
 }
 
@@ -616,22 +649,22 @@ void MainWindow::updateZoomInfo(double factor)
     m_zoomLabel->setText(tr("Zoom: %1 %").arg(qRound(factor * 100.0)));
 }
 
-void MainWindow::chooseBrushColor()
+void MainWindow::chooseToolColor()
 {
-    const QColor color = QColorDialog::getColor(m_view->brushColor(), this, tr("Pinselfarbe"));
+    const QColor color = QColorDialog::getColor(m_view->toolColor(), this, tr("Farbe wählen"));
     if (!color.isValid())
         return;
-    m_view->setBrushColor(color);
+    m_view->setToolColor(color);
     updateColorButton();
 }
 
 void MainWindow::updateColorButton()
 {
-    QPixmap pixmap(16, 16);
-    pixmap.fill(m_view->brushColor());
+    QPixmap pixmap(24, 24);
+    pixmap.fill(m_view->toolColor());
     QPainter painter(&pixmap);
     painter.setPen(QPen(QColor(0x40, 0x40, 0x44), 1.0));
-    painter.drawRect(0, 0, 15, 15);
+    painter.drawRect(0, 0, 23, 23);
     painter.end();
     m_colorButton->setIcon(QIcon(pixmap));
 }
@@ -647,7 +680,7 @@ QString MainWindow::aspectRatioText(const QSize &size)
     if (width <= 64 && height <= 64)
         return QStringLiteral("%1:%2").arg(width).arg(height);
 
-    // Gekuerzt zu unuebersichtlich: an gaengige Verhaeltnisse annaehern.
+    // Gekürzt zu unübersichtlich: an gängige Verhältnisse annaehern.
     struct CommonRatio { int w; int h; };
     static const CommonRatio common[] = {
         {1, 1}, {5, 4}, {4, 3}, {3, 2}, {16, 10}, {16, 9}, {21, 9}, {2, 1},

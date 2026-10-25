@@ -6,7 +6,8 @@
 
 #include "InkObject.h"
 
-// Ein freihaendig gemalter Pinselstrich.
+// Ein gemalter Strich: freihaendig mit dem Pinsel oder gerade mit dem
+// Linienwerkzeug.
 class StrokeItem : public QGraphicsPathItem, public InkObject
 {
 public:
@@ -16,14 +17,20 @@ public:
     void beginAt(const QPointF &scenePos);
     void extendTo(const QPointF &scenePos);
 
+    // Linienwerkzeug: zieht eine gerade Strecke vom Startpunkt aus.
+    void setLineEnd(const QPointF &scenePos);
+
     bool isEmpty() const { return m_points.isEmpty(); }
+    qreal length() const;
 
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) override;
 
     QString typeName() const override { return QStringLiteral("stroke"); }
     QString displayName() const override;
-    void write(QJsonObject &json, const QPointF &origin) const override;
+    QGraphicsItem *asItem() override { return this; }
+    void write(QJsonObject &json) const override;
     bool read(const QJsonObject &json) override;
 
 private:

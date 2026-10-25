@@ -4,6 +4,7 @@
 #include <QByteArray>
 #include <QCoreApplication>
 #include <QImage>
+#include <QPainter>
 
 ImageItem::ImageItem(const QPixmap &pixmap)
     : QGraphicsPixmapItem(pixmap)
@@ -17,13 +18,26 @@ QString ImageItem::displayName() const
     return QCoreApplication::translate("ImageItem", "Bild");
 }
 
-void ImageItem::write(QJsonObject &json, const QPointF &origin) const
+QPainterPath ImageItem::shape() const
 {
-    const QPointF relative = pos() - origin;
-    json[QStringLiteral("x")] = relative.x();
-    json[QStringLiteral("y")] = relative.y();
-    json[QStringLiteral("z")] = zValue();
+    return withoutErasedArea(QGraphicsPixmapItem::shape());
+}
 
+void ImageItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+    if (!hasErasedArea()) {
+        QGraphicsPixmapItem::paint(painter, option, widget);
+        return;
+    }
+
+    painter->save();
+    painter->setClipPath(visibleClipPath(boundingRect()), Qt::IntersectClip);
+    QGraphicsPixmapItem::paint(painter, option, widget);
+    painter->restore();
+}
+
+void ImageItem::write(QJsonObject &json) const
+{
     QByteArray bytes;
     QBuffer buffer(&bytes);
     buffer.open(QIODevice::WriteOnly);
@@ -41,6 +55,5 @@ bool ImageItem::read(const QJsonObject &json)
         return false;
 
     setPixmap(QPixmap::fromImage(image));
-    setPos(json.value(QStringLiteral("x")).toDouble(), json.value(QStringLiteral("y")).toDouble());
     return true;
 }
