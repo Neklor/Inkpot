@@ -370,6 +370,10 @@ QIcon picture(const QColor &color)
 }
 
 // Curved arrow, mirrored for the redo icon.
+//
+// The head is a triangle pointing straight left and the shaft meets it with a
+// straight piece, so the direction stays readable. A shaft that curves away
+// right at the head would make the tip look as though it pointed downwards.
 QIcon curvedArrow(const QColor &color, bool mirrored)
 {
     QPixmap pixmap = createPixmap();
@@ -381,11 +385,13 @@ QIcon curvedArrow(const QColor &color, bool mirrored)
         painter.scale(-1.0, 1.0);
     }
 
-    // The shaft sweeps from the left round to the right and down.
+    // Straight along the top towards the head, then round to the right and
+    // down into the tail.
     QPainterPath shaft;
-    shaft.moveTo(16.0, 26.0);
-    shaft.cubicTo(30.0, 12.0, 54.0, 18.0, 52.0, 38.0);
-    shaft.cubicTo(51.0, 46.0, 46.0, 50.0, 40.0, 52.0);
+    shaft.moveTo(26.0, 21.0);
+    shaft.lineTo(38.0, 21.0);
+    shaft.cubicTo(52.0, 21.0, 57.0, 34.0, 51.0, 44.0);
+    shaft.cubicTo(48.0, 49.0, 43.0, 52.0, 38.0, 54.0);
 
     QPen pen(color, 7.0);
     pen.setCapStyle(Qt::RoundCap);
@@ -394,11 +400,11 @@ QIcon curvedArrow(const QColor &color, bool mirrored)
     painter.setBrush(Qt::NoBrush);
     painter.drawPath(shaft);
 
-    // Arrow head at the start of the sweep.
+    // Head, pointing left.
     QPainterPath head;
-    head.moveTo(10.0, 26.0);
-    head.lineTo(28.0, 20.0);
-    head.lineTo(26.0, 40.0);
+    head.moveTo(8.0, 21.0);
+    head.lineTo(28.0, 9.5);
+    head.lineTo(28.0, 32.5);
     head.closeSubpath();
 
     painter.setPen(Qt::NoPen);
