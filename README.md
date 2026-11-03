@@ -75,6 +75,9 @@ AppStream metadata, the MIME type for `*.ipot` and the translations.
 
 ## Keys and mouse
 
+The program lists these under **Help > Keyboard Shortcuts** as well, gathered
+from the menus themselves so the list stays current.
+
 | Action | Input |
 | --- | --- |
 | Selection | `S` |
@@ -164,6 +167,7 @@ still missing; the place for it is prepared in the AppStream file.
 | `src/InkObject.*` | shared object interface including the erase mask |
 | `src/Icons.*` | icons drawn at run time |
 | `src/NewCanvasDialog.*` | dialog for a custom canvas size |
+| `src/ShortcutsDialog.*` | list of the keyboard shortcuts |
 | `translations/` | translation catalogues |
 | `data/` | icon, desktop entry, AppStream and MIME data |
 | `flatpak/` | Flatpak manifest |
@@ -275,6 +279,9 @@ MIME-Typ für `*.ipot` und die Übersetzungen mit.
 
 ## Tasten und Maus
 
+Das Programm zeigt sie auch unter **Hilfe > Tastenkürzel** an; die Liste wird
+aus den Menüs selbst zusammengestellt und bleibt damit aktuell.
+
 | Aktion | Eingabe |
 | --- | --- |
 | Auswahl | `S` |
@@ -365,6 +372,7 @@ vorbereitet.
 | `src/InkObject.*` | Gemeinsame Objekt-Schnittstelle samt Radier-Maske |
 | `src/Icons.*` | Zur Laufzeit gezeichnete Symbole |
 | `src/NewCanvasDialog.*` | Dialog für eine eigene Flächengröße |
+| `src/ShortcutsDialog.*` | Übersicht der Tastenkürzel |
 | `translations/` | Übersetzungskataloge |
 | `data/` | Symbol, Desktop-Eintrag, AppStream- und MIME-Daten |
 | `flatpak/` | Flatpak-Manifest |

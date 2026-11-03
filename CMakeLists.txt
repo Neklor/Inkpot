@@ -48,6 +48,8 @@ set(INKPOT_SOURCES
     src/TextItem.h
     src/NewCanvasDialog.cpp
     src/NewCanvasDialog.h
+    src/ShortcutsDialog.cpp
+    src/ShortcutsDialog.h
     src/FillItem.cpp
     src/FillItem.h
     src/FloodFill.cpp

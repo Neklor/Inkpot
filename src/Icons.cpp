@@ -191,10 +191,12 @@ QIcon bucket(const QColor &accent, const QColor &outline)
     stream.closeSubpath();
     painter.drawPath(stream);
 
-    // The bucket, tipped over so its mouth points down to the left.
+    // The bucket, tipped over so its mouth points down to the left, right
+    // above where the stream starts. Turning it the other way would put the
+    // mouth on the far side and the paint would seem to leave the body.
     painter.save();
     painter.translate(42.0, 24.0);
-    painter.rotate(140.0);
+    painter.rotate(-140.0);
 
     QPainterPath body;
     body.moveTo(-17.0, -14.0);

@@ -28,7 +28,7 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cpp" line="+93"/>
+        <location filename="../src/MainWindow.cpp" line="+94"/>
         <source>There is nothing to fill at this spot</source>
         <translation>Hier gibt es nichts zu füllen</translation>
     </message>
@@ -144,6 +144,11 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>&amp;Keyboard Shortcuts</source>
+        <translation>&amp;Tastenkürzel</translation>
+    </message>
+    <message>
+        <location line="+5"/>
         <source>&amp;About Inkpot</source>
         <translation>Ü&amp;ber Inkpot</translation>
     </message>
@@ -153,7 +158,7 @@
         <translation>Über &amp;Qt</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+13"/>
         <source>About Inkpot</source>
         <translation>Über Inkpot</translation>
     </message>
@@ -168,7 +173,7 @@
         <translation>Werkzeuge</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+9"/>
         <source>New</source>
         <translation>Neu</translation>
     </message>
@@ -578,6 +583,64 @@ Möchtest Du die Änderungen speichern?</translation>
         <location line="+1"/>
         <source>Drag to scale the object</source>
         <translation>Ziehen, um das Objekt zu skalieren</translation>
+    </message>
+</context>
+<context>
+    <name>ShortcutsDialog</name>
+    <message>
+        <location filename="../src/ShortcutsDialog.cpp" line="+82"/>
+        <source>Keyboard Shortcuts</source>
+        <translation>Tastenkürzel</translation>
+    </message>
+    <message>
+        <location line="+26"/>
+        <source>Tools</source>
+        <translation>Werkzeuge</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Mouse</source>
+        <translation>Maus</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Zoom</source>
+        <translation>Zoomen</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Ctrl + mouse wheel</source>
+        <translation>Strg + Mausrad</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Pan the view</source>
+        <translation>Ansicht verschieben</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Drag with the middle mouse button</source>
+        <translation>Mit der mittleren Maustaste ziehen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edit a caption</source>
+        <translation>Beschriftung bearbeiten</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Double click with the selection tool</source>
+        <translation>Doppelklick mit dem Auswahlwerkzeug</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Select several objects</source>
+        <translation>Mehrere Objekte auswählen</translation>
+    </message>
+    <message>
+        <location line="+0"/>
+        <source>Drag a rubber band with the selection tool</source>
+        <translation>Mit dem Auswahlwerkzeug ein Gummiband aufziehen</translation>
     </message>
 </context>
 <context>

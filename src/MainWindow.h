@@ -47,6 +47,7 @@ private:
     void deleteSelection();
 
     // Help menu
+    void showShortcuts();
     void showAbout();
 
     // Construction
@@ -93,6 +94,7 @@ private:
     QAction *m_brushAction = nullptr;
     QAction *m_fillAction = nullptr;
     QActionGroup *m_toolGroup = nullptr;
+    QToolBar *m_toolBar = nullptr;
 
     QString m_currentFile;
     bool m_dirty = false;

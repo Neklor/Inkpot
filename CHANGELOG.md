@@ -37,8 +37,9 @@ First development release: milestone 1, the basic program.
 - German translation through Qt Linguist catalogues. When the LinguistTools
   CMake package is absent, the build falls back to calling `lrelease` directly,
   so the smaller qt6-l10n-tools package is enough.
-- Help menu with an about dialog carrying version, author, licence and
-  homepage.
+- Help menu with a list of the keyboard shortcuts, gathered from the menus and
+  the toolbar so it cannot fall out of step, and an about dialog carrying
+  version, author, licence and homepage.
 
 [Unreleased]: https://github.com/Neklor/Inkpot/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/Neklor/Inkpot/releases/tag/v0.1.0

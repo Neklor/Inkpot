@@ -37,6 +37,7 @@
 #include "Icons.h"
 #include "ImageItem.h"
 #include "NewCanvasDialog.h"
+#include "ShortcutsDialog.h"
 #include "TextItem.h"
 
 namespace {
@@ -198,11 +199,22 @@ void MainWindow::createActions()
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
+    QAction *shortcutsAction = helpMenu->addAction(tr("&Keyboard Shortcuts"));
+    connect(shortcutsAction, &QAction::triggered, this, &MainWindow::showShortcuts);
+
+    helpMenu->addSeparator();
+
     QAction *aboutAction = helpMenu->addAction(tr("&About Inkpot"));
     connect(aboutAction, &QAction::triggered, this, &MainWindow::showAbout);
 
     QAction *aboutQtAction = helpMenu->addAction(tr("About &Qt"));
     connect(aboutQtAction, &QAction::triggered, qApp, &QApplication::aboutQt);
+}
+
+void MainWindow::showShortcuts()
+{
+    ShortcutsDialog dialog(menuBar(), m_toolBar, this);
+    dialog.exec();
 }
 
 void MainWindow::showAbout()
@@ -238,6 +250,7 @@ void MainWindow::createToolAction(QToolBar *toolBar, const QString &name, const 
 void MainWindow::createToolBar()
 {
     QToolBar *toolBar = addToolBar(tr("Tools"));
+    m_toolBar = toolBar;
     toolBar->setMovable(false);
     toolBar->setToolButtonStyle(Qt::ToolButtonIconOnly);
     toolBar->setIconSize(QSize(24, 24));
