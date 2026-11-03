@@ -196,6 +196,7 @@ void CanvasView::mousePressEvent(QMouseEvent *event)
         case Tool::Eraser:
             m_erasing = true;
             m_lastErasePos = scenePos;
+            m_canvas->beginErase();
             eraseFrom(scenePos, scenePos);
             event->accept();
             return;
@@ -220,6 +221,10 @@ void CanvasView::mousePressEvent(QMouseEvent *event)
     m_dragMayMoveObjects = event->button() == Qt::LeftButton && itemAt(event->pos()) != nullptr;
 
     QGraphicsView::mousePressEvent(event);
+
+    // Record where the objects were, in case this turns into a move.
+    if (m_dragMayMoveObjects)
+        m_canvas->beginObjectMove();
 }
 
 void CanvasView::mouseMoveEvent(QMouseEvent *event)
@@ -265,15 +270,23 @@ void CanvasView::mouseReleaseEvent(QMouseEvent *event)
 
     if (m_activeStroke && event->button() == Qt::LeftButton) {
         const QPointF scenePos = mapToScene(event->pos());
+        bool keep = true;
         if (m_tool == Tool::Line) {
             m_activeStroke->setLineEnd(scenePos);
             // An accidental click without dragging leaves no line behind.
-            if (m_activeStroke->length() < 2.0)
+            if (m_activeStroke->length() < 2.0) {
                 m_canvas->removeObjectLater(m_activeStroke);
+                keep = false;
+            }
         } else {
             m_activeStroke->extendTo(scenePos);
         }
         m_activeStroke->setSelected(false);
+        if (keep) {
+            m_canvas->commitAddedObject(m_activeStroke,
+                                        m_tool == Tool::Line ? tr("Draw line")
+                                                             : tr("Draw stroke"));
+        }
         m_activeStroke = nullptr;
         event->accept();
         return;
@@ -281,6 +294,7 @@ void CanvasView::mouseReleaseEvent(QMouseEvent *event)
 
     if (m_erasing && event->button() == Qt::LeftButton) {
         m_erasing = false;
+        m_canvas->endErase();
         event->accept();
         return;
     }
@@ -288,11 +302,8 @@ void CanvasView::mouseReleaseEvent(QMouseEvent *event)
     QGraphicsView::mouseReleaseEvent(event);
 
     // Moving objects counts as a change to the document.
-    if (m_dragMayMoveObjects
-        && (event->pos() - m_pressPos).manhattanLength() > 2
-        && !m_canvas->selectedItems().isEmpty()) {
-        m_canvas->notifyEdited();
-    }
+    if (m_dragMayMoveObjects)
+        m_canvas->endObjectMove();
     m_dragMayMoveObjects = false;
 }
 

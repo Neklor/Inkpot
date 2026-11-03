@@ -40,6 +40,7 @@ QGraphicsItem *createObjectForType(const QString &type)
 
 CanvasScene::CanvasScene(QObject *parent)
     : QGraphicsScene(parent)
+    , m_undoStack(new QUndoStack(this))
 {
     createHandles();
     updateCanvasHandles();
@@ -164,6 +165,15 @@ void CanvasScene::updateSceneRect()
                         m_pageSize.height() + kSceneMargin));
 }
 
+void CanvasScene::newDocument(const QSize &size)
+{
+    clearObjects();
+    applyPageSize(QSize(qMax(int(kMinimumSide), size.width()),
+                        qMax(int(kMinimumSide), size.height())));
+    m_undoStack->clear();
+    m_uncommitted.clear();
+}
+
 void CanvasScene::setPageSize(const QSize &size)
 {
     const QSize clamped(qMax(int(kMinimumSide), size.width()),
@@ -171,7 +181,20 @@ void CanvasScene::setPageSize(const QSize &size)
     if (clamped == m_pageSize)
         return;
 
-    m_pageSize = clamped;
+    // While a handle is being dragged the size changes continuously; one entry
+    // in the history is recorded when the drag ends.
+    if (!m_resizingCanvas)
+        m_undoStack->push(new PageSizeCommand(this, m_pageSize, clamped));
+    else
+        applyPageSize(clamped);
+}
+
+void CanvasScene::applyPageSize(const QSize &size)
+{
+    if (size == m_pageSize)
+        return;
+
+    m_pageSize = size;
     updateCanvasHandles();
     updateSceneRect();
     update();
@@ -214,10 +237,15 @@ void CanvasScene::beginCanvasResize()
 {
     if (m_aspectLocked && m_pageSize.height() > 0)
         m_lockedRatio = double(m_pageSize.width()) / m_pageSize.height();
+    m_resizingCanvas = true;
+    m_pageSizeBeforeResize = m_pageSize;
 }
 
 void CanvasScene::endCanvasResize()
 {
+    m_resizingCanvas = false;
+    if (m_pageSize != m_pageSizeBeforeResize)
+        m_undoStack->push(new PageSizeCommand(this, m_pageSizeBeforeResize, m_pageSize));
     emit pageRectChanged();
 }
 
@@ -271,6 +299,47 @@ void CanvasScene::resizeCanvasFromHandle(ResizeHandle::Position position, const 
 
 // --------------------------------------------------------- Scaling objects
 
+void CanvasScene::pushTransform(const QString &text)
+{
+    QList<QGraphicsItem *> changed;
+    QList<Placement> before;
+    QList<Placement> after;
+
+    for (int i = 0; i < m_dragItems.size() && i < m_dragBefore.size(); ++i) {
+        QGraphicsItem *item = m_dragItems.at(i);
+        const Placement now = placementOf(item);
+        if (now == m_dragBefore.at(i))
+            continue;
+        changed.append(item);
+        before.append(m_dragBefore.at(i));
+        after.append(now);
+    }
+
+    m_dragItems.clear();
+    m_dragBefore.clear();
+
+    if (!changed.isEmpty())
+        m_undoStack->push(new TransformCommand(this, changed, before, after, text));
+}
+
+void CanvasScene::beginObjectMove()
+{
+    m_dragItems.clear();
+    m_dragBefore.clear();
+    const QList<QGraphicsItem *> selection = selectedItems();
+    for (QGraphicsItem *item : selection) {
+        if (!dynamic_cast<InkObject *>(item))
+            continue;
+        m_dragItems.append(item);
+        m_dragBefore.append(placementOf(item));
+    }
+}
+
+void CanvasScene::endObjectMove()
+{
+    pushTransform(tr("Move objects"));
+}
+
 qreal CanvasScene::angleTo(const QPointF &centre, const QPointF &point)
 {
     const QPointF delta = point - centre;
@@ -297,6 +366,9 @@ void CanvasScene::beginObjectScale()
     m_scaleStartFontSize = 0.0;
     if (auto *text = dynamic_cast<TextItem *>(m_scaleTarget))
         m_scaleStartFontSize = text->fontPointSize();
+
+    m_dragItems = { m_scaleTarget };
+    m_dragBefore = { placementOf(m_scaleTarget) };
 }
 
 void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const QPointF &scenePos)
@@ -362,6 +434,7 @@ void CanvasScene::endObjectScale()
     if (!m_scaleTarget)
         return;
     m_scaleTarget = nullptr;
+    pushTransform(tr("Scale object"));
     updateObjectHandles();
     emit objectPropertiesChanged();
     emit edited();
@@ -382,6 +455,9 @@ void CanvasScene::beginObjectRotate(const QPointF &scenePos)
     m_rotateCentre = m_rotateTarget->mapToScene(m_rotateTarget->boundingRect().center());
     m_rotateStartAngle = object->rotationAngle();
     m_rotateStartPointer = angleTo(m_rotateCentre, scenePos);
+
+    m_dragItems = { m_rotateTarget };
+    m_dragBefore = { placementOf(m_rotateTarget) };
 }
 
 void CanvasScene::rotateObjectFromHandle(const QPointF &scenePos,
@@ -412,6 +488,7 @@ void CanvasScene::endObjectRotate()
     if (!m_rotateTarget)
         return;
     m_rotateTarget = nullptr;
+    pushTransform(tr("Turn object"));
     updateObjectHandles();
     emit objectPropertiesChanged();
     emit edited();
@@ -426,6 +503,52 @@ void CanvasScene::prepareObject(QGraphicsItem *item)
     item->setFlag(QGraphicsItem::ItemSendsGeometryChanges, true);
 }
 
+void CanvasScene::insertObject(QGraphicsItem *item)
+{
+    if (!item)
+        return;
+    prepareObject(item);
+    addItem(item);
+    objectsWereChanged();
+}
+
+void CanvasScene::takeObject(QGraphicsItem *item)
+{
+    if (!item || item->scene() != this)
+        return;
+    item->setSelected(false);
+    removeItem(item);
+    updateObjectHandles();
+    objectsWereChanged();
+}
+
+void CanvasScene::objectsWereChanged()
+{
+    updateObjectHandles();
+    emit objectsChanged();
+    emit edited();
+}
+
+void CanvasScene::pushTextChange(TextItem *item, const QString &before, const QString &after)
+{
+    if (item && before != after)
+        m_undoStack->push(new TextCommand(this, item, before, after));
+}
+
+void CanvasScene::commitAddedObject(QGraphicsItem *item, const QString &text)
+{
+    if (!item || !m_uncommitted.remove(item))
+        return;
+    m_undoStack->push(new AddObjectsCommand(
+        this, { item }, text.isEmpty() ? tr("Add object") : text));
+}
+
+void CanvasScene::addObjectUndoable(QGraphicsItem *item, const QString &text)
+{
+    addObject(item);
+    commitAddedObject(item, text);
+}
+
 void CanvasScene::addObject(QGraphicsItem *item)
 {
     if (!item)
@@ -434,6 +557,7 @@ void CanvasScene::addObject(QGraphicsItem *item)
     m_topZ += 1.0;
     item->setZValue(m_topZ);
     addItem(item);
+    m_uncommitted.insert(item);
     emit objectsChanged();
     emit edited();
 }
@@ -466,26 +590,29 @@ QGraphicsItem *CanvasScene::singleSelectedObject() const
 
 void CanvasScene::removeSelectedObjects()
 {
+    QList<QGraphicsItem *> doomed;
     const QList<QGraphicsItem *> selection = selectedItems();
-    bool removedAny = false;
     for (QGraphicsItem *item : selection) {
-        if (!dynamic_cast<InkObject *>(item))
-            continue;
-        removeItem(item);
-        delete item;
-        removedAny = true;
+        if (dynamic_cast<InkObject *>(item))
+            doomed.append(item);
     }
-    if (removedAny) {
-        updateObjectHandles();
-        emit objectsChanged();
-        emit edited();
-    }
+    if (doomed.isEmpty())
+        return;
+
+    // Anything still waiting to be recorded is simply forgotten.
+    for (QGraphicsItem *item : doomed)
+        m_uncommitted.remove(item);
+
+    m_undoStack->push(new RemoveObjectsCommand(this, doomed, tr("Delete objects")));
 }
 
 void CanvasScene::removeObjectLater(QGraphicsItem *item)
 {
     if (!item || !dynamic_cast<InkObject *>(item))
         return;
+
+    // Never recorded, so it can simply go.
+    m_uncommitted.remove(item);
 
     // Called from an event of the object itself, hence the delay.
     QTimer::singleShot(0, this, [this, item] {
@@ -500,6 +627,10 @@ void CanvasScene::removeObjectLater(QGraphicsItem *item)
 
 void CanvasScene::clearObjects()
 {
+    // The history belongs to the drawing that is going away.
+    m_undoStack->clear();
+    m_uncommitted.clear();
+
     const QList<QGraphicsItem *> all = objects();
     for (QGraphicsItem *item : all) {
         removeItem(item);
@@ -523,19 +654,24 @@ bool CanvasScene::setSelectedObjectsColor(const QColor &color)
     if (!color.isValid())
         return false;
 
-    bool changedAny = false;
+    QList<QGraphicsItem *> changed;
+    QList<QColor> before;
+
     const QList<QGraphicsItem *> selection = selectedItems();
     for (QGraphicsItem *item : selection) {
         auto *object = dynamic_cast<InkObject *>(item);
-        if (object && object->setColor(color))
-            changedAny = true;
+        if (!object || !object->color().isValid() || object->color() == color)
+            continue;
+        changed.append(item);
+        before.append(object->color());
     }
 
-    if (changedAny) {
-        emit objectPropertiesChanged();
-        emit edited();
-    }
-    return changedAny;
+    if (changed.isEmpty())
+        return false;
+
+    m_undoStack->push(new ColorCommand(this, changed, before, color));
+    emit objectPropertiesChanged();
+    return true;
 }
 
 QColor CanvasScene::selectedObjectColor() const
@@ -579,8 +715,44 @@ bool CanvasScene::fillAt(const QPointF &scenePos, const QColor &color, int toler
         return false;
 
     auto *item = new FillItem(region.translated(page.topLeft()), color);
-    addObject(item);
+    addObjectUndoable(item, tr("Fill area"));
     return true;
+}
+
+void CanvasScene::beginErase()
+{
+    m_eraseItems.clear();
+    m_eraseBefore.clear();
+    const QList<QGraphicsItem *> all = objects();
+    for (QGraphicsItem *item : all) {
+        auto *object = dynamic_cast<InkObject *>(item);
+        if (!object)
+            continue;
+        m_eraseItems.append(item);
+        m_eraseBefore.append(object->erasedMask());
+    }
+}
+
+void CanvasScene::endErase()
+{
+    QList<QGraphicsItem *> changed;
+    QList<QPainterPath> before;
+    QList<QPainterPath> after;
+
+    for (int i = 0; i < m_eraseItems.size() && i < m_eraseBefore.size(); ++i) {
+        auto *object = dynamic_cast<InkObject *>(m_eraseItems.at(i));
+        if (!object || object->erasedMask() == m_eraseBefore.at(i))
+            continue;
+        changed.append(m_eraseItems.at(i));
+        before.append(m_eraseBefore.at(i));
+        after.append(object->erasedMask());
+    }
+
+    m_eraseItems.clear();
+    m_eraseBefore.clear();
+
+    if (!changed.isEmpty())
+        m_undoStack->push(new EraseCommand(this, changed, before, after));
 }
 
 void CanvasScene::eraseWithPath(const QPainterPath &scenePath)
@@ -807,6 +979,11 @@ bool CanvasScene::fromJson(const QJsonObject &json, QString *error)
     }
 
     updateSceneRect();
+
+    // An opened drawing starts with a clean history.
+    m_undoStack->clear();
+    m_uncommitted.clear();
+
     emit pageRectChanged();
     emit objectsChanged();
     return true;

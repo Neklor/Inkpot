@@ -4,9 +4,75 @@
 <context>
     <name>CanvasScene</name>
     <message>
-        <location filename="../src/CanvasScene.cpp" line="+756"/>
+        <location filename="../src/CanvasScene.cpp" line="+340"/>
+        <source>Move objects</source>
+        <translation>Objekte verschieben</translation>
+    </message>
+    <message>
+        <location line="+97"/>
+        <source>Scale object</source>
+        <translation>Objekt skalieren</translation>
+    </message>
+    <message>
+        <location line="+54"/>
+        <source>Turn object</source>
+        <translation>Objekt drehen</translation>
+    </message>
+    <message>
+        <location line="+52"/>
+        <source>Add object</source>
+        <translation>Objekt hinzufügen</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Delete objects</source>
+        <translation>Objekte löschen</translation>
+    </message>
+    <message>
+        <location line="+112"/>
+        <source>Fill area</source>
+        <translation>Fläche füllen</translation>
+    </message>
+    <message>
+        <location line="+210"/>
         <source>The file is not an Inkpot project.</source>
         <translation>Die Datei ist kein Inkpot-Projekt.</translation>
+    </message>
+</context>
+<context>
+    <name>CanvasView</name>
+    <message>
+        <location filename="../src/CanvasView.cpp" line="+287"/>
+        <source>Draw line</source>
+        <translation>Linie ziehen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Draw stroke</source>
+        <translation>Strich malen</translation>
+    </message>
+</context>
+<context>
+    <name>Commands</name>
+    <message>
+        <location filename="../src/Commands.cpp" line="+143"/>
+        <source>Change colour</source>
+        <translation>Farbe ändern</translation>
+    </message>
+    <message>
+        <location line="+30"/>
+        <source>Erase</source>
+        <translation>Radieren</translation>
+    </message>
+    <message>
+        <location line="+23"/>
+        <source>Resize canvas</source>
+        <translation>Arbeitsfläche ändern</translation>
+    </message>
+    <message>
+        <location line="+14"/>
+        <source>Edit caption</source>
+        <translation>Beschriftung ändern</translation>
     </message>
 </context>
 <context>
@@ -28,12 +94,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cpp" line="+94"/>
+        <location filename="../src/MainWindow.cpp" line="+98"/>
         <source>There is nothing to fill at this spot</source>
         <translation>Hier gibt es nichts zu füllen</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+49"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
@@ -98,7 +164,17 @@
         <translation>&amp;Bearbeiten</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+4"/>
+        <source>&amp;Undo</source>
+        <translation>&amp;Rückgängig</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>&amp;Redo</source>
+        <translation>&amp;Wiederholen</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>&amp;Delete Selection</source>
         <translation>Auswahl &amp;löschen</translation>
     </message>
@@ -138,7 +214,12 @@
         <translation>&amp;Einpassen</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+9"/>
+        <source>&amp;Object List</source>
+        <translation>&amp;Objektliste</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
@@ -189,7 +270,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <location line="+171"/>
+        <location line="+177"/>
         <location line="+183"/>
         <location line="+11"/>
         <location line="+8"/>
@@ -198,7 +279,7 @@
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location line="-395"/>
+        <location line="-401"/>
         <source>Open (Ctrl+O)</source>
         <translation>Öffnen (Strg+O)</translation>
     </message>
@@ -208,7 +289,7 @@
         <translation>Projekt oder Bild öffnen</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+15"/>
         <source>Selection</source>
         <translation>Auswahl</translation>
     </message>
@@ -336,7 +417,7 @@
         <translation>Seitenverhältnis der Arbeitsfläche</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+21"/>
         <source>New canvas %1 × %2</source>
         <translation>Neue Arbeitsfläche %1 × %2</translation>
     </message>
@@ -429,7 +510,12 @@
         <translation>Die Zwischenablage enthaelt kein Bild</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+7"/>
+        <source>Paste image</source>
+        <translation>Bild einfügen</translation>
+    </message>
+    <message>
+        <location line="+3"/>
         <source>Image pasted as a new object</source>
         <translation>Bild als neues Objekt eingefügt</translation>
     </message>
@@ -484,7 +570,12 @@ Möchtest Du die Änderungen speichern?</translation>
         <translation>Das Bild %1 konnte nicht geladen werden: %2</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
+        <source>Import image</source>
+        <translation>Bild einfügen</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Imported %1 as an object</source>
         <translation>%1 als Objekt importiert</translation>
     </message>
@@ -573,6 +664,14 @@ Möchtest Du die Änderungen speichern?</translation>
     </message>
 </context>
 <context>
+    <name>ObjectListDock</name>
+    <message>
+        <location filename="../src/ObjectListDock.cpp" line="+53"/>
+        <source>Objects</source>
+        <translation>Objekte</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
         <location filename="../src/ResizeHandle.cpp" line="+27"/>
@@ -588,6 +687,11 @@ Möchtest Du die Änderungen speichern?</translation>
         <location line="+1"/>
         <source>Drag to scale the object</source>
         <translation>Ziehen, um das Objekt zu skalieren</translation>
+    </message>
+    <message>
+        <location filename="../src/TextItem.cpp" line="+143"/>
+        <source>Add caption</source>
+        <translation>Beschriftung hinzufügen</translation>
     </message>
 </context>
 <context>
@@ -659,7 +763,7 @@ Möchtest Du die Änderungen speichern?</translation>
 <context>
     <name>TextItem</name>
     <message>
-        <location filename="../src/TextItem.cpp" line="+35"/>
+        <location filename="../src/TextItem.cpp" line="-108"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>

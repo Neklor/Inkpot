@@ -337,6 +337,88 @@ QPen shacklePen(const QColor &color)
 
 }   // namespace
 
+QIcon picture(const QColor &color)
+{
+    QPixmap pixmap = createPixmap();
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    QColor fill = color;
+    fill.setAlpha(45);
+    painter.setPen(outlinePen(color, 4.0));
+    painter.setBrush(fill);
+    painter.drawRoundedRect(QRectF(10.0, 16.0, 44.0, 32.0), 4.0, 4.0);
+
+    // A hill and a sun, the usual shorthand for a picture.
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(color);
+    painter.drawEllipse(QPointF(22.0, 27.0), 4.5, 4.5);
+
+    QPainterPath hill;
+    hill.moveTo(14.0, 44.0);
+    hill.lineTo(27.0, 31.0);
+    hill.lineTo(38.0, 44.0);
+    hill.closeSubpath();
+    hill.moveTo(32.0, 44.0);
+    hill.lineTo(42.0, 35.0);
+    hill.lineTo(50.0, 44.0);
+    hill.closeSubpath();
+    painter.drawPath(hill);
+
+    painter.end();
+    return QIcon(pixmap);
+}
+
+// Curved arrow, mirrored for the redo icon.
+QIcon curvedArrow(const QColor &color, bool mirrored)
+{
+    QPixmap pixmap = createPixmap();
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    if (mirrored) {
+        painter.translate(64.0, 0.0);
+        painter.scale(-1.0, 1.0);
+    }
+
+    // The shaft sweeps from the left round to the right and down.
+    QPainterPath shaft;
+    shaft.moveTo(16.0, 26.0);
+    shaft.cubicTo(30.0, 12.0, 54.0, 18.0, 52.0, 38.0);
+    shaft.cubicTo(51.0, 46.0, 46.0, 50.0, 40.0, 52.0);
+
+    QPen pen(color, 7.0);
+    pen.setCapStyle(Qt::RoundCap);
+    pen.setJoinStyle(Qt::RoundJoin);
+    painter.setPen(pen);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawPath(shaft);
+
+    // Arrow head at the start of the sweep.
+    QPainterPath head;
+    head.moveTo(10.0, 26.0);
+    head.lineTo(28.0, 20.0);
+    head.lineTo(26.0, 40.0);
+    head.closeSubpath();
+
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(color);
+    painter.drawPath(head);
+
+    painter.end();
+    return QIcon(pixmap);
+}
+
+QIcon undo(const QColor &color)
+{
+    return curvedArrow(color, false);
+}
+
+QIcon redo(const QColor &color)
+{
+    return curvedArrow(color, true);
+}
+
 QIcon lockClosed(const QColor &color)
 {
     QPixmap pixmap = createPixmap();

@@ -38,6 +38,17 @@ they were drawn. The project format keeps them that way.
 * Scaling a caption changes its font size rather than distorting it, and the
   size follows live in the toolbar
 
+**Object list**
+* A dock on the right lists every object, topmost first, with its colour
+* Picking a row selects the object on the canvas and the other way round;
+  Ctrl picks several, Shift a block
+* It can be hidden through View > Object List, and the window remembers that
+
+**History**
+* Undo and redo for drawing, filling, erasing, deleting, moving, turning,
+  scaling, recolouring, editing a caption and resizing the canvas
+* One drag is one step: a whole stroke of the eraser comes back at once
+
 **Canvas**
 * Pinned to the top left corner, resized with handles on its right and bottom
   edge or by typing the size in the status bar
@@ -92,6 +103,7 @@ from the menus themselves so the list stays current.
 | Text | `T` |
 | Edit a caption later | double click with the selection tool |
 | Recolour objects | select them, then the colour button |
+| Undo / redo | `Ctrl+Z` / `Ctrl+Shift+Z` |
 | Delete selection | `Del` |
 | Select all | `Ctrl+A` |
 | Zoom | `Ctrl` + mouse wheel, `Ctrl++`, `Ctrl+-` |
@@ -173,6 +185,8 @@ still missing; the place for it is prepared in the AppStream file.
 | `src/Icons.*` | icons drawn at run time |
 | `src/NewCanvasDialog.*` | dialog for a custom canvas size |
 | `src/ShortcutsDialog.*` | list of the keyboard shortcuts |
+| `src/ObjectListDock.*` | the object list on the right |
+| `src/Commands.*` | undo commands |
 | `translations/` | translation catalogues |
 | `data/` | icon, desktop entry, AppStream and MIME data |
 | `flatpak/` | Flatpak manifest |
@@ -247,6 +261,17 @@ auch lange nachdem sie entstanden sind. Das Projektformat hält sie so.
 * Beim Skalieren einer Beschriftung ändert sich die Schriftgröße statt einer
   Verzerrung, und der Wert läuft live in der Werkzeugleiste mit
 
+**Objektliste**
+* Eine Leiste rechts führt alle Objekte auf, das oberste zuerst, mit ihrer Farbe
+* Eine Zeile anzuklicken wählt das Objekt auf der Fläche aus und umgekehrt;
+  mit Strg mehrere, mit Umschalt ein Block
+* Über Ansicht > Objektliste ausblendbar; das Fenster merkt sich die Einstellung
+
+**Verlauf**
+* Rückgängig und Wiederholen für Malen, Füllen, Radieren, Löschen, Verschieben,
+  Drehen, Skalieren, Umfärben, Textänderungen und Größenänderungen der Fläche
+* Ein Ziehen ist ein Schritt: ein ganzer Radierer-Zug kommt auf einmal zurück
+
 **Arbeitsfläche**
 * Liegt fest in der linken oberen Ecke, veränderbar über die Anfasspunkte an
   rechter und unterer Kante oder durch Eingabe der Größe in der Fußzeile
@@ -301,6 +326,7 @@ aus den Menüs selbst zusammengestellt und bleibt damit aktuell.
 | Text | `T` |
 | Beschriftung später ändern | Doppelklick mit dem Auswahlwerkzeug |
 | Objekte umfärben | auswählen, dann der Farbknopf |
+| Rückgängig / Wiederholen | `Strg+Z` / `Strg+Umschalt+Z` |
 | Auswahl löschen | `Entf` |
 | Alles auswählen | `Strg+A` |
 | Zoomen | `Strg` + Mausrad, `Strg++`, `Strg+-` |
@@ -383,6 +409,8 @@ vorbereitet.
 | `src/Icons.*` | Zur Laufzeit gezeichnete Symbole |
 | `src/NewCanvasDialog.*` | Dialog für eine eigene Flächengröße |
 | `src/ShortcutsDialog.*` | Übersicht der Tastenkürzel |
+| `src/ObjectListDock.*` | Die Objektliste rechts |
+| `src/Commands.*` | Befehle für den Verlauf |
 | `translations/` | Übersetzungskataloge |
 | `data/` | Symbol, Desktop-Eintrag, AppStream- und MIME-Daten |
 | `flatpak/` | Flatpak-Manifest |

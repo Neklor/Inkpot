@@ -28,6 +28,8 @@
 #include <QPrinter>
 #include <QSaveFile>
 #include <QSpinBox>
+#include <QSettings>
+#include <QUndoStack>
 #include <QStatusBar>
 #include <QToolBar>
 #include <QToolButton>
@@ -37,6 +39,7 @@
 #include "Icons.h"
 #include "ImageItem.h"
 #include "NewCanvasDialog.h"
+#include "ObjectListDock.h"
 #include "ShortcutsDialog.h"
 #include "TextItem.h"
 
@@ -80,6 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_view = new CanvasView(m_scene, this);
     setCentralWidget(m_view);
 
+    createObjectList();
     createActions();
     createToolBar();
     createStatusBar();
@@ -95,6 +99,7 @@ MainWindow::MainWindow(QWidget *parent)
     });
 
     resize(1200, 820);
+    restoreLayout();
     updateSizeControls();
     updateObjectInfo();
     updateZoomInfo(m_view->zoomFactor());
@@ -109,6 +114,32 @@ MainWindow::~MainWindow()
     // objects and keeps emitting signals - which must no longer reach us.
     QObject::disconnect(m_scene, nullptr, this, nullptr);
     QObject::disconnect(m_view, nullptr, this, nullptr);
+}
+
+void MainWindow::createObjectList()
+{
+    m_objectList = new ObjectListDock(m_scene, this);
+    addDockWidget(Qt::RightDockWidgetArea, m_objectList);
+}
+
+// Window size and which docks are shown are remembered between runs.
+void MainWindow::restoreLayout()
+{
+    QSettings settings;
+    const QByteArray geometry = settings.value(QStringLiteral("window/geometry")).toByteArray();
+    const QByteArray state = settings.value(QStringLiteral("window/state")).toByteArray();
+
+    if (!geometry.isEmpty())
+        restoreGeometry(geometry);
+    if (!state.isEmpty())
+        restoreState(state);
+}
+
+void MainWindow::storeLayout()
+{
+    QSettings settings;
+    settings.setValue(QStringLiteral("window/geometry"), saveGeometry());
+    settings.setValue(QStringLiteral("window/state"), saveState());
 }
 
 void MainWindow::createActions()
@@ -167,6 +198,20 @@ void MainWindow::createActions()
 
     QMenu *editMenu = menuBar()->addMenu(tr("&Edit"));
 
+    const QColor symbolColour = palette().color(QPalette::ButtonText);
+
+    m_undoAction = m_scene->undoStack()->createUndoAction(this, tr("&Undo"));
+    m_undoAction->setShortcut(QKeySequence::Undo);
+    m_undoAction->setIcon(Icons::undo(symbolColour));
+    editMenu->addAction(m_undoAction);
+
+    m_redoAction = m_scene->undoStack()->createRedoAction(this, tr("&Redo"));
+    m_redoAction->setShortcuts({ QKeySequence::Redo, QKeySequence(QStringLiteral("Ctrl+Y")) });
+    m_redoAction->setIcon(Icons::redo(symbolColour));
+    editMenu->addAction(m_redoAction);
+
+    editMenu->addSeparator();
+
     m_deleteAction = editMenu->addAction(tr("&Delete Selection"));
     m_deleteAction->setShortcut(QKeySequence::Delete);
     connect(m_deleteAction, &QAction::triggered, this, &MainWindow::deleteSelection);
@@ -196,6 +241,14 @@ void MainWindow::createActions()
     QAction *fitAction = viewMenu->addAction(tr("&Fit in Window"));
     fitAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+9")));
     connect(fitAction, &QAction::triggered, m_view, &CanvasView::fitPageInView);
+
+    viewMenu->addSeparator();
+
+    // The dock supplies its own show and hide entry, which also carries the
+    // right checked state.
+    QAction *listAction = m_objectList->toggleViewAction();
+    listAction->setText(tr("&Object List"));
+    viewMenu->addAction(listAction);
 
     QMenu *helpMenu = menuBar()->addMenu(tr("&Help"));
 
@@ -267,6 +320,13 @@ void MainWindow::createToolBar()
     openAction->setToolTip(tr("Open (Ctrl+O)"));
     openAction->setStatusTip(tr("Open a project or an image"));
     connect(openAction, &QAction::triggered, this, &MainWindow::open);
+
+    toolBar->addSeparator();
+
+    if (m_undoAction)
+        toolBar->addAction(m_undoAction);
+    if (m_redoAction)
+        toolBar->addAction(m_redoAction);
 
     toolBar->addSeparator();
 
@@ -399,8 +459,7 @@ void MainWindow::newCanvas(const QSize &size)
     if (!maybeSave())
         return;
 
-    m_scene->clearObjects();
-    m_scene->setPageSize(size);
+    m_scene->newDocument(size);
     m_view->resetZoom();
     setCurrentFile(QString());
     setDirty(false);
@@ -545,7 +604,7 @@ void MainWindow::pasteFromClipboard()
     auto *item = new ImageItem(QPixmap::fromImage(image));
     const QRectF page = m_scene->pageRect();
     item->setPos(page.center() - QPointF(image.width() / 2.0, image.height() / 2.0));
-    m_scene->addObject(item);
+    m_scene->addObjectUndoable(item, tr("Paste image"));
     m_scene->clearSelection();
     item->setSelected(true);
     statusBar()->showMessage(tr("Image pasted as a new object"), 3000);
@@ -666,12 +725,12 @@ bool MainWindow::loadImageFile(const QString &path)
     }
 
     // The image becomes an object on a canvas sized to match.
-    m_scene->clearObjects();
-    m_scene->setPageSize(image.size());
+    m_scene->newDocument(image.size());
 
     auto *item = new ImageItem(QPixmap::fromImage(image));
     item->setPos(0.0, 0.0);
-    m_scene->addObject(item);
+    m_scene->addObjectUndoable(item, tr("Import image"));
+    m_scene->undoStack()->clear();
 
     m_view->fitPageInView();
     setCurrentFile(QString());   // not saved as a project yet
@@ -858,8 +917,10 @@ QString MainWindow::aspectRatioText(const QSize &size)
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-    if (maybeSave())
-        event->accept();
-    else
+    if (!maybeSave()) {
         event->ignore();
+        return;
+    }
+    storeLayout();
+    event->accept();
 }

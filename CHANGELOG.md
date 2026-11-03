@@ -34,6 +34,13 @@ First development release: milestone 1, the basic program.
 - File menu with new (preset and custom sizes), open, save, save as, export to
   PNG, JPEG, BMP, TIFF and WebP, copy to clipboard, paste, print and quit.
 - Project format `*.ipot` that keeps every object editable.
+- Object list on the right: every object with its colour, topmost first.
+  Picking a row selects the object and the other way round, with Ctrl for
+  several and Shift for a block. It hides through the View menu and the window
+  remembers the layout between runs.
+- Undo and redo covering drawing, filling, erasing, deleting, moving, turning,
+  scaling, recolouring, editing a caption and resizing the canvas. One drag is
+  one step.
 - Tool icons drawn at run time, so the project ships no image files.
 - Desktop integration: desktop entry, AppStream metadata, application icon and
   a MIME type for `*.ipot`, plus a Flatpak manifest.

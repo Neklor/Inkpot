@@ -83,6 +83,7 @@ bool TextItem::setColor(const QColor &color)
 
 void TextItem::beginEditing()
 {
+    m_textBeforeEditing = toPlainText();
     setTextInteractionFlags(Qt::TextEditorInteraction);
     setFocus(Qt::MouseFocusReason);
 
@@ -127,11 +128,22 @@ void TextItem::focusOutEvent(QFocusEvent *event)
     endEditing();
     QGraphicsTextItem::focusOutEvent(event);
 
+    auto *canvas = qobject_cast<CanvasScene *>(scene());
+    if (!canvas)
+        return;
+
     // An empty caption is just the leftover of a misplaced click.
     if (toPlainText().trimmed().isEmpty()) {
-        if (auto *canvas = qobject_cast<CanvasScene *>(scene()))
-            canvas->removeObjectLater(this);
+        canvas->removeObjectLater(this);
+        return;
     }
+
+    // A caption that was just placed enters the history as a new object;
+    // one that already existed enters it as a change to its text.
+    canvas->commitAddedObject(this, QObject::tr("Add caption"));
+    if (toPlainText() != m_textBeforeEditing)
+        canvas->pushTextChange(this, m_textBeforeEditing, toPlainText());
+    m_textBeforeEditing = toPlainText();
 }
 
 void TextItem::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)

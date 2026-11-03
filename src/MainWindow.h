@@ -52,6 +52,9 @@ private:
 
     // Construction
     void createActions();
+    void createObjectList();
+    void restoreLayout();
+    void storeLayout();
     void createToolBar();
     void createStatusBar();
 
@@ -93,8 +96,11 @@ private:
     QDoubleSpinBox *m_fontSizeSpin = nullptr;
     QAction *m_brushAction = nullptr;
     QAction *m_fillAction = nullptr;
+    QAction *m_undoAction = nullptr;
+    QAction *m_redoAction = nullptr;
     QActionGroup *m_toolGroup = nullptr;
     QToolBar *m_toolBar = nullptr;
+    class ObjectListDock *m_objectList = nullptr;
 
     QString m_currentFile;
     bool m_dirty = false;

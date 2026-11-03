@@ -42,5 +42,8 @@ public:
 
 protected:
     void focusOutEvent(QFocusEvent *event) override;
+
+private:
+    QString m_textBeforeEditing;   // to tell the history what changed
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
 };

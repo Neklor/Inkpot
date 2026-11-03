@@ -28,6 +28,11 @@ QIcon text(const QColor &color);      // Text
 QIcon bucket(const QColor &accent, const QColor &outline);
 QIcon plus(const QColor &color);      // New
 QIcon folder(const QColor &color);    // Open
+QIcon picture(const QColor &color);   // an image object in the list
+
+// The usual curved arrows for undo and redo.
+QIcon undo(const QColor &color);
+QIcon redo(const QColor &color);
 
 // Circular arrow, drawn into the current painter around the origin. Used both
 // for the rotation handle and for the mouse cursor while turning.

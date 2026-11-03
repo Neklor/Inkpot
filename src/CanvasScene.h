@@ -8,6 +8,10 @@
 #include <QSize>
 #include <QTransform>
 
+#include <QSet>
+#include <QUndoStack>
+
+#include "Commands.h"
 #include "ResizeHandle.h"
 
 // The scene holds the canvas (the "page") and every object on it.
@@ -15,6 +19,8 @@
 // The canvas is pinned to the top left corner at (0, 0) and grows to the right
 // and downwards. It is resized with the three handles on its right and bottom
 // edge, or through the fields in the status bar.
+class TextItem;
+
 class CanvasScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -25,6 +31,10 @@ public:
 
     QRectF pageRect() const { return QRectF(QPointF(0.0, 0.0), QSizeF(m_pageSize)); }
     QSize pageSize() const { return m_pageSize; }
+
+    // Starts a fresh drawing: no objects, the given size, no history. Setting
+    // up a new document is not something one undoes.
+    void newDocument(const QSize &size);
 
     void setPageSize(const QSize &size);
     void setPageWidth(int width);
@@ -50,8 +60,24 @@ public:
                                 Qt::KeyboardModifiers modifiers = Qt::NoModifier);
     void endObjectRotate();
 
+    // Undo. Every change that a command describes goes through the raw
+    // operations below, which do the work without recording anything.
+    QUndoStack *undoStack() const { return m_undoStack; }
+    void insertObject(QGraphicsItem *item);
+    void takeObject(QGraphicsItem *item);
+    void applyPageSize(const QSize &size);
+    void objectsWereChanged();
+    void pushTextChange(TextItem *item, const QString &before, const QString &after);
+
     // Managing objects.
+    //
+    // addObject() puts the object on the canvas without recording anything;
+    // it is meant for a stroke that is still being drawn. Once it is finished,
+    // commitAddedObject() records it. Objects that appear in one go, such as a
+    // fill or a pasted picture, use addObjectUndoable().
     void addObject(QGraphicsItem *item);
+    void commitAddedObject(QGraphicsItem *item, const QString &text = QString());
+    void addObjectUndoable(QGraphicsItem *item, const QString &text = QString());
     QList<QGraphicsItem *> objects() const;
     int objectCount() const { return objects().size(); }
     void removeSelectedObjects();
@@ -70,8 +96,15 @@ public:
     // is nothing to fill at that spot.
     bool fillAt(const QPointF &scenePos, const QColor &color, int tolerance = 24);
 
-    // Erasing inside the objects.
+    // Erasing inside the objects. One drag of the eraser becomes one entry in
+    // the history, however many objects it reached.
+    void beginErase();
     void eraseWithPath(const QPainterPath &scenePath);
+    void endErase();
+
+    // Moving objects with the mouse, recorded as one entry.
+    void beginObjectMove();
+    void endObjectMove();
 
     // Callable from outside, for instance after objects have been moved.
     void notifyEdited() { emit edited(); }
@@ -117,6 +150,19 @@ private:
 
     // Angle of the pointer around a centre, in degrees.
     static qreal angleTo(const QPointF &centre, const QPointF &point);
+
+    // Records what changed between a begin and an end call.
+    void pushTransform(const QString &text);
+
+    QUndoStack *m_undoStack = nullptr;
+    QSet<QGraphicsItem *> m_uncommitted;   // drawn but not yet in the history
+    bool m_resizingCanvas = false;
+    QSize m_pageSizeBeforeResize;
+
+    QList<QGraphicsItem *> m_dragItems;
+    QList<Placement> m_dragBefore;
+    QList<QPainterPath> m_eraseBefore;
+    QList<QGraphicsItem *> m_eraseItems;
 
     // Starting values while an object is being scaled.
     QGraphicsItem *m_scaleTarget = nullptr;
