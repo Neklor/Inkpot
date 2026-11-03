@@ -209,9 +209,13 @@ void MainWindow::showAbout()
         tr("<h3>Inkpot %1</h3>"
            "<p>A small paint program in which everything you draw stays an "
            "object of its own.</p>"
+           "<p>Copyright \u00a9 %2 %3</p>"
            "<p>Licensed under the GNU General Public License, version 3.</p>"
-           "<p><a href=\"%2\">%2</a></p>")
-            .arg(QStringLiteral(INKPOT_VERSION), QStringLiteral(INKPOT_HOMEPAGE)));
+           "<p><a href=\"%4\">%4</a></p>")
+            .arg(QStringLiteral(INKPOT_VERSION),
+                 QStringLiteral(INKPOT_COPYRIGHT_YEARS),
+                 QStringLiteral(INKPOT_AUTHOR),
+                 QStringLiteral(INKPOT_HOMEPAGE)));
 }
 
 void MainWindow::createToolAction(QToolBar *toolBar, const QString &name, const QIcon &icon,

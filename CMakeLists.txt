@@ -10,6 +10,8 @@ project(Inkpot
 # and the AppStream data together and is what Flatpak and software centres
 # identify the program by.
 set(INKPOT_APP_ID "io.github.neklor.Inkpot")
+set(INKPOT_AUTHOR "Christoph Krogmann")
+set(INKPOT_COPYRIGHT_YEARS "2026")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -28,7 +30,7 @@ find_package(Qt6 6.4 QUIET COMPONENTS LinguistTools)
 
 qt_standard_project_setup()
 
-qt_add_executable(inkpot
+set(INKPOT_SOURCES
     src/main.cpp
     src/MainWindow.cpp
     src/MainWindow.h
@@ -52,12 +54,16 @@ qt_add_executable(inkpot
     src/InkObject.h
 )
 
+qt_add_executable(inkpot ${INKPOT_SOURCES})
+
 target_include_directories(inkpot PRIVATE src)
 
 target_compile_definitions(inkpot PRIVATE
     INKPOT_APP_ID="${INKPOT_APP_ID}"
     INKPOT_VERSION="${PROJECT_VERSION}"
     INKPOT_HOMEPAGE="${PROJECT_HOMEPAGE_URL}"
+    INKPOT_AUTHOR="${INKPOT_AUTHOR}"
+    INKPOT_COPYRIGHT_YEARS="${INKPOT_COPYRIGHT_YEARS}"
     INKPOT_TRANSLATIONS_DIR="${CMAKE_INSTALL_FULL_DATADIR}/inkpot/translations"
 )
 
@@ -69,23 +75,72 @@ target_link_libraries(inkpot PRIVATE
 # ---------------------------------------------------------------- Translations
 
 set(INKPOT_TS_FILES
-    translations/inkpot_de.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/inkpot_de.ts
 )
 
+# Debian and Ubuntu split the Linguist tools: the programs come with
+# qt6-l10n-tools, while the CMake package lives in qt6-tools-dev. Fall back to
+# calling the programs directly so the smaller package is enough.
+if(TARGET Qt6::qmake)
+    get_target_property(_inkpot_qmake Qt6::qmake IMPORTED_LOCATION)
+    get_filename_component(_inkpot_qt_bin "${_inkpot_qmake}" DIRECTORY)
+endif()
+
+find_program(INKPOT_LRELEASE
+    NAMES lrelease-qt6 lrelease6 lrelease
+    HINTS "${_inkpot_qt_bin}" "${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}"
+          /usr/lib/qt6/bin /usr/lib64/qt6/bin
+)
+find_program(INKPOT_LUPDATE
+    NAMES lupdate-qt6 lupdate6 lupdate
+    HINTS "${_inkpot_qt_bin}" "${QT6_INSTALL_PREFIX}/${QT6_INSTALL_BINS}"
+          /usr/lib/qt6/bin /usr/lib64/qt6/bin
+)
+
+set(INKPOT_QM_FILES "")
+
 if(Qt6LinguistTools_FOUND)
-    # "cmake --build build --target update_translations" refreshes the .ts
-    # files from the sources; the .qm files are built along with the program.
     qt_add_lupdate(inkpot TS_FILES ${INKPOT_TS_FILES})
     qt_add_lrelease(inkpot
         TS_FILES ${INKPOT_TS_FILES}
         QM_FILES_OUTPUT_VARIABLE INKPOT_QM_FILES
     )
-    install(FILES ${INKPOT_QM_FILES}
-            DESTINATION ${CMAKE_INSTALL_DATADIR}/inkpot/translations)
+elseif(INKPOT_LRELEASE)
+    foreach(_ts IN LISTS INKPOT_TS_FILES)
+        get_filename_component(_name "${_ts}" NAME_WE)
+        set(_qm "${CMAKE_CURRENT_BINARY_DIR}/${_name}.qm")
+        add_custom_command(
+            OUTPUT "${_qm}"
+            COMMAND "${INKPOT_LRELEASE}" -silent "${_ts}" -qm "${_qm}"
+            DEPENDS "${_ts}"
+            COMMENT "Compiling ${_name}.qm"
+            VERBATIM
+        )
+        list(APPEND INKPOT_QM_FILES "${_qm}")
+    endforeach()
+
+    add_custom_target(inkpot_translations ALL DEPENDS ${INKPOT_QM_FILES})
+    add_dependencies(inkpot inkpot_translations)
+
+    if(INKPOT_LUPDATE)
+        add_custom_target(update_translations
+            COMMAND "${INKPOT_LUPDATE}" -no-obsolete -locations relative
+                    ${INKPOT_SOURCES} -ts ${INKPOT_TS_FILES}
+            WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+            COMMENT "Updating translation catalogues from the sources"
+            VERBATIM
+        )
+    endif()
 else()
     message(STATUS
-        "Qt LinguistTools not found - building without translations. "
-        "On Debian and Ubuntu they come with the qt6-l10n-tools package.")
+        "Neither the Qt LinguistTools CMake package nor lrelease was found - "
+        "building without translations. On Debian and Ubuntu the programs come "
+        "with the qt6-l10n-tools package.")
+endif()
+
+if(INKPOT_QM_FILES)
+    install(FILES ${INKPOT_QM_FILES}
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/inkpot/translations)
 endif()
 
 # --------------------------------------------------------------- Installation

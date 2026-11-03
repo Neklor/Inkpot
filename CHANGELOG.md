@@ -30,7 +30,11 @@ First development release: milestone 1, the basic program.
 - Tool icons drawn at run time, so the project ships no image files.
 - Desktop integration: desktop entry, AppStream metadata, application icon and
   a MIME type for `*.ipot`, plus a Flatpak manifest.
-- German translation through Qt Linguist catalogues.
+- German translation through Qt Linguist catalogues. When the LinguistTools
+  CMake package is absent, the build falls back to calling `lrelease` directly,
+  so the smaller qt6-l10n-tools package is enough.
+- Help menu with an about dialog carrying version, author, licence and
+  homepage.
 
 [Unreleased]: https://github.com/Neklor/Inkpot/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/Neklor/Inkpot/releases/tag/v0.1.0
