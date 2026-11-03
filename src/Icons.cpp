@@ -30,6 +30,44 @@ QPen outlinePen(const QColor &color, qreal width = 5.0)
 
 namespace Icons {
 
+void drawRotationArrow(QPainter &painter, qreal radius, const QColor &color, qreal width)
+{
+    QPen pen(color, width);
+    pen.setCapStyle(Qt::RoundCap);
+    painter.setPen(pen);
+    painter.setBrush(Qt::NoBrush);
+
+    // Three quarters of a circle, leaving a gap for the arrow head.
+    const QRectF circle(-radius, -radius, radius * 2.0, radius * 2.0);
+    painter.drawArc(circle, 30 * 16, 280 * 16);
+
+    // Head at the open end of the arc.
+    const qreal head = radius * 0.85;
+    QPainterPath tip;
+    tip.moveTo(radius, 0.0);
+    tip.lineTo(radius - head * 0.6, -head * 0.55);
+    tip.lineTo(radius + head * 0.6, -head * 0.55);
+    tip.closeSubpath();
+
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(color);
+    painter.drawPath(tip.translated(0.0, radius * 0.5));
+}
+
+QCursor rotationCursor()
+{
+    QPixmap pixmap(28, 28);
+    pixmap.fill(Qt::transparent);
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.translate(14.0, 14.0);
+    // White underneath so the cursor stays visible on dark drawings.
+    drawRotationArrow(painter, 9.0, QColor(255, 255, 255), 5.0);
+    drawRotationArrow(painter, 9.0, QColor(20, 20, 24), 2.4);
+    painter.end();
+    return QCursor(pixmap, 14, 14);
+}
+
 QIcon pointer(const QColor &color)
 {
     QPixmap pixmap = createPixmap();

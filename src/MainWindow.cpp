@@ -674,7 +674,7 @@ bool MainWindow::loadImageFile(const QString &path)
     m_scene->addObject(item);
 
     m_view->fitPageInView();
-    setCurrentFile(QString());   // als Projekt noch nicht gespeichert
+    setCurrentFile(QString());   // not saved as a project yet
     setDirty(true);
     statusBar()->showMessage(tr("Imported %1 as an object").arg(QFileInfo(path).fileName()), 4000);
     return true;

@@ -4,7 +4,7 @@
 <context>
     <name>CanvasScene</name>
     <message>
-        <location filename="../src/CanvasScene.cpp" line="+685"/>
+        <location filename="../src/CanvasScene.cpp" line="+756"/>
         <source>The file is not an Inkpot project.</source>
         <translation>Die Datei ist kein Inkpot-Projekt.</translation>
     </message>
@@ -575,7 +575,12 @@ Möchtest Du die Änderungen speichern?</translation>
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../src/ResizeHandle.cpp" line="+43"/>
+        <location filename="../src/ResizeHandle.cpp" line="+27"/>
+        <source>Drag to turn the object, hold Shift for 15 degree steps</source>
+        <translation>Ziehen, um das Objekt zu drehen; mit Umschalt in 15-Grad-Schritten</translation>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>Drag to resize the canvas</source>
         <translation>Ziehen, um die Arbeitsfläche zu verändern</translation>
     </message>
@@ -588,7 +593,7 @@ Möchtest Du die Änderungen speichern?</translation>
 <context>
     <name>ShortcutsDialog</name>
     <message>
-        <location filename="../src/ShortcutsDialog.cpp" line="+82"/>
+        <location filename="../src/ShortcutsDialog.cpp" line="+91"/>
         <source>Keyboard Shortcuts</source>
         <translation>Tastenkürzel</translation>
     </message>

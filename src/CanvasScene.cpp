@@ -1,8 +1,10 @@
 #include "CanvasScene.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include <QGraphicsItem>
+#include <QGraphicsView>
 #include <QImage>
 #include <QJsonArray>
 #include <QPainter>
@@ -90,6 +92,11 @@ void CanvasScene::createHandles()
         addItem(handle);
         m_objectHandles.append(handle);
     }
+
+    // The turning handle sits above the top edge of the selected object.
+    m_rotateHandle = new ResizeHandle(ResizeHandle::Top, ResizeHandle::Role::Rotate, this);
+    m_rotateHandle->setVisible(false);
+    addItem(m_rotateHandle);
 }
 
 void CanvasScene::updateCanvasHandles()
@@ -107,12 +114,31 @@ void CanvasScene::updateObjectHandles()
     if (!target) {
         for (ResizeHandle *handle : m_objectHandles)
             handle->setVisible(false);
+        m_rotateHandle->setVisible(false);
     } else {
-        const QRectF bounds = target->sceneBoundingRect();
+        // The handles follow the object's own rectangle, so they turn with it.
+        const QRectF local = target->boundingRect();
         for (ResizeHandle *handle : m_objectHandles) {
-            handle->setPos(ResizeHandle::anchorPoint(handle->handlePosition(), bounds));
+            handle->setPos(target->mapToScene(
+                ResizeHandle::anchorPoint(handle->handlePosition(), local)));
             handle->setVisible(true);
         }
+
+        // Keep the turning handle a constant distance above the top edge on
+        // screen, whatever the zoom.
+        qreal viewScale = 1.0;
+        if (!views().isEmpty())
+            viewScale = qMax(qreal(0.01), views().first()->transform().m11());
+
+        const QPointF topCentre = target->mapToScene(
+            ResizeHandle::anchorPoint(ResizeHandle::Top, local));
+        const QPointF up = target->mapToScene(QPointF(0.0, -1.0))
+                           - target->mapToScene(QPointF(0.0, 0.0));
+        const qreal length = std::hypot(up.x(), up.y());
+        const QPointF direction = length > 0.0 ? up / length : QPointF(0.0, -1.0);
+
+        m_rotateHandle->setPos(topCentre + direction * (30.0 / viewScale));
+        m_rotateHandle->setVisible(true);
     }
     m_updatingHandles = false;
 }
@@ -122,8 +148,10 @@ void CanvasScene::setHandlesVisible(bool visible)
     m_updatingHandles = true;
     for (ResizeHandle *handle : m_canvasHandles)
         handle->setVisible(visible);
+    const bool withObject = visible && singleSelectedObject() != nullptr;
     for (ResizeHandle *handle : m_objectHandles)
-        handle->setVisible(visible && singleSelectedObject() != nullptr);
+        handle->setVisible(withObject);
+    m_rotateHandle->setVisible(withObject);
     m_updatingHandles = false;
 }
 
@@ -243,13 +271,28 @@ void CanvasScene::resizeCanvasFromHandle(ResizeHandle::Position position, const 
 
 // --------------------------------------------------------- Scaling objects
 
+qreal CanvasScene::angleTo(const QPointF &centre, const QPointF &point)
+{
+    const QPointF delta = point - centre;
+    return std::atan2(delta.y(), delta.x()) * 180.0 / M_PI;
+}
+
 void CanvasScene::beginObjectScale()
 {
     m_scaleTarget = singleSelectedObject();
-    if (!m_scaleTarget)
+    auto *object = dynamic_cast<InkObject *>(m_scaleTarget);
+    if (!object) {
+        m_scaleTarget = nullptr;
         return;
-    m_scaleStartRect = m_scaleTarget->sceneBoundingRect();
-    m_scaleStartTransform = m_scaleTarget->transform();
+    }
+
+    // Everything is measured in the object's own coordinates, so a turned
+    // object still grows along its own axes.
+    m_scaleStartRect = m_scaleTarget->boundingRect();
+    m_scaleStartSceneTransform = m_scaleTarget->sceneTransform();
+    m_scaleStartAngle = object->rotationAngle();
+    m_scaleStartScaleX = object->scaleX();
+    m_scaleStartScaleY = object->scaleY();
 
     m_scaleStartFontSize = 0.0;
     if (auto *text = dynamic_cast<TextItem *>(m_scaleTarget))
@@ -258,79 +301,60 @@ void CanvasScene::beginObjectScale()
 
 void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const QPointF &scenePos)
 {
-    if (!m_scaleTarget || m_scaleStartRect.isEmpty())
+    auto *object = dynamic_cast<InkObject *>(m_scaleTarget);
+    if (!object || m_scaleStartRect.isEmpty())
         return;
 
-    // The desired new rectangle: the dragged edge follows the pointer while
-    // the opposite one stays put.
-    QRectF target = m_scaleStartRect;
-    switch (position) {
-    case ResizeHandle::TopLeft:
-        target.setTop(qMin(scenePos.y(), target.bottom() - kMinimumObjectSide));
-        target.setLeft(qMin(scenePos.x(), target.right() - kMinimumObjectSide));
-        break;
-    case ResizeHandle::Top:
-        target.setTop(qMin(scenePos.y(), target.bottom() - kMinimumObjectSide));
-        break;
-    case ResizeHandle::TopRight:
-        target.setTop(qMin(scenePos.y(), target.bottom() - kMinimumObjectSide));
-        target.setRight(qMax(scenePos.x(), target.left() + kMinimumObjectSide));
-        break;
-    case ResizeHandle::Right:
-        target.setRight(qMax(scenePos.x(), target.left() + kMinimumObjectSide));
-        break;
-    case ResizeHandle::BottomRight:
-        target.setBottom(qMax(scenePos.y(), target.top() + kMinimumObjectSide));
-        target.setRight(qMax(scenePos.x(), target.left() + kMinimumObjectSide));
-        break;
-    case ResizeHandle::Bottom:
-        target.setBottom(qMax(scenePos.y(), target.top() + kMinimumObjectSide));
-        break;
-    case ResizeHandle::BottomLeft:
-        target.setBottom(qMax(scenePos.y(), target.top() + kMinimumObjectSide));
-        target.setLeft(qMin(scenePos.x(), target.right() - kMinimumObjectSide));
-        break;
-    case ResizeHandle::Left:
-        target.setLeft(qMin(scenePos.x(), target.right() - kMinimumObjectSide));
-        break;
-    }
+    bool invertible = false;
+    const QTransform toLocal = m_scaleStartSceneTransform.inverted(&invertible);
+    if (!invertible)
+        return;
+
+    const QPointF local = toLocal.map(scenePos);
+    const QRectF base = m_scaleStartRect;
+
+    // The dragged edge follows the pointer, the opposite one stays put.
+    const QPointF edge = ResizeHandle::anchorPoint(position, base);
+    const QPointF anchor = ResizeHandle::anchorPoint(ResizeHandle::opposite(position), base);
+
+    const bool drivesX = position != ResizeHandle::Top && position != ResizeHandle::Bottom;
+    const bool drivesY = position != ResizeHandle::Left && position != ResizeHandle::Right;
+
+    qreal factorX = 1.0;
+    qreal factorY = 1.0;
+    if (drivesX && !qFuzzyCompare(edge.x(), anchor.x()))
+        factorX = (local.x() - anchor.x()) / (edge.x() - anchor.x());
+    if (drivesY && !qFuzzyCompare(edge.y(), anchor.y()))
+        factorY = (local.y() - anchor.y()) / (edge.y() - anchor.y());
+
+    // No flipping and nothing that collapses to nothing.
+    factorX = qMax(qreal(0.02), factorX);
+    factorY = qMax(qreal(0.02), factorY);
+
+    QPointF anchorNow = anchor;
 
     if (auto *text = dynamic_cast<TextItem *>(m_scaleTarget)) {
-        // Text is not distorted but grows through its font size. Side
-        // handles follow the width, all others the height.
+        // Text is not stretched but grows through its font size. Side handles
+        // follow the width, all others the height.
         const bool widthDrives = position == ResizeHandle::Left
                                  || position == ResizeHandle::Right;
-        const qreal factor = widthDrives
-                                 ? target.width() / m_scaleStartRect.width()
-                                 : target.height() / m_scaleStartRect.height();
-
-        text->setFontPointSize(m_scaleStartFontSize * factor);
-
-        // The opposite edge stays put.
-        const QPointF fixedPoint =
-            ResizeHandle::anchorPoint(ResizeHandle::opposite(position), m_scaleStartRect);
-        const QPointF movedPoint =
-            ResizeHandle::anchorPoint(ResizeHandle::opposite(position), text->sceneBoundingRect());
-        text->setPos(text->pos() + (fixedPoint - movedPoint));
-
-        updateObjectHandles();
-        emit objectPropertiesChanged();
-        return;
+        text->setFontPointSize(m_scaleStartFontSize * (widthDrives ? factorX : factorY));
+        object->applyPlacement();   // the centre moved with the new size
+        anchorNow = ResizeHandle::anchorPoint(ResizeHandle::opposite(position),
+                                              text->boundingRect());
+    } else {
+        object->setPlacement(m_scaleStartAngle,
+                             m_scaleStartScaleX * factorX,
+                             m_scaleStartScaleY * factorY);
     }
 
-    const qreal factorX = target.width() / m_scaleStartRect.width();
-    const qreal factorY = target.height() / m_scaleStartRect.height();
-
-    // The new scale is applied on top of the original transformation so that
-    // repeated dragging does not accumulate.
-    const QTransform scaled = m_scaleStartTransform * QTransform::fromScale(factorX, factorY);
-    m_scaleTarget->setTransform(scaled);
-
-    // Move the item so the stationary edge really does stay where it was.
-    const QRectF mapped = scaled.mapRect(m_scaleTarget->boundingRect());
-    m_scaleTarget->setPos(target.topLeft() - mapped.topLeft());
+    // Put the object back so the stationary edge really does stay where it was.
+    const QPointF before = m_scaleStartSceneTransform.map(anchor);
+    const QPointF after = m_scaleTarget->sceneTransform().map(anchorNow);
+    m_scaleTarget->setPos(m_scaleTarget->pos() + (before - after));
 
     updateObjectHandles();
+    emit objectPropertiesChanged();
 }
 
 void CanvasScene::endObjectScale()
@@ -338,6 +362,56 @@ void CanvasScene::endObjectScale()
     if (!m_scaleTarget)
         return;
     m_scaleTarget = nullptr;
+    updateObjectHandles();
+    emit objectPropertiesChanged();
+    emit edited();
+}
+
+// --------------------------------------------------------- Turning objects
+
+void CanvasScene::beginObjectRotate(const QPointF &scenePos)
+{
+    m_rotateTarget = singleSelectedObject();
+    auto *object = dynamic_cast<InkObject *>(m_rotateTarget);
+    if (!object) {
+        m_rotateTarget = nullptr;
+        return;
+    }
+
+    // Turning happens about the centre of the object, which stays put.
+    m_rotateCentre = m_rotateTarget->mapToScene(m_rotateTarget->boundingRect().center());
+    m_rotateStartAngle = object->rotationAngle();
+    m_rotateStartPointer = angleTo(m_rotateCentre, scenePos);
+}
+
+void CanvasScene::rotateObjectFromHandle(const QPointF &scenePos,
+                                         Qt::KeyboardModifiers modifiers)
+{
+    auto *object = dynamic_cast<InkObject *>(m_rotateTarget);
+    if (!object)
+        return;
+
+    qreal angle = m_rotateStartAngle + (angleTo(m_rotateCentre, scenePos) - m_rotateStartPointer);
+
+    if (modifiers & Qt::ShiftModifier)
+        angle = qRound(angle / 15.0) * 15.0;
+
+    while (angle >= 180.0)
+        angle -= 360.0;
+    while (angle < -180.0)
+        angle += 360.0;
+
+    object->setPlacement(angle, object->scaleX(), object->scaleY());
+
+    updateObjectHandles();
+    emit objectPropertiesChanged();
+}
+
+void CanvasScene::endObjectRotate()
+{
+    if (!m_rotateTarget)
+        return;
+    m_rotateTarget = nullptr;
     updateObjectHandles();
     emit objectPropertiesChanged();
     emit edited();
@@ -384,7 +458,7 @@ QGraphicsItem *CanvasScene::singleSelectedObject() const
         if (!dynamic_cast<InkObject *>(item))
             continue;
         if (found)
-            return nullptr;   // bei Mehrfachauswahl wird nicht skaliert
+            return nullptr;   // several objects at once are not scaled
         found = item;
     }
     return found;
@@ -629,7 +703,7 @@ QJsonObject CanvasScene::toJson() const
 {
     QJsonObject root;
     root[QStringLiteral("application")] = QStringLiteral("Inkpot");
-    root[QStringLiteral("formatVersion")] = 2;
+    root[QStringLiteral("formatVersion")] = 3;
 
     QJsonObject canvas;
     canvas[QStringLiteral("width")] = m_pageSize.width();
@@ -655,17 +729,14 @@ QJsonObject CanvasScene::toJson() const
         json[QStringLiteral("y")] = item->pos().y();
         json[QStringLiteral("z")] = item->zValue();
 
-        const QTransform transform = item->transform();
-        if (!transform.isIdentity()) {
-            QJsonArray values;
-            values.append(transform.m11());
-            values.append(transform.m12());
-            values.append(transform.m21());
-            values.append(transform.m22());
-            values.append(transform.dx());
-            values.append(transform.dy());
-            json[QStringLiteral("transform")] = values;
-        }
+        // Angle and scale are written instead of the raw matrix: that keeps
+        // the file readable and lets the matrix be rebuilt in the right order.
+        if (!qFuzzyIsNull(object->rotationAngle()))
+            json[QStringLiteral("rotation")] = object->rotationAngle();
+        if (!qFuzzyCompare(object->scaleX(), qreal(1.0)))
+            json[QStringLiteral("scaleX")] = object->scaleX();
+        if (!qFuzzyCompare(object->scaleY(), qreal(1.0)))
+            json[QStringLiteral("scaleY")] = object->scaleY();
 
         if (object->hasErasedArea())
             json[QStringLiteral("erased")] = InkPath::toBase64(object->erasedMask());
@@ -710,15 +781,19 @@ bool CanvasScene::fromJson(const QJsonObject &json, QString *error)
         item->setPos(objectJson.value(QStringLiteral("x")).toDouble(),
                      objectJson.value(QStringLiteral("y")).toDouble());
 
-        const QJsonArray transformValues = objectJson.value(QStringLiteral("transform")).toArray();
-        if (transformValues.size() == 6) {
-            item->setTransform(QTransform(transformValues.at(0).toDouble(),
-                                          transformValues.at(1).toDouble(),
-                                          transformValues.at(2).toDouble(),
-                                          transformValues.at(3).toDouble(),
-                                          transformValues.at(4).toDouble(),
-                                          transformValues.at(5).toDouble()));
+        qreal scaleX = objectJson.value(QStringLiteral("scaleX")).toDouble(1.0);
+        qreal scaleY = objectJson.value(QStringLiteral("scaleY")).toDouble(1.0);
+
+        // Files written before objects could be turned carry the raw matrix,
+        // which only ever held a scale.
+        const QJsonArray legacy = objectJson.value(QStringLiteral("transform")).toArray();
+        if (legacy.size() == 6) {
+            scaleX = legacy.at(0).toDouble(1.0);
+            scaleY = legacy.at(3).toDouble(1.0);
         }
+
+        object->setPlacement(objectJson.value(QStringLiteral("rotation")).toDouble(0.0),
+                             scaleX, scaleY);
 
         const QString erased = objectJson.value(QStringLiteral("erased")).toString();
         if (!erased.isEmpty())

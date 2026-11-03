@@ -29,7 +29,11 @@ they were drawn. The project format keeps them that way.
 
 **Objects**
 * Everything drawn or pasted becomes a separate object
-* Select, move, scale through eight handles, recolour, delete
+* Select, move, scale through eight handles, turn with the round handle above
+  the object, recolour, delete
+* Turning and scaling work in the object's own axes, so a turned object still
+  grows along its own edges instead of being distorted. Hold Shift while
+  turning for 15 degree steps
 * Rubber band selection for several objects at once
 * Scaling a caption changes its font size rather than distorting it, and the
   size follows live in the toolbar
@@ -93,6 +97,7 @@ from the menus themselves so the list stays current.
 | Zoom | `Ctrl` + mouse wheel, `Ctrl++`, `Ctrl+-` |
 | Actual size / fit in window | `Ctrl+0` / `Ctrl+9` |
 | Pan the view | drag with the middle mouse button |
+| Turn in 15 degree steps | hold `Shift` while dragging the turning handle |
 
 ## Translations
 
@@ -233,7 +238,11 @@ auch lange nachdem sie entstanden sind. Das Projektformat hält sie so.
 
 **Objekte**
 * Alles Gemalte oder Eingefügte wird ein eigenes Objekt
-* Auswählen, verschieben, über acht Anfasspunkte skalieren, umfärben, löschen
+* Auswählen, verschieben, über acht Anfasspunkte skalieren, über den runden
+  Anfasser oberhalb drehen, umfärben, löschen
+* Drehen und Skalieren arbeiten in den Achsen des Objekts: ein gedrehtes
+  Objekt wächst weiter entlang seiner eigenen Kanten statt verzerrt zu werden.
+  Mit gehaltener Umschalttaste rastet die Drehung in 15-Grad-Schritten
 * Gummiband-Auswahl für mehrere Objekte auf einmal
 * Beim Skalieren einer Beschriftung ändert sich die Schriftgröße statt einer
   Verzerrung, und der Wert läuft live in der Werkzeugleiste mit
@@ -297,6 +306,7 @@ aus den Menüs selbst zusammengestellt und bleibt damit aktuell.
 | Zoomen | `Strg` + Mausrad, `Strg++`, `Strg+-` |
 | Originalgröße / Einpassen | `Strg+0` / `Strg+9` |
 | Ansicht verschieben | Ziehen mit der mittleren Maustaste |
+| In 15-Grad-Schritten drehen | `Umschalt` beim Ziehen des Dreh-Anfassers |
 
 ## Übersetzungen
 

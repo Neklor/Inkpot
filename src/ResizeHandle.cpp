@@ -5,9 +5,11 @@
 #include <QPainter>
 
 #include "CanvasScene.h"
+#include "Icons.h"
 
 namespace {
-constexpr qreal kHandleSize = 9.0;   // Bildschirmpixel, zoomunabhaengig
+constexpr qreal kHandleSize = 9.0;    // screen pixels, independent of zoom
+constexpr qreal kRotateSize = 20.0;   // the turning handle is a round button
 }
 
 ResizeHandle::ResizeHandle(Position position, Role role, CanvasScene *canvas)
@@ -19,6 +21,12 @@ ResizeHandle::ResizeHandle(Position position, Role role, CanvasScene *canvas)
     // Object handles sit above the objects, canvas handles above those.
     setZValue(m_role == Role::Canvas ? 1.0e6 : 9.0e5);
     setAcceptedMouseButtons(Qt::LeftButton);
+
+    if (m_role == Role::Rotate) {
+        setCursor(Icons::rotationCursor());
+        setToolTip(QObject::tr("Drag to turn the object, hold Shift for 15 degree steps"));
+        return;
+    }
 
     switch (m_position) {
     case TopLeft:
@@ -76,12 +84,21 @@ ResizeHandle::Position ResizeHandle::opposite(Position position)
 
 QRectF ResizeHandle::boundingRect() const
 {
-    const qreal half = kHandleSize / 2.0 + 1.0;
+    const qreal half = (m_role == Role::Rotate ? kRotateSize : kHandleSize) / 2.0 + 1.0;
     return QRectF(-half, -half, half * 2.0, half * 2.0);
 }
 
 void ResizeHandle::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QWidget *)
 {
+    if (m_role == Role::Rotate) {
+        painter->setRenderHint(QPainter::Antialiasing, true);
+        painter->setPen(QPen(QColor(0x10, 0x3a, 0x6b), 1.0));
+        painter->setBrush(QColor(0x4d, 0xa3, 0xff));
+        painter->drawEllipse(QPointF(0.0, 0.0), kRotateSize / 2.0, kRotateSize / 2.0);
+        Icons::drawRotationArrow(*painter, 5.6, QColor(255, 255, 255), 1.8);
+        return;
+    }
+
     const qreal half = kHandleSize / 2.0;
     const QRectF square(-half, -half, kHandleSize, kHandleSize);
 
@@ -100,27 +117,36 @@ void ResizeHandle::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
 
 void ResizeHandle::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (m_role == Role::Canvas)
-        m_canvas->beginCanvasResize();
-    else
-        m_canvas->beginObjectScale();
+    switch (m_role) {
+    case Role::Canvas: m_canvas->beginCanvasResize();                break;
+    case Role::Object: m_canvas->beginObjectScale();                 break;
+    case Role::Rotate: m_canvas->beginObjectRotate(event->scenePos()); break;
+    }
     event->accept();
 }
 
 void ResizeHandle::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (m_role == Role::Canvas)
+    switch (m_role) {
+    case Role::Canvas:
         m_canvas->resizeCanvasFromHandle(m_position, event->scenePos());
-    else
+        break;
+    case Role::Object:
         m_canvas->scaleObjectFromHandle(m_position, event->scenePos());
+        break;
+    case Role::Rotate:
+        m_canvas->rotateObjectFromHandle(event->scenePos(), event->modifiers());
+        break;
+    }
     event->accept();
 }
 
 void ResizeHandle::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 {
-    if (m_role == Role::Canvas)
-        m_canvas->endCanvasResize();
-    else
-        m_canvas->endObjectScale();
+    switch (m_role) {
+    case Role::Canvas: m_canvas->endCanvasResize(); break;
+    case Role::Object: m_canvas->endObjectScale();  break;
+    case Role::Rotate: m_canvas->endObjectRotate(); break;
+    }
     event->accept();
 }

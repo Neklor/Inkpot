@@ -18,7 +18,10 @@ First development release: milestone 1, the basic program.
   ratio and a live ratio display.
 - Object handling: brush strokes, straight lines, captions and pasted images
   are objects of their own and can be selected, moved, scaled through eight
-  handles, recoloured and deleted.
+  handles, turned with a round handle above them, recoloured and deleted.
+  Rotation and scale are kept as separate values in the object and combined in
+  that order, so a turned object still grows along its own axes instead of
+  being distorted. Holding Shift turns in 15 degree steps.
 - Tools for selection, brush, line, eraser, bucket fill and text. The eraser
   works inside objects by masking the erased area, so the original shape is
   preserved in the project file.

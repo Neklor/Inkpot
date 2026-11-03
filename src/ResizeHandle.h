@@ -26,7 +26,8 @@ public:
 
     enum class Role {
         Canvas,
-        Object
+        Object,
+        Rotate
     };
 
     ResizeHandle(Position position, Role role, CanvasScene *canvas);

@@ -44,6 +44,12 @@ public:
     void scaleObjectFromHandle(ResizeHandle::Position position, const QPointF &scenePos);
     void endObjectScale();
 
+    // Turning a selected object with the round handle above it.
+    void beginObjectRotate(const QPointF &scenePos);
+    void rotateObjectFromHandle(const QPointF &scenePos,
+                                Qt::KeyboardModifiers modifiers = Qt::NoModifier);
+    void endObjectRotate();
+
     // Managing objects.
     void addObject(QGraphicsItem *item);
     QList<QGraphicsItem *> objects() const;
@@ -109,9 +115,23 @@ private:
     QList<ResizeHandle *> m_canvasHandles;
     QList<ResizeHandle *> m_objectHandles;
 
+    // Angle of the pointer around a centre, in degrees.
+    static qreal angleTo(const QPointF &centre, const QPointF &point);
+
     // Starting values while an object is being scaled.
     QGraphicsItem *m_scaleTarget = nullptr;
-    QRectF m_scaleStartRect;
-    QTransform m_scaleStartTransform;
+    QRectF m_scaleStartRect;              // in the object's own coordinates
+    QTransform m_scaleStartSceneTransform;
+    qreal m_scaleStartAngle = 0.0;
+    qreal m_scaleStartScaleX = 1.0;
+    qreal m_scaleStartScaleY = 1.0;
     qreal m_scaleStartFontSize = 0.0;
+
+    // Starting values while an object is being turned.
+    QGraphicsItem *m_rotateTarget = nullptr;
+    QPointF m_rotateCentre;
+    qreal m_rotateStartAngle = 0.0;
+    qreal m_rotateStartPointer = 0.0;
+
+    ResizeHandle *m_rotateHandle = nullptr;
 };

@@ -24,6 +24,31 @@ QPainterPath InkPath::fromBase64(const QString &encoded)
     return path;
 }
 
+void InkObject::setPlacement(qreal angle, qreal scaleX, qreal scaleY)
+{
+    m_angle = angle;
+    m_scaleX = qMax(qreal(0.01), scaleX);
+    m_scaleY = qMax(qreal(0.01), scaleY);
+    applyPlacement();
+}
+
+void InkObject::applyPlacement()
+{
+    QGraphicsItem *item = asItem();
+    if (!item)
+        return;
+
+    // Read from the inside out: move the centre to the origin, scale along the
+    // object's own axes, turn, move back.
+    const QPointF centre = item->boundingRect().center();
+    QTransform matrix;
+    matrix.translate(centre.x(), centre.y());
+    matrix.rotate(m_angle);
+    matrix.scale(m_scaleX, m_scaleY);
+    matrix.translate(-centre.x(), -centre.y());
+    item->setTransform(matrix);
+}
+
 void InkObject::eraseScenePath(const QPainterPath &scenePath)
 {
     QGraphicsItem *item = asItem();

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <QCursor>
 #include <QIcon>
+
+class QPainter;
 
 class QColor;
 
@@ -25,6 +28,13 @@ QIcon text(const QColor &color);      // Text
 QIcon bucket(const QColor &accent, const QColor &outline);
 QIcon plus(const QColor &color);      // New
 QIcon folder(const QColor &color);    // Open
+
+// Circular arrow, drawn into the current painter around the origin. Used both
+// for the rotation handle and for the mouse cursor while turning.
+void drawRotationArrow(QPainter &painter, qreal radius, const QColor &color, qreal width);
+
+// The same arrow as a cursor.
+QCursor rotationCursor();
 
 // Aspect ratio lock: closed and open padlock.
 QIcon lockClosed(const QColor &color);

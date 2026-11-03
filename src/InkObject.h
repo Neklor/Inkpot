@@ -44,6 +44,21 @@ public:
     virtual QColor color() const { return QColor(); }
     virtual bool setColor(const QColor &color) { Q_UNUSED(color); return false; }
 
+    // Placement: rotation in degrees and scale along the object's own axes.
+    //
+    // Both are kept here rather than left to QGraphicsItem::setRotation(),
+    // because Qt applies the item transform after its rotation. The scale
+    // would then act on already rotated coordinates and distort the object
+    // instead of letting it grow along its own axes. Building the matrix here
+    // keeps the order right: scale first, then rotate, both about the centre.
+    qreal rotationAngle() const { return m_angle; }
+    qreal scaleX() const { return m_scaleX; }
+    qreal scaleY() const { return m_scaleY; }
+    void setPlacement(qreal angle, qreal scaleX, qreal scaleY);
+
+    // Rebuilds the matrix, for instance after the content changed size.
+    void applyPlacement();
+
     // Erasing inside an object: the area is masked out while the original
     // shape is kept, so it can be brought back later.
     void eraseScenePath(const QPainterPath &scenePath);
@@ -59,4 +74,7 @@ protected:
     QPainterPath withoutErasedArea(const QPainterPath &path) const;
 
     QPainterPath m_erasedMask;   // in item coordinates
+    qreal m_angle = 0.0;
+    qreal m_scaleX = 1.0;
+    qreal m_scaleY = 1.0;
 };
