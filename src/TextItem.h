@@ -5,11 +5,10 @@
 
 #include "InkObject.h"
 
-// Beschriftung auf der Arbeitsfläche.
+// A caption on the canvas.
 //
-// Im Bearbeitungsmodus nimmt das Objekt Tastatureingaben an; danach verhaelt
-// es sich wie jedes andere Objekt und laesst sich auswählen, verschieben und
-// skalieren.
+// While being edited the object accepts keyboard input; afterwards it behaves
+// like any other object and can be selected, moved and scaled.
 class TextItem : public QGraphicsTextItem, public InkObject
 {
     Q_OBJECT
@@ -17,11 +16,11 @@ class TextItem : public QGraphicsTextItem, public InkObject
 public:
     explicit TextItem(const QString &text = QString());
 
-    // Setzt die Schrift und sorgt dabei für saubere Graustufen-Glättung.
+    // Sets the font and makes sure it is antialiased in grayscale.
     void applyFont(const QFont &font);
 
-    // Schriftgröße in Punkt. Über die Anfasspunkte wird genau dieser Wert
-    // verändert, damit Text nicht verzerrt, sondern wirklich größer wird.
+    // Font size in points. The handles change exactly this value, so that
+    // text really grows instead of being distorted.
     qreal fontPointSize() const;
     void setFontPointSize(qreal pointSize);
 

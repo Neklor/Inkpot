@@ -4,12 +4,12 @@
 
 class CanvasScene;
 
-// Anfasspunkt zum Verändern einer Größe.
+// A handle for changing a size.
 //
-// Dieselbe Klasse bedient zwei Aufgaben: die Arbeitsfläche selbst (Rolle
-// Canvas, nur rechts und unten) und das Skalieren eines ausgewählten Objekts
-// (Rolle Object, rundherum). Die Griffe ignorieren die Ansichts-Transformation
-// und bleiben bei jedem Zoomfaktor gleich gross.
+// The same class serves two purposes: the canvas itself (role Canvas, right
+// and bottom edge only) and scaling a selected object (role Object, all round).
+// Handles ignore the view transformation and keep their size at any zoom
+// level.
 class ResizeHandle : public QGraphicsItem
 {
 public:
@@ -34,10 +34,10 @@ public:
     Position handlePosition() const { return m_position; }
     Role role() const { return m_role; }
 
-    // Mittelpunkt des Griffs für ein gegebenes Rechteck.
+    // Centre of the handle for a given rectangle.
     static QPointF anchorPoint(Position position, const QRectF &rect);
 
-    // Der Griff auf der anderen Seite; sein Punkt bleibt beim Ziehen stehen.
+    // The handle on the opposite side; its point stays put while dragging.
     static Position opposite(Position position);
 
     QRectF boundingRect() const override;

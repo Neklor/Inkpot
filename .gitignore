@@ -30,6 +30,13 @@ ui_*.h
 *~
 *.swp
 
+# Claude Code
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.claude.json
+.mcp.json
+
 # Binaer- und Objektdateien
 *.o
 *.so

@@ -7,8 +7,8 @@
 
 namespace {
 
-// Alle Symbole werden in einem 64x64-Raster entworfen und von QIcon auf die
-// jeweils benötigte Größe verkleinert.
+// Every icon is designed on a 64x64 grid and scaled down by QIcon to
+// whatever size is needed.
 constexpr int kGrid = 64;
 
 QPixmap createPixmap()
@@ -36,7 +36,7 @@ QIcon pointer(const QColor &color)
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    // Klassischer Mauspfeil.
+    // The classic mouse pointer.
     QPainterPath arrow;
     arrow.moveTo(16.0, 8.0);
     arrow.lineTo(16.0, 50.0);
@@ -61,7 +61,7 @@ QIcon brush(const QColor &accent, const QColor &outline)
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    // Schräg liegender Pinsel: Holzstiel, Metallzwinge, farbige Borsten.
+    // A brush held at an angle: wooden handle, metal ferrule, coloured bristles.
     painter.translate(33.0, 32.0);
     painter.rotate(-45.0);
 
@@ -69,7 +69,7 @@ QIcon brush(const QColor &accent, const QColor &outline)
     painter.setBrush(QColor(0xB4, 0x7E, 0x48));
     painter.drawRoundedRect(QRectF(-6.5, -28.0, 13.0, 29.0), 6.0, 6.0);
 
-    // Lichtkante auf dem Stiel
+    // Highlight along the handle
     painter.setBrush(QColor(0xD6, 0xA5, 0x70));
     painter.drawRoundedRect(QRectF(-4.5, -26.0, 4.0, 24.0), 2.0, 2.0);
 
@@ -102,7 +102,7 @@ QIcon line(const QColor &color)
     painter.setPen(outlinePen(color, 5.0));
     painter.drawLine(QPointF(14.0, 50.0), QPointF(50.0, 14.0));
 
-    // Endpunkte andeuten
+    // Hint at the end points
     painter.setPen(Qt::NoPen);
     painter.setBrush(color);
     painter.drawEllipse(QPointF(14.0, 50.0), 7.0, 7.0);
@@ -128,11 +128,11 @@ QIcon eraser(const QColor &color)
     painter.setBrush(fill);
     painter.drawRoundedRect(QRectF(-21.0, -11.0, 42.0, 22.0), 4.0, 4.0);
 
-    // Trennlinie zwischen Griff und Radierteil
+    // Divider between the grip and the rubber part
     painter.drawLine(QPointF(1.0, -11.0), QPointF(1.0, 11.0));
     painter.restore();
 
-    // Unterlage, auf der radiert wird
+    // The surface being erased
     painter.setPen(outlinePen(color, 4.0));
     painter.drawLine(QPointF(12.0, 55.0), QPointF(54.0, 55.0));
 
@@ -149,7 +149,7 @@ QIcon text(const QColor &color)
     painter.setPen(Qt::NoPen);
     painter.setBrush(color);
 
-    // Grosses T
+    // A capital T
     painter.drawRoundedRect(QRectF(12.0, 12.0, 40.0, 9.0), 2.0, 2.0);
     painter.drawRoundedRect(QRectF(27.5, 12.0, 9.0, 42.0), 2.0, 2.0);
 
@@ -181,7 +181,7 @@ QIcon folder(const QColor &color)
     QColor fill = color;
     fill.setAlpha(55);
 
-    // Rückwand mit Reiter
+    // Back panel with tab
     QPainterPath body;
     body.moveTo(9.0, 50.0);
     body.lineTo(9.0, 17.0);
@@ -195,7 +195,7 @@ QIcon folder(const QColor &color)
     painter.setBrush(fill);
     painter.drawPath(body);
 
-    // Vorderklappe
+    // Front flap
     painter.setBrush(Qt::NoBrush);
     painter.drawLine(QPointF(9.0, 32.0), QPointF(55.0, 32.0));
 
@@ -205,14 +205,14 @@ QIcon folder(const QColor &color)
 
 namespace {
 
-// Gemeinsamer Korpus beider Schloss-Symbole.
+// Body shared by both padlock icons.
 void drawLockBody(QPainter &painter, const QColor &color)
 {
     painter.setPen(Qt::NoPen);
     painter.setBrush(color);
     painter.drawRoundedRect(QRectF(16.0, 30.0, 32.0, 24.0), 4.5, 4.5);
 
-    // Schlüsselloch als echte Aussparung, damit es auf jedem Grund stimmt.
+    // The keyhole is a real cut-out so it looks right on any background.
     painter.save();
     painter.setCompositionMode(QPainter::CompositionMode_Clear);
     painter.setBrush(Qt::black);
@@ -237,7 +237,7 @@ QIcon lockClosed(const QColor &color)
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    // Bügel: beide Schenkel reichen bis zum Korpus.
+    // Shackle: both legs reach down to the body.
     QPainterPath shackle;
     shackle.moveTo(23.0, 31.0);
     shackle.lineTo(23.0, 26.0);
@@ -260,7 +260,7 @@ QIcon lockOpen(const QColor &color)
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
-    // Bügel aufgeklappt: der rechte Schenkel endet über dem Korpus.
+    // Shackle swung open: the right leg stops above the body.
     QPainterPath shackle;
     shackle.moveTo(23.0, 31.0);
     shackle.lineTo(23.0, 24.0);

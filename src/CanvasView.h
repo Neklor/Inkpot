@@ -9,7 +9,7 @@ class CanvasScene;
 class StrokeItem;
 class TextItem;
 
-// Ansicht der Arbeitsfläche samt Werkzeugbedienung.
+// View of the canvas, including the tool handling.
 class CanvasView : public QGraphicsView
 {
     Q_OBJECT
@@ -31,12 +31,12 @@ public:
     QColor toolColor() const { return m_toolColor; }
     void setToolColor(const QColor &color);
 
-    // Strichstärke des Pinsels und der Linie, zugleich Durchmesser des
-    // Radiergummis.
+    // Stroke width of the brush and the line tool, and at the same time the
+    // diameter of the eraser.
     qreal toolSize() const { return m_toolSize; }
     void setToolSize(qreal size);
 
-    // Schriftgröße für neu angelegte Beschriftungen.
+    // Font size for newly created captions.
     qreal fontPointSize() const { return m_fontPointSize; }
     void setFontPointSize(qreal pointSize);
 

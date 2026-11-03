@@ -1,0 +1,41 @@
+# Flatpak-Manifest für Inkpot.
+#
+# Lokal bauen und ausprobieren:
+#   flatpak install flathub org.kde.Platform//6.11 org.kde.Sdk//6.11
+#   flatpak-builder --user --install --force-clean build-flatpak \
+#       flatpak/io.github.neklor.Inkpot.yml
+#   flatpak run io.github.neklor.Inkpot
+#
+# Für eine Veröffentlichung auf Flathub muss die Quelle eine feste Fassung
+# sein: unten den dir-Eintrag gegen den git-Eintrag mit Tag tauschen.
+
+id: io.github.neklor.Inkpot
+runtime: org.kde.Platform
+runtime-version: '6.11'
+sdk: org.kde.Sdk
+command: inkpot
+
+finish-args:
+  - --share=ipc
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --device=dri
+  # Zugriff auf eigene Bilder und Dokumente zum Öffnen und Speichern
+  - --filesystem=xdg-pictures
+  - --filesystem=xdg-documents
+  # Drucken
+  - --socket=cups
+
+modules:
+  - name: inkpot
+    buildsystem: cmake-ninja
+    config-opts:
+      - -DCMAKE_BUILD_TYPE=Release
+    sources:
+      - type: dir
+        path: ..
+      # Für die Veröffentlichung stattdessen:
+      # - type: git
+      #   url: https://github.com/Neklor/Inkpot.git
+      #   tag: v0.1.0
+      #   commit: <vollständiger Commit-Hash des Tags>

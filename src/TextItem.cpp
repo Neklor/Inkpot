@@ -21,9 +21,9 @@ TextItem::TextItem(const QString &text)
 
 void TextItem::applyFont(const QFont &newFont)
 {
-    // Subpixel-Glättung erzeugt farbige Ränder an den Buchstaben. Auf einer
-    // Malfläche, die auch exportiert und gedruckt wird, sollen Buchstaben rein
-    // in ihrer eigenen Farbe erscheinen.
+    // Subpixel antialiasing puts coloured fringes around the glyphs. On a
+    // canvas that is also exported and printed, letters should appear purely
+    // in their own colour.
     QFont adjusted = newFont;
     adjusted.setStyleStrategy(QFont::StyleStrategy(adjusted.styleStrategy()
                                                    | QFont::NoSubpixelAntialias));
@@ -55,8 +55,8 @@ void TextItem::setFontPointSize(qreal pointSize)
     updated.setPointSizeF(clamped);
     applyFont(updated);
 
-    // Bereits getippter Text trägt eigene Zeichenformate; die Schrift des
-    // Dokuments allein würde ihn nicht erreichen.
+    // Text that has already been typed carries its own character formats;
+    // the document font alone would not reach it.
     QTextCursor cursor(document());
     cursor.select(QTextCursor::Document);
     QTextCharFormat format;
@@ -98,7 +98,7 @@ void TextItem::endEditing()
 
     setTextInteractionFlags(Qt::NoTextInteraction);
 
-    // Markierung im Text aufheben, sonst bleibt sie sichtbar.
+    // Drop the text selection, otherwise it stays visible.
     QTextCursor cursor = textCursor();
     cursor.clearSelection();
     setTextCursor(cursor);
@@ -127,7 +127,7 @@ void TextItem::focusOutEvent(QFocusEvent *event)
     endEditing();
     QGraphicsTextItem::focusOutEvent(event);
 
-    // Leere Beschriftungen sind nur Überbleibsel eines Fehlklicks.
+    // An empty caption is just the leftover of a misplaced click.
     if (toPlainText().trimmed().isEmpty()) {
         if (auto *canvas = qobject_cast<CanvasScene *>(scene()))
             canvas->removeObjectLater(this);

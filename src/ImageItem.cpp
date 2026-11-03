@@ -15,7 +15,7 @@ ImageItem::ImageItem(const QPixmap &pixmap)
 
 QString ImageItem::displayName() const
 {
-    return QCoreApplication::translate("ImageItem", "Bild");
+    return QCoreApplication::translate("ImageItem", "Image");
 }
 
 QPainterPath ImageItem::shape() const

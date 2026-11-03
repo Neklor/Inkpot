@@ -16,11 +16,11 @@
 
 namespace {
 
-constexpr qreal kMinimumSide = 16.0;     // kleinste Kantenlaenge der Fläche
+constexpr qreal kMinimumSide = 16.0;     // smallest edge length of the canvas
 constexpr qreal kMinimumObjectSide = 4.0;
-constexpr qreal kSceneMargin = 400.0;    // Arbeitsraum rechts und unterhalb
+constexpr qreal kSceneMargin = 400.0;    // room to work right of and below it
 
-// Erzeugt ein leeres Objekt passend zum Typbezeichner im Projektformat.
+// Creates an empty object matching the type identifier in the project format.
 QGraphicsItem *createObjectForType(const QString &type)
 {
     if (type == QLatin1String("stroke"))
@@ -32,7 +32,7 @@ QGraphicsItem *createObjectForType(const QString &type)
     return nullptr;
 }
 
-// Radierspuren werden als Pfad gespeichert.
+// Erased areas are stored as a path.
 QString pathToBase64(const QPainterPath &path)
 {
     QByteArray bytes;
@@ -67,8 +67,8 @@ CanvasScene::CanvasScene(QObject *parent)
         emit objectPropertiesChanged();
     });
 
-    // Verschobene oder veränderte Objekte brauchen neu gesetzte Griffe. Das
-    // Flag verhindert, dass das Setzen der Griffe sich selbst auslöst.
+    // Objects that were moved or changed need their handles repositioned.
+    // The flag keeps placing the handles from triggering itself.
     connect(this, &QGraphicsScene::changed, this, [this] {
         if (!m_updatingHandles)
             updateObjectHandles();
@@ -77,16 +77,16 @@ CanvasScene::CanvasScene(QObject *parent)
 
 CanvasScene::~CanvasScene()
 {
-    // Beim Abbau räumt ~QGraphicsScene noch die Objekte ab und sendet dabei
-    // changed(). Zu diesem Zeitpunkt sind die Griff-Listen als Member dieser
-    // Klasse bereits zerstört, deshalb hier alle eigenen Verbindungen lösen.
+    // While tearing down, ~QGraphicsScene still deletes the objects and emits
+    // changed() along the way. By then the handle lists, being members of this
+    // class, are already gone, so drop all of our own connections here.
     disconnect(this, nullptr, this, nullptr);
 }
 
 void CanvasScene::createHandles()
 {
-    // Die Arbeitsfläche hängt oben und links fest; sie wächst nur nach
-    // rechts und unten.
+    // The canvas is pinned at the top and on the left; it only grows to the
+    // right and downwards.
     const ResizeHandle::Position canvasPositions[] = {
         ResizeHandle::Right, ResizeHandle::BottomRight, ResizeHandle::Bottom
     };
@@ -96,7 +96,7 @@ void CanvasScene::createHandles()
         m_canvasHandles.append(handle);
     }
 
-    // Objekte lassen sich dagegen in alle Richtungen skalieren.
+    // Objects, in contrast, can be scaled in every direction.
     const ResizeHandle::Position objectPositions[] = {
         ResizeHandle::TopLeft,  ResizeHandle::Top,         ResizeHandle::TopRight,
         ResizeHandle::Right,    ResizeHandle::BottomRight, ResizeHandle::Bottom,
@@ -147,8 +147,8 @@ void CanvasScene::setHandlesVisible(bool visible)
 
 void CanvasScene::updateSceneRect()
 {
-    // Links und oben schließt die Szene bündig mit der Arbeitsfläche ab,
-    // damit diese in der Ansicht fest in der Ecke liegt.
+    // On the left and at the top the scene ends flush with the canvas, which
+    // is what keeps the canvas pinned to the corner of the view.
     setSceneRect(QRectF(0.0, 0.0,
                         m_pageSize.width() + kSceneMargin,
                         m_pageSize.height() + kSceneMargin));
@@ -198,7 +198,7 @@ void CanvasScene::setAspectRatioLocked(bool locked)
         m_lockedRatio = double(m_pageSize.width()) / m_pageSize.height();
 }
 
-// ------------------------------------------------- Größe der Arbeitsfläche
+// ------------------------------------------------------------- Canvas size
 
 void CanvasScene::beginCanvasResize()
 {
@@ -213,8 +213,8 @@ void CanvasScene::endCanvasResize()
 
 void CanvasScene::resizeCanvasFromHandle(ResizeHandle::Position position, const QPointF &scenePos)
 {
-    // Die linke obere Ecke bleibt immer bei (0, 0); nur die gezogene Kante
-    // folgt dem Mauszeiger.
+    // The top left corner always stays at (0, 0); only the dragged edge
+    // follows the mouse pointer.
     qreal width = m_pageSize.width();
     qreal height = m_pageSize.height();
 
@@ -230,7 +230,7 @@ void CanvasScene::resizeCanvasFromHandle(ResizeHandle::Position position, const 
         height = scenePos.y();
         break;
     default:
-        return;   // oben und links gibt es keine Griffe
+        return;   // there are no handles at the top or on the left
     }
 
     width = qMax(width, kMinimumSide);
@@ -245,7 +245,7 @@ void CanvasScene::resizeCanvasFromHandle(ResizeHandle::Position position, const 
             width = height * m_lockedRatio;
             break;
         default:
-            // Eckgriff: die stärker veränderte Achse gibt den Ton an.
+            // Corner handle: the axis that changed more sets the tone.
             if (width / height > m_lockedRatio)
                 height = width / m_lockedRatio;
             else
@@ -259,7 +259,7 @@ void CanvasScene::resizeCanvasFromHandle(ResizeHandle::Position position, const 
     setPageSize(QSize(qRound(width), qRound(height)));
 }
 
-// ------------------------------------------------------- Objekte skalieren
+// --------------------------------------------------------- Scaling objects
 
 void CanvasScene::beginObjectScale()
 {
@@ -279,8 +279,8 @@ void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const Q
     if (!m_scaleTarget || m_scaleStartRect.isEmpty())
         return;
 
-    // Gewuenschtes neues Rechteck: die gezogene Kante folgt dem Zeiger, die
-    // gegenüberliegende bleibt stehen.
+    // The desired new rectangle: the dragged edge follows the pointer while
+    // the opposite one stays put.
     QRectF target = m_scaleStartRect;
     switch (position) {
     case ResizeHandle::TopLeft:
@@ -314,9 +314,8 @@ void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const Q
     }
 
     if (auto *text = dynamic_cast<TextItem *>(m_scaleTarget)) {
-        // Text wird nicht verzerrt, sondern wächst über die Schriftgröße.
-        // Seitliche Griffe richten sich nach der Breite, alle anderen nach
-        // der Höhe.
+        // Text is not distorted but grows through its font size. Side
+        // handles follow the width, all others the height.
         const bool widthDrives = position == ResizeHandle::Left
                                  || position == ResizeHandle::Right;
         const qreal factor = widthDrives
@@ -325,7 +324,7 @@ void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const Q
 
         text->setFontPointSize(m_scaleStartFontSize * factor);
 
-        // Die gegenüberliegende Kante bleibt stehen.
+        // The opposite edge stays put.
         const QPointF fixedPoint =
             ResizeHandle::anchorPoint(ResizeHandle::opposite(position), m_scaleStartRect);
         const QPointF movedPoint =
@@ -340,12 +339,12 @@ void CanvasScene::scaleObjectFromHandle(ResizeHandle::Position position, const Q
     const qreal factorX = target.width() / m_scaleStartRect.width();
     const qreal factorY = target.height() / m_scaleStartRect.height();
 
-    // Die neue Skalierung wird auf die ursprüngliche Transformation gelegt,
-    // damit mehrfaches Ziehen sich nicht aufschaukelt.
+    // The new scale is applied on top of the original transformation so that
+    // repeated dragging does not accumulate.
     const QTransform scaled = m_scaleStartTransform * QTransform::fromScale(factorX, factorY);
     m_scaleTarget->setTransform(scaled);
 
-    // Position so nachführen, dass die stehende Kante wirklich stehen bleibt.
+    // Move the item so the stationary edge really does stay where it was.
     const QRectF mapped = scaled.mapRect(m_scaleTarget->boundingRect());
     m_scaleTarget->setPos(target.topLeft() - mapped.topLeft());
 
@@ -362,7 +361,7 @@ void CanvasScene::endObjectScale()
     emit edited();
 }
 
-// --------------------------------------------------------------- Objekte
+// ----------------------------------------------------------------- Objects
 
 void CanvasScene::prepareObject(QGraphicsItem *item)
 {
@@ -432,7 +431,7 @@ void CanvasScene::removeObjectLater(QGraphicsItem *item)
     if (!item || !dynamic_cast<InkObject *>(item))
         return;
 
-    // Aufgerufen aus einem Ereignis des Objekts selbst, daher verzögert.
+    // Called from an event of the object itself, hence the delay.
     QTimer::singleShot(0, this, [this, item] {
         if (item->scene() != this)
             return;
@@ -522,7 +521,7 @@ void CanvasScene::eraseWithPath(const QPainterPath &scenePath)
         emit edited();
 }
 
-// ------------------------------------------------------------------ Ausgabe
+// ----------------------------------------------------------------- Rendering
 
 QImage CanvasScene::renderRegion(const QRectF &source, const QList<QGraphicsItem *> &onlyItems,
                                  const QColor &background, qreal scale)
@@ -537,8 +536,8 @@ QImage CanvasScene::renderRegion(const QRectF &source, const QList<QGraphicsItem
         return QImage();
     image.fill(background);
 
-    // Anfasspunkte, Auswahlrahmen und nicht gewuenschte Objekte vor dem
-    // Zeichnen ausblenden und danach wiederherstellen.
+    // Hide handles, selection frames and unwanted objects before drawing,
+    // and restore them afterwards.
     const QList<QGraphicsItem *> selection = selectedItems();
     QList<QGraphicsItem *> hidden;
 
@@ -599,7 +598,7 @@ QImage CanvasScene::renderSelection()
 void CanvasScene::drawBackground(QPainter *painter, const QRectF &rect)
 {
     if (m_renderingToImage)
-        return;   // beim Export nur die Objekte, kein Rahmen, kein Schatten
+        return;   // when exporting draw only the objects: no frame, no shadow
 
     painter->fillRect(rect, QColor(0x2b, 0x2d, 0x31));
 
@@ -613,7 +612,7 @@ void CanvasScene::drawBackground(QPainter *painter, const QRectF &rect)
     painter->restore();
 }
 
-// ------------------------------------------------------------ Projektformat
+// ------------------------------------------------------------ Project format
 
 QJsonObject CanvasScene::toJson() const
 {
@@ -672,7 +671,7 @@ bool CanvasScene::fromJson(const QJsonObject &json, QString *error)
 {
     if (json.value(QStringLiteral("application")).toString() != QLatin1String("Inkpot")) {
         if (error)
-            *error = tr("Die Datei ist kein Inkpot-Projekt.");
+            *error = tr("The file is not an Inkpot project.");
         return false;
     }
 

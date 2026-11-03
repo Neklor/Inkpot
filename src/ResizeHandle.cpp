@@ -16,7 +16,7 @@ ResizeHandle::ResizeHandle(Position position, Role role, CanvasScene *canvas)
     , m_canvas(canvas)
 {
     setFlag(QGraphicsItem::ItemIgnoresTransformations, true);
-    // Objektgriffe liegen über den Objekten, Flächengriffe darüber.
+    // Object handles sit above the objects, canvas handles above those.
     setZValue(m_role == Role::Canvas ? 1.0e6 : 9.0e5);
     setAcceptedMouseButtons(Qt::LeftButton);
 
@@ -40,8 +40,8 @@ ResizeHandle::ResizeHandle(Position position, Role role, CanvasScene *canvas)
     }
 
     setToolTip(m_role == Role::Canvas
-                   ? QObject::tr("Ziehen, um die Arbeitsfläche zu verändern")
-                   : QObject::tr("Ziehen, um das Objekt zu skalieren"));
+                   ? QObject::tr("Drag to resize the canvas")
+                   : QObject::tr("Drag to scale the object"));
 }
 
 QPointF ResizeHandle::anchorPoint(Position position, const QRectF &rect)
@@ -91,7 +91,7 @@ void ResizeHandle::paint(QPainter *painter, const QStyleOptionGraphicsItem *, QW
         painter->setBrush(QColor(0xf2, 0xf3, 0xf5));
         painter->drawRect(square);
     } else {
-        // Objektgriffe heben sich farblich von den Flächengriffen ab.
+        // Object handles are set apart from the canvas handles by colour.
         painter->setPen(QPen(QColor(0x10, 0x3a, 0x6b), 1.0));
         painter->setBrush(QColor(0x4d, 0xa3, 0xff));
         painter->drawRect(square);

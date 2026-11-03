@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7794ff"/>
+      <stop offset="1" stop-color="#2f4bd0"/>
+    </linearGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8bc83"/>
+      <stop offset="1" stop-color="#a06f33"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Fass -->
+  <path d="M24 58 h80 v38 a18 18 0 0 1 -18 18 h-44 a18 18 0 0 1 -18 -18 z"
+        fill="url(#glass)"/>
+  <!-- Glanzkante -->
+  <path d="M35 68 v26 a10 10 0 0 0 7 10" fill="none" stroke="#ffffff"
+        stroke-opacity="0.45" stroke-width="7" stroke-linecap="round"/>
+
+  <!-- Öffnung: heller Rand, darin die Tinte -->
+  <ellipse cx="64" cy="58" rx="40" ry="13" fill="#9db3ff"/>
+  <ellipse cx="64" cy="59" rx="31" ry="9" fill="#101a4d"/>
+
+  <!-- Pinsel, in die Tinte getaucht -->
+  <g transform="rotate(24 64 60)">
+    <path d="M55 46 h18 l-4 22 q-5 7 -10 0 z" fill="#101a4d"/>
+    <rect x="51" y="30" width="26" height="15" rx="3.5" fill="#cdd3dc"/>
+    <rect x="53" y="35" width="22" height="4" fill="#949bA7"/>
+    <rect x="56" y="-10" width="16" height="42" rx="8" fill="url(#wood)"/>
+  </g>
+</svg>

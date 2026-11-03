@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+  <mime-type type="application/x-inkpot-project">
+    <comment>Inkpot project</comment>
+    <comment xml:lang="de">Inkpot-Projekt</comment>
+    <icon name="io.github.neklor.Inkpot"/>
+    <generic-icon name="image-x-generic"/>
+    <sub-class-of type="application/json"/>
+    <glob pattern="*.ipot"/>
+    <glob pattern="*.inkpot"/>
+    <magic priority="60">
+      <match type="string" value="&quot;application&quot;: &quot;Inkpot&quot;" offset="0:128"/>
+    </magic>
+  </mime-type>
+</mime-info>

@@ -10,11 +10,11 @@
 
 #include "ResizeHandle.h"
 
-// Die Szene enthaelt die Arbeitsfläche (die "Seite") und alle Objekte darauf.
+// The scene holds the canvas (the "page") and every object on it.
 //
-// Die Arbeitsfläche liegt fest in der linken oberen Ecke bei (0, 0) und wächst
-// nach rechts und unten. Veraendert wird sie über die drei Anfasspunkte an der
-// rechten und unteren Kante oder über die Felder in der Fusszeile.
+// The canvas is pinned to the top left corner at (0, 0) and grows to the right
+// and downwards. It is resized with the three handles on its right and bottom
+// edge, or through the fields in the status bar.
 class CanvasScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -34,17 +34,17 @@ public:
     void setAspectRatioLocked(bool locked);
     double lockedRatio() const { return m_lockedRatio; }
 
-    // Ziehen an einem Anfasspunkt der Arbeitsfläche.
+    // Dragging a handle of the canvas.
     void beginCanvasResize();
     void resizeCanvasFromHandle(ResizeHandle::Position position, const QPointF &scenePos);
     void endCanvasResize();
 
-    // Ziehen an einem Anfasspunkt eines ausgewählten Objekts.
+    // Dragging a handle of a selected object.
     void beginObjectScale();
     void scaleObjectFromHandle(ResizeHandle::Position position, const QPointF &scenePos);
     void endObjectScale();
 
-    // Objektverwaltung.
+    // Managing objects.
     void addObject(QGraphicsItem *item);
     QList<QGraphicsItem *> objects() const;
     int objectCount() const { return objects().size(); }
@@ -54,18 +54,18 @@ public:
     void selectAllObjects();
     QGraphicsItem *singleSelectedObject() const;
 
-    // Eigenschaften der Auswahl.
+    // Properties of the selection.
     bool setSelectedObjectsColor(const QColor &color);
     QColor selectedObjectColor() const;
     class TextItem *singleSelectedText() const;
 
-    // Radieren innerhalb der Objekte.
+    // Erasing inside the objects.
     void eraseWithPath(const QPainterPath &scenePath);
 
-    // Von aussen aufrufbar, wenn Objekte z. B. verschoben wurden.
+    // Callable from outside, for instance after objects have been moved.
     void notifyEdited() { emit edited(); }
 
-    // Ausgabe als Bild. Anfasspunkte und Auswahlrahmen werden ausgeblendet.
+    // Rendering to an image. Handles and selection frames are hidden.
     QImage renderRegion(const QRectF &source,
                         const QList<QGraphicsItem *> &onlyItems = QList<QGraphicsItem *>(),
                         const QColor &background = Qt::white,
@@ -73,15 +73,15 @@ public:
     QImage renderPage(const QColor &background = Qt::white, qreal scale = 1.0);
     QImage renderSelection();
 
-    // Projektformat (*.ipot).
+    // Project format (*.ipot).
     QJsonObject toJson() const;
     bool fromJson(const QJsonObject &json, QString *error = nullptr);
 
 signals:
     void pageRectChanged();
     void objectsChanged();
-    void objectPropertiesChanged();   // Farbe oder Schriftgröße der Auswahl
-    void edited();          // es gibt ungespeicherte Änderungen
+    void objectPropertiesChanged();   // colour or font size of the selection
+    void edited();          // there are unsaved changes
 
 protected:
     void drawBackground(QPainter *painter, const QRectF &rect) override;
@@ -104,7 +104,7 @@ private:
     QList<ResizeHandle *> m_canvasHandles;
     QList<ResizeHandle *> m_objectHandles;
 
-    // Ausgangswerte während des Skalierens eines Objekts.
+    // Starting values while an object is being scaled.
     QGraphicsItem *m_scaleTarget = nullptr;
     QRectF m_scaleStartRect;
     QTransform m_scaleStartTransform;

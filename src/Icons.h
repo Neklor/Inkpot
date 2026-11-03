@@ -4,23 +4,22 @@
 
 class QColor;
 
-// Alle Werkzeug-Symbole werden zur Laufzeit gezeichnet. Dadurch braucht das
-// Projekt keine Bilddateien und die Symbole passen sich der Textfarbe des
-// jeweiligen Themes an.
+// Every tool icon is drawn at run time. That way the project needs no image
+// files and the icons follow the text colour of the current theme.
 namespace Icons {
 
-QIcon pointer(const QColor &color);   // Auswahl: Mauspfeil
+QIcon pointer(const QColor &color);   // Selection: mouse pointer
 
-// Pinsel mit Borsten in der aktuell gewählten Malfarbe. Der Umriss sorgt
-// dafür, dass auch sehr helle Farben auf hellem Grund sichtbar bleiben.
+// Brush whose bristles carry the currently chosen drawing colour. The
+// outline keeps very light colours visible on a light background.
 QIcon brush(const QColor &accent, const QColor &outline);
-QIcon line(const QColor &color);      // Linie
-QIcon eraser(const QColor &color);    // Radiergummi
+QIcon line(const QColor &color);      // Line
+QIcon eraser(const QColor &color);    // Eraser
 QIcon text(const QColor &color);      // Text
-QIcon plus(const QColor &color);      // Neu
-QIcon folder(const QColor &color);    // Öffnen
+QIcon plus(const QColor &color);      // New
+QIcon folder(const QColor &color);    // Open
 
-// Seitenverhältnis-Sperre: geschlossenes und offenes Schloss.
+// Aspect ratio lock: closed and open padlock.
 QIcon lockClosed(const QColor &color);
 QIcon lockOpen(const QColor &color);
 

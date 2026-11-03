@@ -24,11 +24,15 @@ public:
     explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow() override;
 
+    // Opens a project or an image, as passed on the command line or handed
+    // over by the desktop environment.
+    void openPath(const QString &path);
+
 protected:
     void closeEvent(QCloseEvent *event) override;
 
 private:
-    // Datei-Menue
+    // File menu
     void newCanvas(const QSize &size);
     void newCustomCanvas();
     void open();
@@ -39,15 +43,18 @@ private:
     void pasteFromClipboard();
     void print();
 
-    // Bearbeiten-Menue
+    // Edit menu
     void deleteSelection();
 
-    // Aufbau
+    // Help menu
+    void showAbout();
+
+    // Construction
     void createActions();
     void createToolBar();
     void createStatusBar();
 
-    // Zustand
+    // State
     bool maybeSave();
     bool loadFile(const QString &path);
     bool loadImageFile(const QString &path);

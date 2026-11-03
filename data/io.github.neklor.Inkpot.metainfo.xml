@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.neklor.Inkpot</id>
+
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0-only</project_license>
+
+  <name>Inkpot</name>
+  <summary>Draw and edit pictures made of objects</summary>
+  <summary xml:lang="de">Bilder aus Objekten malen und bearbeiten</summary>
+
+  <description>
+    <p>
+      Inkpot is a small paint program in which everything you draw stays an
+      object of its own. Brush strokes, straight lines, captions and pasted
+      images can be selected, moved, scaled, recoloured and deleted at any
+      time, long after they were drawn.
+    </p>
+    <p xml:lang="de">
+      Inkpot ist ein kleines Malprogramm, in dem alles Gemalte ein eigenes
+      Objekt bleibt. Pinselstriche, Linien, Beschriftungen und eingefügte
+      Bilder lassen sich jederzeit auswählen, verschieben, skalieren, umfärben
+      und löschen - auch lange nachdem sie entstanden sind.
+    </p>
+    <p>Features:</p>
+    <p xml:lang="de">Eigenschaften:</p>
+    <ul>
+      <li>Brush, line, eraser and text tools</li>
+      <li>The eraser works inside objects without destroying their shape</li>
+      <li>Resizable canvas with a lockable aspect ratio</li>
+      <li>Project format that keeps every object editable</li>
+      <li>Export to PNG, JPEG, BMP, TIFF and WebP</li>
+    </ul>
+    <ul xml:lang="de">
+      <li>Werkzeuge für Pinsel, Linie, Radiergummi und Text</li>
+      <li>Der Radiergummi wirkt innerhalb von Objekten, ohne ihre Form zu zerstören</li>
+      <li>Frei einstellbare Arbeitsfläche mit feststellbarem Seitenverhältnis</li>
+      <li>Projektformat, das jedes Objekt bearbeitbar hält</li>
+      <li>Export nach PNG, JPEG, BMP, TIFF und WebP</li>
+    </ul>
+  </description>
+
+  <launchable type="desktop-id">io.github.neklor.Inkpot.desktop</launchable>
+
+  <provides>
+    <binary>inkpot</binary>
+    <mediatype>application/x-inkpot-project</mediatype>
+  </provides>
+
+  <categories>
+    <category>Graphics</category>
+    <category>2DGraphics</category>
+    <category>RasterGraphics</category>
+  </categories>
+
+  <url type="homepage">https://github.com/Neklor/Inkpot</url>
+  <url type="bugtracker">https://github.com/Neklor/Inkpot/issues</url>
+  <url type="vcs-browser">https://github.com/Neklor/Inkpot</url>
+
+  <developer id="io.github.neklor">
+    <name>Christoph Krogmann</name>
+  </developer>
+
+  <content_rating type="oars-1.1"/>
+
+  <!--
+    Vor einer Veröffentlichung auf Flathub wird mindestens ein Bildschirmfoto
+    gebraucht; es muss unter einer dauerhaft erreichbaren URL liegen:
+
+    <screenshots>
+      <screenshot type="default">
+        <image>https://raw.githubusercontent.com/Neklor/Inkpot/main/data/screenshots/main.png</image>
+        <caption>The main window with an open drawing</caption>
+      </screenshot>
+    </screenshots>
+  -->
+
+  <releases>
+    <release version="0.1.0" date="2026-11-03" type="development">
+      <description>
+        <p>First development release with the basic program and object handling.</p>
+        <p xml:lang="de">Erste Entwicklungsfassung mit Grundprogramm und Objektfähigkeit.</p>
+      </description>
+    </release>
+  </releases>
+</component>

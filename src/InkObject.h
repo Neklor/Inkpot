@@ -8,49 +8,48 @@
 
 class QGraphicsItem;
 
-// Gemeinsame Schnittstelle aller Objekte auf der Arbeitsfläche.
+// Shared interface of every object on the canvas.
 //
-// Alles, was gemalt oder eingefügt wird, ist ein eigenständiges Objekt: es
-// erbt zusaetzlich von einer QGraphicsItem-Klasse und ist damit auswaehlbar,
-// verschiebbar, skalierbar und loeschbar.
+// Anything that is drawn or pasted becomes an object in its own right: it also
+// derives from a QGraphicsItem class and can therefore be selected, moved,
+// scaled and deleted.
 class InkObject
 {
 public:
     virtual ~InkObject() = default;
 
-    // Bezeichner im Projektformat, z. B. "stroke".
+    // Identifier used in the project format, for example "stroke".
     virtual QString typeName() const = 0;
 
-    // Für die Anzeige in der Oberflaeche.
+    // Name shown in the user interface.
     virtual QString displayName() const = 0;
 
-    // Jedes Objekt ist zugleich ein QGraphicsItem.
+    // Every object is a QGraphicsItem as well.
     virtual QGraphicsItem *asItem() = 0;
 
-    // Nur die typeigenen Daten. Position, Ebene, Skalierung und Radierspuren
-    // schreibt und liest die Szene für alle Objekte einheitlich.
+    // Type specific data only. Position, stacking order, scale and erased
+    // areas are written and read by the scene for all objects alike.
     virtual void write(QJsonObject &json) const = 0;
     virtual bool read(const QJsonObject &json) = 0;
 
-    // Farbe des Objekts. Nicht jedes Objekt hat eine (ein Bild etwa nicht);
-    // dann ist die Farbe ungültig und setColor() meldet false.
+    // Colour of the object. Not every object has one - an image does not -
+    // in which case the colour is invalid and setColor() reports false.
     virtual QColor color() const { return QColor(); }
     virtual bool setColor(const QColor &color) { Q_UNUSED(color); return false; }
 
-    // Radieren innerhalb eines Objekts: der Bereich wird maskiert, die
-    // ursprüngliche Form bleibt erhalten und kann später wieder
-    // freigegeben werden.
+    // Erasing inside an object: the area is masked out while the original
+    // shape is kept, so it can be brought back later.
     void eraseScenePath(const QPainterPath &scenePath);
     bool hasErasedArea() const { return !m_erasedMask.isEmpty(); }
     QPainterPath erasedMask() const { return m_erasedMask; }
     void setErasedMask(const QPainterPath &mask);
 
 protected:
-    // Sichtbarer Bereich innerhalb von bounds, also ohne die Radierspuren.
+    // The visible area within bounds, that is without the erased parts.
     QPainterPath visibleClipPath(const QRectF &bounds) const;
 
-    // Form abzueglich der Radierspuren, für die Treffer-Prüfung.
+    // The shape minus the erased parts, used for hit testing.
     QPainterPath withoutErasedArea(const QPainterPath &path) const;
 
-    QPainterPath m_erasedMask;   // in Item-Koordinaten
+    QPainterPath m_erasedMask;   // in item coordinates
 };

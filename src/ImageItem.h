@@ -4,7 +4,7 @@
 
 #include "InkObject.h"
 
-// Ein eingefügtes oder geöffnetes Bild als Objekt.
+// A pasted or opened image, held as an object.
 class ImageItem : public QGraphicsPixmapItem, public InkObject
 {
 public:

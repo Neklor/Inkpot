@@ -1,0 +1,17 @@
+[Desktop Entry]
+Type=Application
+Version=1.5
+Name=Inkpot
+GenericName=Paint Program
+GenericName[de]=Malprogramm
+Comment=Draw and edit pictures made of objects
+Comment[de]=Bilder aus Objekten malen und bearbeiten
+Exec=inkpot %f
+Icon=io.github.neklor.Inkpot
+Terminal=false
+Categories=Graphics;2DGraphics;RasterGraphics;Qt;
+MimeType=application/x-inkpot-project;
+Keywords=paint;draw;drawing;canvas;sketch;
+Keywords[de]=malen;zeichnen;Zeichnung;Leinwand;Skizze;
+StartupNotify=true
+StartupWMClass=inkpot

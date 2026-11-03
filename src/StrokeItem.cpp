@@ -9,8 +9,7 @@
 #include <QPen>
 
 namespace {
-// Mindestbreite für die Trefferflaeche, damit sich auch dünne Striche
-// bequem anklicken lassen.
+// Minimum width of the hit area so that thin strokes stay easy to click.
 constexpr qreal kMinimumHitWidth = 10.0;
 }
 
@@ -25,7 +24,7 @@ StrokeItem::StrokeItem(const QColor &color, qreal width)
 
 QString StrokeItem::displayName() const
 {
-    return QCoreApplication::translate("StrokeItem", "Pinselstrich");
+    return QCoreApplication::translate("StrokeItem", "Brush stroke");
 }
 
 bool StrokeItem::setColor(const QColor &color)
@@ -52,7 +51,7 @@ void StrokeItem::extendTo(const QPointF &scenePos)
     const QPointF local = mapFromScene(scenePos);
     if (!m_points.isEmpty()) {
         const QPointF delta = local - m_points.last();
-        // Sehr dichte Punkte bringen nichts und kosten nur Speicher.
+        // Points this close add nothing and only cost memory.
         if (delta.manhattanLength() < 1.0)
             return;
     }
@@ -66,7 +65,7 @@ void StrokeItem::setLineEnd(const QPointF &scenePos)
     if (m_points.isEmpty())
         m_points.append(QPointF(0.0, 0.0));
 
-    // Eine Gerade besteht genau aus Start- und Endpunkt.
+    // A straight line consists of exactly a start and an end point.
     if (m_points.size() < 2)
         m_points.append(local);
     else
@@ -97,11 +96,11 @@ void StrokeItem::rebuildPath()
 
     path.moveTo(m_points.first());
     if (m_points.size() == 1) {
-        // Einzelner Klick: winziges Segment, damit der runde Pinselkopf einen
-        // sichtbaren Punkt setzt.
+        // A single click: a tiny segment so the round brush tip leaves a
+        // visible dot.
         path.lineTo(m_points.first() + QPointF(0.01, 0.0));
     } else {
-        // Über die Mittelpunkte interpolieren ergibt weiche Linien.
+        // Interpolating through the midpoints yields smooth lines.
         for (int i = 1; i < m_points.size() - 1; ++i) {
             const QPointF mid = (m_points.at(i) + m_points.at(i + 1)) / 2.0;
             path.quadTo(m_points.at(i), mid);
@@ -138,7 +137,7 @@ void StrokeItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
         return;
     }
 
-    // Radierte Stellen werden ausgeblendet, der Strich selbst bleibt erhalten.
+    // Erased spots are hidden while the stroke itself is kept.
     painter->save();
     painter->setClipPath(visibleClipPath(boundingRect()), Qt::IntersectClip);
     QGraphicsPathItem::paint(painter, option, widget);

@@ -8,8 +8,8 @@ void InkObject::eraseScenePath(const QPainterPath &scenePath)
     if (!item)
         return;
 
-    // Die Maske wächst mit jedem Radierer-Zug. Die Außenmaße des Objekts
-    // ändern sich dabei nicht, ein update() genuegt also.
+    // The mask grows with every stroke of the eraser. The outer dimensions of
+    // the object do not change, so an update() is enough.
     m_erasedMask = m_erasedMask.united(item->mapFromScene(scenePath));
     item->update();
 }

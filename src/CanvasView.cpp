@@ -27,7 +27,7 @@ CanvasView::CanvasView(CanvasScene *scene, QWidget *parent)
     setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
     setResizeAnchor(QGraphicsView::NoAnchor);
 
-    // Die Arbeitsfläche liegt fest in der linken oberen Ecke.
+    // The canvas is pinned to the top left corner.
     setAlignment(Qt::AlignLeft | Qt::AlignTop);
 
     setViewportUpdateMode(QGraphicsView::SmartViewportUpdate);
@@ -35,9 +35,9 @@ CanvasView::CanvasView(CanvasScene *scene, QWidget *parent)
     setMouseTracking(true);
     setFocusPolicy(Qt::StrongFocus);
 
-    // Wichtig: kein eigener Hintergrundpinsel auf der Ansicht. Sobald einer
-    // gesetzt ist, ruft Qt CanvasScene::drawBackground() nicht mehr auf und
-    // die weisse Arbeitsfläche bliebe unsichtbar.
+    // Important: no background brush of our own on the view. As soon as one
+    // is set, Qt stops calling CanvasScene::drawBackground() and the white
+    // canvas would stay invisible.
     applyCursor();
 }
 
@@ -46,7 +46,7 @@ void CanvasView::setTool(Tool tool)
     if (m_tool == tool)
         return;
     m_tool = tool;
-    // Nur das Auswahlwerkzeug zieht ein Gummiband auf.
+    // Only the selection tool draws a rubber band.
     setDragMode(m_tool == Tool::Select ? QGraphicsView::RubberBandDrag : QGraphicsView::NoDrag);
     applyCursor();
 }
@@ -125,7 +125,7 @@ void CanvasView::fitPageInView()
 
 void CanvasView::eraseFrom(const QPointF &fromScene, const QPointF &toScene)
 {
-    // Der Radierer wirkt als runde Spur zwischen den beiden Punkten.
+    // The eraser acts as a round track between the two points.
     QPainterPath track;
     track.moveTo(fromScene);
     if (fromScene == toScene)
@@ -143,7 +143,7 @@ void CanvasView::eraseFrom(const QPointF &fromScene, const QPointF &toScene)
 
 void CanvasView::placeTextAt(const QPointF &scenePos)
 {
-    // Auf vorhandenem Text weiterschreiben statt ein neues Objekt anzulegen.
+    // Keep typing in existing text instead of creating another object.
     if (auto *existing = dynamic_cast<TextItem *>(itemAt(mapFromScene(scenePos)))) {
         existing->beginEditing();
         return;
@@ -163,7 +163,7 @@ void CanvasView::placeTextAt(const QPointF &scenePos)
 void CanvasView::mousePressEvent(QMouseEvent *event)
 {
     if (event->button() == Qt::MiddleButton) {
-        // Mittlere Maustaste verschiebt die Ansicht.
+        // The middle mouse button pans the view.
         m_panning = true;
         m_lastPanPos = event->pos();
         applyCursor();
@@ -258,7 +258,7 @@ void CanvasView::mouseReleaseEvent(QMouseEvent *event)
         const QPointF scenePos = mapToScene(event->pos());
         if (m_tool == Tool::Line) {
             m_activeStroke->setLineEnd(scenePos);
-            // Ein versehentlicher Klick ohne Ziehen hinterlaesst keine Linie.
+            // An accidental click without dragging leaves no line behind.
             if (m_activeStroke->length() < 2.0)
                 m_canvas->removeObjectLater(m_activeStroke);
         } else {
@@ -278,7 +278,7 @@ void CanvasView::mouseReleaseEvent(QMouseEvent *event)
 
     QGraphicsView::mouseReleaseEvent(event);
 
-    // Verschobene Objekte sind eine Änderung am Dokument.
+    // Moving objects counts as a change to the document.
     if (m_dragMayMoveObjects
         && (event->pos() - m_pressPos).manhattanLength() > 2
         && !m_canvas->selectedItems().isEmpty()) {

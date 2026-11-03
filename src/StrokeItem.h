@@ -7,18 +7,17 @@
 
 #include "InkObject.h"
 
-// Ein gemalter Strich: freihaendig mit dem Pinsel oder gerade mit dem
-// Linienwerkzeug.
+// A drawn stroke: freehand with the brush or straight with the line tool.
 class StrokeItem : public QGraphicsPathItem, public InkObject
 {
 public:
     explicit StrokeItem(const QColor &color = Qt::black, qreal width = 4.0);
 
-    // Malvorgang: beginAt() beim Druecken, extendTo() beim Ziehen.
+    // Drawing: beginAt() on press, extendTo() while dragging.
     void beginAt(const QPointF &scenePos);
     void extendTo(const QPointF &scenePos);
 
-    // Linienwerkzeug: zieht eine gerade Strecke vom Startpunkt aus.
+    // Line tool: drags a straight segment away from the starting point.
     void setLineEnd(const QPointF &scenePos);
 
     bool isEmpty() const { return m_points.isEmpty(); }
@@ -41,5 +40,5 @@ private:
     void rebuildPath();
     qreal hitWidth() const;
 
-    QVector<QPointF> m_points;   // in Item-Koordinaten
+    QVector<QPointF> m_points;   // in item coordinates
 };

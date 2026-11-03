@@ -38,8 +38,13 @@ Objekte erhält; der Export erzeugt ein flaches Bild.
 Voraussetzungen (Debian/Ubuntu/Mint):
 
 ```bash
-sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-base-dev-tools libgl1-mesa-dev
+sudo apt install build-essential cmake ninja-build qt6-base-dev qt6-base-dev-tools \
+                 qt6-l10n-tools libgl1-mesa-dev
 ```
+
+`qt6-l10n-tools` liefert `lupdate` und `lrelease` für die Übersetzungen. Fehlt
+das Paket, baut Inkpot trotzdem — dann aber ohne Übersetzungen, also auf
+Englisch.
 
 Bauen und starten:
 
@@ -48,6 +53,73 @@ cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build
 ./build/inkpot
 ```
+
+Systemweit installieren:
+
+```bash
+sudo cmake --install build
+sudo update-mime-database /usr/local/share/mime
+sudo update-desktop-database /usr/local/share/applications
+```
+
+## Sprachen
+
+Die Texte im Quelltext sind englisch; Übersetzungen liegen als
+Qt-Linguist-Katalog unter [`translations/`](translations/). Das ist das übliche
+Verfahren für Qt-Anwendungen und wird von Übersetzungsplattformen wie Weblate
+unterstützt.
+
+Eine Übersetzung bearbeiten — entweder mit `linguist6 translations/inkpot_de.ts`
+oder direkt im Texteditor, die Dateien sind lesbares XML:
+
+```xml
+<message>
+    <source>&amp;Save</source>
+    <translation>&amp;Speichern</translation>
+</message>
+```
+
+Eine neue Sprache anlegen:
+
+```bash
+cp translations/inkpot_de.ts translations/inkpot_fr.ts   # Sprachkürzel anpassen
+# die Zeile <TS ... language="de_DE"> auf die neue Sprache setzen,
+# die Datei in CMakeLists.txt bei INKPOT_TS_FILES eintragen
+cmake --build build
+```
+
+Nach Änderungen am Quelltext holt
+
+```bash
+cmake --build build --target update_translations
+```
+
+neue und geänderte Texte in alle `.ts`-Dateien.
+
+## Veröffentlichung
+
+Für Flatpak und Distributionspakete liegen bereit:
+
+| Datei | Zweck |
+| --- | --- |
+| `data/io.github.neklor.Inkpot.desktop` | Eintrag im Anwendungsmenü |
+| `data/io.github.neklor.Inkpot.metainfo.xml` | AppStream-Daten für Software-Zentren |
+| `data/io.github.neklor.Inkpot.xml` | MIME-Typ für `*.ipot` |
+| `data/icons/hicolor/scalable/apps/…svg` | Anwendungssymbol |
+| `flatpak/io.github.neklor.Inkpot.yml` | Flatpak-Manifest |
+
+Flatpak lokal bauen:
+
+```bash
+flatpak install flathub org.kde.Platform//6.11 org.kde.Sdk//6.11
+flatpak-builder --user --install --force-clean build-flatpak \
+    flatpak/io.github.neklor.Inkpot.yml
+flatpak run io.github.neklor.Inkpot
+```
+
+Vor einer Veröffentlichung auf Flathub fehlt noch mindestens ein Bildschirmfoto
+unter einer dauerhaften URL; die Stelle dafür ist in der AppStream-Datei
+vorbereitet.
 
 ## Bedienung
 
@@ -81,6 +153,19 @@ cmake --build build
 | `src/InkObject.*` | Gemeinsame Objekt-Schnittstelle samt Radier-Maske |
 | `src/Icons.*` | Zur Laufzeit gezeichnete Symbole |
 | `src/NewCanvasDialog.*` | Dialog für benutzerdefinierte Größe |
+| `translations/` | Übersetzungskataloge |
+| `data/` | Symbol, Desktop-Eintrag, AppStream- und MIME-Daten |
+| `flatpak/` | Flatpak-Manifest |
+
+## Mitarbeit
+
+Quelltext, Kommentare und die Texte in der Oberfläche sind englisch, damit das
+Projekt für Mitwirkende und Übersetzer offen ist. Diese README bleibt deutsch.
+Commit-Nachrichten werden auf Englisch geschrieben.
+
+Änderungen werden in [CHANGELOG.md](CHANGELOG.md) festgehalten; die
+Versionsnummer steht in [CMakeLists.txt](CMakeLists.txt) und wird von dort an
+Programm und Paketdaten weitergereicht.
 
 ## Lizenz
 
