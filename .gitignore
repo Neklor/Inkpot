@@ -37,4 +37,4 @@ ui_*.h
 inkpot
 
 # Testausgaben
-*.inkpot.bak
+*.ipot.bak

@@ -41,8 +41,20 @@
 
 namespace {
 
-const char *kProjectSuffix = "inkpot";
-const char *kProjectFilter = "Inkpot-Projekt (*.inkpot)";
+const char *kProjectSuffix = "ipot";
+const char *kProjectFilter = "Inkpot-Projekt (*.ipot)";
+
+// Projekte aus der Zeit vor der Umstellung auf *.ipot.
+const char *kLegacySuffix = "inkpot";
+const char *kOpenFilter = "Inkpot-Projekt (*.ipot *.inkpot)";
+
+// Trägt die Datei eine unserer Projektendungen?
+bool isProjectFile(const QString &path)
+{
+    const QString suffix = QFileInfo(path).suffix();
+    return suffix.compare(QLatin1String(kProjectSuffix), Qt::CaseInsensitive) == 0
+           || suffix.compare(QLatin1String(kLegacySuffix), Qt::CaseInsensitive) == 0;
+}
 
 // Standardgrößen für "Datei > Neu".
 struct Preset {
@@ -374,7 +386,7 @@ void MainWindow::open()
         imagePatterns.append(QStringLiteral("*.%1").arg(QString::fromLatin1(format)));
 
     const QString filter = QStringLiteral("%1;;%2;;%3")
-                               .arg(QString::fromLatin1(kProjectFilter),
+                               .arg(QString::fromLatin1(kOpenFilter),
                                     tr("Bilder (%1)").arg(imagePatterns.join(QLatin1Char(' '))),
                                     tr("Alle Dateien (*)"));
 
@@ -382,7 +394,7 @@ void MainWindow::open()
     if (path.isEmpty())
         return;
 
-    if (QFileInfo(path).suffix().compare(QLatin1String(kProjectSuffix), Qt::CaseInsensitive) == 0)
+    if (isProjectFile(path))
         loadFile(path);
     else
         loadImageFile(path);
@@ -398,7 +410,7 @@ bool MainWindow::save()
 bool MainWindow::saveAs()
 {
     QString path = QFileDialog::getSaveFileName(this, tr("Speichern unter"),
-                                                m_currentFile.isEmpty() ? tr("Unbenannt.inkpot")
+                                                m_currentFile.isEmpty() ? tr("Unbenannt.ipot")
                                                                         : m_currentFile,
                                                 QString::fromLatin1(kProjectFilter));
     if (path.isEmpty())

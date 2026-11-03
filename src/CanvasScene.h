@@ -73,7 +73,7 @@ public:
     QImage renderPage(const QColor &background = Qt::white, qreal scale = 1.0);
     QImage renderSelection();
 
-    // Projektformat (*.inkpot).
+    // Projektformat (*.ipot).
     QJsonObject toJson() const;
     bool fromJson(const QJsonObject &json, QString *error = nullptr);
 

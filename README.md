@@ -4,7 +4,7 @@ Ein einfaches, objektbasiertes Malprogramm für Linux — C++ mit Qt 6.
 
 Alles, was auf der Arbeitsfläche entsteht, ist ein eigenständiges **Objekt**:
 Pinselstriche und eingefügte Bilder lassen sich auswählen, verschieben und
-wieder löschen. Gespeichert wird im Projektformat `*.inkpot`, das diese
+wieder löschen. Gespeichert wird im Projektformat `*.ipot`, das diese
 Objekte erhält; der Export erzeugt ein flaches Bild.
 
 ## Stand
