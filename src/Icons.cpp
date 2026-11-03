@@ -112,29 +112,43 @@ QIcon line(const QColor &color)
     return QIcon(pixmap);
 }
 
-QIcon eraser(const QColor &color)
+QIcon eraser(const QColor &outline)
 {
     QPixmap pixmap = createPixmap();
     QPainter painter(&pixmap);
     painter.setRenderHint(QPainter::Antialiasing, true);
 
+    // Two-tone block in the style of a classic Pelikan eraser: the end that
+    // meets the paper is a pale red, the other end a pale blue.
+    const QColor red(0xE4, 0xA3, 0xA3);
+    const QColor blue(0xA8, 0xC0, 0xE5);
+
     painter.save();
-    painter.translate(30.0, 28.0);
-    painter.rotate(-42.0);
+    painter.translate(33.0, 27.0);
+    painter.rotate(-40.0);
 
-    QColor fill = color;
-    fill.setAlpha(70);
-    painter.setPen(outlinePen(color, 4.0));
-    painter.setBrush(fill);
-    painter.drawRoundedRect(QRectF(-21.0, -11.0, 42.0, 22.0), 4.0, 4.0);
+    QPainterPath block;
+    block.addRoundedRect(QRectF(-24.0, -12.5, 48.0, 25.0), 5.0, 5.0);
 
-    // Divider between the grip and the rubber part
-    painter.drawLine(QPointF(1.0, -11.0), QPointF(1.0, 11.0));
+    painter.setPen(Qt::NoPen);
+    painter.setClipPath(block);
+    painter.setBrush(red);
+    painter.drawRect(QRectF(-24.0, -12.5, 24.0, 25.0));
+    painter.setBrush(blue);
+    painter.drawRect(QRectF(0.0, -12.5, 24.0, 25.0));
+    painter.setClipping(false);
+
+    // Seam between the halves, then the outline around the whole block.
+    painter.setPen(QPen(outline, 1.8));
+    painter.drawLine(QPointF(0.0, -12.5), QPointF(0.0, 12.5));
+    painter.setPen(QPen(outline, 2.8));
+    painter.setBrush(Qt::NoBrush);
+    painter.drawPath(block);
     painter.restore();
 
-    // The surface being erased
-    painter.setPen(outlinePen(color, 4.0));
-    painter.drawLine(QPointF(12.0, 55.0), QPointF(54.0, 55.0));
+    // The surface being erased.
+    painter.setPen(outlinePen(outline, 4.0));
+    painter.drawLine(QPointF(11.0, 56.0), QPointF(55.0, 56.0));
 
     painter.end();
     return QIcon(pixmap);

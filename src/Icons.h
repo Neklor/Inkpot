@@ -14,7 +14,10 @@ QIcon pointer(const QColor &color);   // Selection: mouse pointer
 // outline keeps very light colours visible on a light background.
 QIcon brush(const QColor &accent, const QColor &outline);
 QIcon line(const QColor &color);      // Line
-QIcon eraser(const QColor &color);    // Eraser
+
+// Two-tone eraser in the style of a classic Pelikan block. The colour given
+// is used for the outline, so it follows the theme.
+QIcon eraser(const QColor &outline);
 QIcon text(const QColor &color);      // Text
 QIcon plus(const QColor &color);      // New
 QIcon folder(const QColor &color);    // Open
