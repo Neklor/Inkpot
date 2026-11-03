@@ -8,6 +8,13 @@
 
 class QGraphicsItem;
 
+// Paths are stored in the project file as base64 encoded QDataStream data.
+// Both the erased areas and the area of a bucket fill use this.
+namespace InkPath {
+QString toBase64(const QPainterPath &path);
+QPainterPath fromBase64(const QString &encoded);
+}
+
 // Shared interface of every object on the canvas.
 //
 // Anything that is drawn or pasted becomes an object in its own right: it also

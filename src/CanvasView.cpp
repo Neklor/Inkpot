@@ -65,6 +65,9 @@ void CanvasView::applyCursor()
     case Tool::Text:
         viewport()->setCursor(Qt::IBeamCursor);
         break;
+    case Tool::Fill:
+        viewport()->setCursor(Qt::PointingHandCursor);
+        break;
     default:
         viewport()->setCursor(Qt::CrossCursor);
         break;
@@ -194,6 +197,12 @@ void CanvasView::mousePressEvent(QMouseEvent *event)
             m_erasing = true;
             m_lastErasePos = scenePos;
             eraseFrom(scenePos, scenePos);
+            event->accept();
+            return;
+
+        case Tool::Fill:
+            if (!m_canvas->fillAt(scenePos, m_toolColor))
+                emit fillRejected();
             event->accept();
             return;
 

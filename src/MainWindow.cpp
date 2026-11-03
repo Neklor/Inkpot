@@ -89,6 +89,9 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_scene, &CanvasScene::selectionChanged, this, &MainWindow::updateObjectInfo);
     connect(m_scene, &CanvasScene::objectPropertiesChanged, this, &MainWindow::updateObjectControls);
     connect(m_view, &CanvasView::zoomChanged, this, &MainWindow::updateZoomInfo);
+    connect(m_view, &CanvasView::fillRejected, this, [this] {
+        statusBar()->showMessage(tr("There is nothing to fill at this spot"), 3000);
+    });
 
     resize(1200, 820);
     updateSizeControls();
@@ -271,6 +274,12 @@ void MainWindow::createToolBar()
     createToolAction(toolBar, tr("Eraser"), Icons::eraser(symbolColor), QStringLiteral("E"),
                      tr("Erase inside objects"),
                      int(CanvasView::Tool::Eraser));
+    createToolAction(toolBar, tr("Fill"), Icons::bucket(m_view->toolColor(), symbolColor),
+                     QStringLiteral("F"),
+                     tr("Fill an enclosed area - works across objects"),
+                     int(CanvasView::Tool::Fill));
+    m_fillAction = m_toolGroup->actions().last();
+
     createToolAction(toolBar, tr("Text"), Icons::text(symbolColor), QStringLiteral("T"),
                      tr("Place a caption - double-click edits it later"),
                      int(CanvasView::Tool::Text));
@@ -799,9 +808,11 @@ void MainWindow::updateColorButton()
 
     // The bristles of the brush icon always show the drawing colour, not the
     // colour of the selection - that is what you actually paint with.
+    const QColor symbolColor = palette().color(QPalette::ButtonText);
     if (m_brushAction)
-        m_brushAction->setIcon(Icons::brush(m_view->toolColor(),
-                                            palette().color(QPalette::ButtonText)));
+        m_brushAction->setIcon(Icons::brush(m_view->toolColor(), symbolColor));
+    if (m_fillAction)
+        m_fillAction->setIcon(Icons::bucket(m_view->toolColor(), symbolColor));
 }
 
 QString MainWindow::aspectRatioText(const QSize &size)

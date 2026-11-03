@@ -59,6 +59,11 @@ public:
     QColor selectedObjectColor() const;
     class TextItem *singleSelectedText() const;
 
+    // Bucket fill. The area is determined on the rendered picture of the
+    // whole canvas, so it may span several objects. Returns false when there
+    // is nothing to fill at that spot.
+    bool fillAt(const QPointF &scenePos, const QColor &color, int tolerance = 24);
+
     // Erasing inside the objects.
     void eraseWithPath(const QPainterPath &scenePath);
 

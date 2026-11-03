@@ -2,14 +2,14 @@
 
 #include <algorithm>
 
-#include <QBuffer>
-#include <QDataStream>
 #include <QGraphicsItem>
 #include <QImage>
 #include <QJsonArray>
 #include <QPainter>
 #include <QTimer>
 
+#include "FillItem.h"
+#include "FloodFill.h"
 #include "ImageItem.h"
 #include "StrokeItem.h"
 #include "TextItem.h"
@@ -29,27 +29,9 @@ QGraphicsItem *createObjectForType(const QString &type)
         return new ImageItem;
     if (type == QLatin1String("text"))
         return new TextItem;
+    if (type == QLatin1String("fill"))
+        return new FillItem;
     return nullptr;
-}
-
-// Erased areas are stored as a path.
-QString pathToBase64(const QPainterPath &path)
-{
-    QByteArray bytes;
-    QDataStream stream(&bytes, QIODevice::WriteOnly);
-    stream << path;
-    return QString::fromLatin1(bytes.toBase64());
-}
-
-QPainterPath pathFromBase64(const QString &encoded)
-{
-    QPainterPath path;
-    QByteArray bytes = QByteArray::fromBase64(encoded.toLatin1());
-    if (bytes.isEmpty())
-        return path;
-    QDataStream stream(&bytes, QIODevice::ReadOnly);
-    stream >> path;
-    return path;
 }
 
 }   // namespace
@@ -498,6 +480,35 @@ TextItem *CanvasScene::singleSelectedText() const
     return dynamic_cast<TextItem *>(singleSelectedObject());
 }
 
+bool CanvasScene::fillAt(const QPointF &scenePos, const QColor &color, int tolerance)
+{
+    const QRectF page = pageRect();
+    if (!color.isValid() || !page.contains(scenePos))
+        return false;
+
+    // The fill works on what is actually visible: the canvas with every
+    // object drawn onto it.
+    const QImage picture = renderPage(Qt::white);
+    if (picture.isNull())
+        return false;
+
+    const QPoint start(qRound(scenePos.x() - page.left()), qRound(scenePos.y() - page.top()));
+    if (!picture.rect().contains(start))
+        return false;
+
+    // Clicking a spot that already has the colour would change nothing.
+    if (QColor::fromRgba(picture.pixel(start)) == color)
+        return false;
+
+    const QPainterPath region = FloodFill::regionAt(picture, start, tolerance, 1);
+    if (region.isEmpty())
+        return false;
+
+    auto *item = new FillItem(region.translated(page.topLeft()), color);
+    addObject(item);
+    return true;
+}
+
 void CanvasScene::eraseWithPath(const QPainterPath &scenePath)
 {
     if (scenePath.isEmpty())
@@ -657,7 +668,7 @@ QJsonObject CanvasScene::toJson() const
         }
 
         if (object->hasErasedArea())
-            json[QStringLiteral("erased")] = pathToBase64(object->erasedMask());
+            json[QStringLiteral("erased")] = InkPath::toBase64(object->erasedMask());
 
         object->write(json);
         array.append(json);
@@ -711,7 +722,7 @@ bool CanvasScene::fromJson(const QJsonObject &json, QString *error)
 
         const QString erased = objectJson.value(QStringLiteral("erased")).toString();
         if (!erased.isEmpty())
-            object->setErasedMask(pathFromBase64(erased));
+            object->setErasedMask(InkPath::fromBase64(erased));
 
         prepareObject(item);
         const qreal z = objectJson.value(QStringLiteral("z")).toDouble(m_topZ + 1.0);

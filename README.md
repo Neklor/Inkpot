@@ -18,9 +18,13 @@ they were drawn. The project format keeps them that way.
 ## Features
 
 **Tools**
-* Selection, brush, straight line, eraser and text
+* Selection, brush, straight line, eraser, bucket fill and text
 * The eraser works *inside* objects: the erased area is masked out while the
   original shape is kept in the project file
+* The bucket fills an enclosed area the way a raster paint program does, but
+  works out that area on the rendered picture of the whole canvas. An area
+  enclosed by several overlapping objects is therefore filled as one, and the
+  result becomes an object of its own
 * Captions can be edited again with a double click
 
 **Objects**
@@ -77,6 +81,7 @@ AppStream metadata, the MIME type for `*.ipot` and the translations.
 | Brush | `B` |
 | Line | `L` |
 | Eraser | `E` |
+| Bucket fill | `F` |
 | Text | `T` |
 | Edit a caption later | double click with the selection tool |
 | Recolour objects | select them, then the colour button |
@@ -152,6 +157,8 @@ still missing; the place for it is prepared in the AppStream file.
 | `src/CanvasView.*` | view, tools, zoom |
 | `src/ResizeHandle.*` | handles for canvas and objects |
 | `src/StrokeItem.*` | object: brush stroke and line |
+| `src/FillItem.*` | object: filled area |
+| `src/FloodFill.*` | working out the area a bucket fill covers |
 | `src/ImageItem.*` | object: image |
 | `src/TextItem.*` | object: caption |
 | `src/InkObject.*` | shared object interface including the erase mask |
@@ -210,9 +217,14 @@ auch lange nachdem sie entstanden sind. Das Projektformat hält sie so.
 ## Funktionen
 
 **Werkzeuge**
-* Auswahl, Pinsel, gerade Linie, Radiergummi und Text
+* Auswahl, Pinsel, gerade Linie, Radiergummi, Farbeimer und Text
 * Der Radiergummi wirkt *innerhalb* von Objekten: Die radierte Stelle wird
   ausgespart, die ursprüngliche Form bleibt in der Projektdatei erhalten
+* Der Farbeimer füllt geschlossene Flächen wie in einem Pixel-Malprogramm,
+  ermittelt die Fläche aber auf dem gezeichneten Bild der gesamten
+  Arbeitsfläche. Eine Fläche, die mehrere überlappende Objekte gemeinsam
+  einschließen, wird daher als eine gefüllt; das Ergebnis ist wieder ein
+  eigenes Objekt
 * Beschriftungen lassen sich per Doppelklick wieder bearbeiten
 
 **Objekte**
@@ -269,6 +281,7 @@ MIME-Typ für `*.ipot` und die Übersetzungen mit.
 | Pinsel | `B` |
 | Linie | `L` |
 | Radiergummi | `E` |
+| Farbeimer | `F` |
 | Text | `T` |
 | Beschriftung später ändern | Doppelklick mit dem Auswahlwerkzeug |
 | Objekte umfärben | auswählen, dann der Farbknopf |
@@ -345,6 +358,8 @@ vorbereitet.
 | `src/CanvasView.*` | Ansicht, Werkzeuge, Zoom |
 | `src/ResizeHandle.*` | Anfasspunkte für Arbeitsfläche und Objekte |
 | `src/StrokeItem.*` | Objekt: Pinselstrich und Linie |
+| `src/FillItem.*` | Objekt: gefüllte Fläche |
+| `src/FloodFill.*` | Ermittelt die Fläche, die der Farbeimer füllt |
 | `src/ImageItem.*` | Objekt: Bild |
 | `src/TextItem.*` | Objekt: Beschriftung |
 | `src/InkObject.*` | Gemeinsame Objekt-Schnittstelle samt Radier-Maske |

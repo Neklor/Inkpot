@@ -4,9 +4,17 @@
 <context>
     <name>CanvasScene</name>
     <message>
-        <location filename="../src/CanvasScene.cpp" line="+674"/>
+        <location filename="../src/CanvasScene.cpp" line="+685"/>
         <source>The file is not an Inkpot project.</source>
         <translation>Die Datei ist kein Inkpot-Projekt.</translation>
+    </message>
+</context>
+<context>
+    <name>FillItem</name>
+    <message>
+        <location filename="../src/FillItem.cpp" line="+15"/>
+        <source>Filled area</source>
+        <translation>Gefüllte Fläche</translation>
     </message>
 </context>
 <context>
@@ -20,7 +28,12 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cpp" line="+112"/>
+        <location filename="../src/MainWindow.cpp" line="+93"/>
+        <source>There is nothing to fill at this spot</source>
+        <translation>Hier gibt es nichts zu füllen</translation>
+    </message>
+    <message>
+        <location line="+22"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
@@ -171,7 +184,7 @@
     </message>
     <message>
         <location line="+3"/>
-        <location line="+165"/>
+        <location line="+171"/>
         <location line="+183"/>
         <location line="+11"/>
         <location line="+8"/>
@@ -180,7 +193,7 @@
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location line="-389"/>
+        <location line="-395"/>
         <source>Open (Ctrl+O)</source>
         <translation>Öffnen (Strg+O)</translation>
     </message>
@@ -231,6 +244,16 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>Fill</source>
+        <translation>Füllen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Fill an enclosed area - works across objects</source>
+        <translation>Eine geschlossene Fläche füllen - wirkt objektübergreifend</translation>
+    </message>
+    <message>
+        <location line="+4"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>

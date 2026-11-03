@@ -171,6 +171,58 @@ QIcon text(const QColor &color)
     return QIcon(pixmap);
 }
 
+QIcon bucket(const QColor &accent, const QColor &outline)
+{
+    QPixmap pixmap = createPixmap();
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    // Puddle and the stream feeding it, both in the chosen colour. They are
+    // drawn first so the bucket covers where the stream leaves its mouth.
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(accent);
+    painter.drawEllipse(QPointF(32.0, 55.0), 21.0, 6.5);
+
+    QPainterPath stream;
+    stream.moveTo(26.0, 33.0);
+    stream.quadTo(21.0, 46.0, 24.0, 55.0);
+    stream.lineTo(40.0, 55.0);
+    stream.quadTo(37.0, 44.0, 40.0, 32.0);
+    stream.closeSubpath();
+    painter.drawPath(stream);
+
+    // The bucket, tipped over so its mouth points down to the left.
+    painter.save();
+    painter.translate(42.0, 24.0);
+    painter.rotate(140.0);
+
+    QPainterPath body;
+    body.moveTo(-17.0, -14.0);
+    body.lineTo(17.0, -14.0);
+    body.lineTo(12.0, 16.0);
+    body.quadTo(11.0, 20.0, 7.0, 20.0);
+    body.lineTo(-7.0, 20.0);
+    body.quadTo(-11.0, 20.0, -12.0, 16.0);
+    body.closeSubpath();
+
+    painter.setPen(QPen(outline, 3.0));
+    painter.setBrush(QColor(0xC6, 0xCC, 0xD6));
+    painter.drawPath(body);
+
+    // Paint standing in the mouth.
+    const QRectF mouth(-17.5, -20.0, 35.0, 12.0);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(accent);
+    painter.drawEllipse(mouth);
+    painter.setPen(QPen(outline, 3.0));
+    painter.setBrush(Qt::NoBrush);
+    painter.drawEllipse(mouth);
+    painter.restore();
+
+    painter.end();
+    return QIcon(pixmap);
+}
+
 QIcon plus(const QColor &color)
 {
     QPixmap pixmap = createPixmap();

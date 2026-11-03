@@ -91,6 +91,7 @@ private:
     QDoubleSpinBox *m_toolSizeSpin = nullptr;
     QDoubleSpinBox *m_fontSizeSpin = nullptr;
     QAction *m_brushAction = nullptr;
+    QAction *m_fillAction = nullptr;
     QActionGroup *m_toolGroup = nullptr;
 
     QString m_currentFile;

@@ -48,6 +48,10 @@ set(INKPOT_SOURCES
     src/TextItem.h
     src/NewCanvasDialog.cpp
     src/NewCanvasDialog.h
+    src/FillItem.cpp
+    src/FillItem.h
+    src/FloodFill.cpp
+    src/FloodFill.h
     src/Icons.cpp
     src/Icons.h
     src/InkObject.cpp

@@ -19,9 +19,13 @@ First development release: milestone 1, the basic program.
 - Object handling: brush strokes, straight lines, captions and pasted images
   are objects of their own and can be selected, moved, scaled through eight
   handles, recoloured and deleted.
-- Tools for selection, brush, line, eraser and text. The eraser works inside
-  objects by masking the erased area, so the original shape is preserved in
-  the project file.
+- Tools for selection, brush, line, eraser, bucket fill and text. The eraser
+  works inside objects by masking the erased area, so the original shape is
+  preserved in the project file.
+- The bucket fill determines its area on the rendered picture of the whole
+  canvas, so an area enclosed by several overlapping objects is filled as one.
+  The result is an object of its own and can be recoloured, scaled, erased
+  into and deleted like any other.
 - Font size field that follows the selected caption; dragging its handles
   changes the font size instead of distorting the text.
 - File menu with new (preset and custom sizes), open, save, save as, export to

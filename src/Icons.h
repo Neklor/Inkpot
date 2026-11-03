@@ -19,6 +19,10 @@ QIcon line(const QColor &color);      // Line
 // is used for the outline, so it follows the theme.
 QIcon eraser(const QColor &outline);
 QIcon text(const QColor &color);      // Text
+
+// Paint bucket pouring the currently chosen colour. As with the brush, the
+// outline follows the theme so the icon reads on any background.
+QIcon bucket(const QColor &accent, const QColor &outline);
 QIcon plus(const QColor &color);      // New
 QIcon folder(const QColor &color);    // Open
 

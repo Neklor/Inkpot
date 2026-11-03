@@ -1,6 +1,28 @@
 #include "InkObject.h"
 
+#include <QByteArray>
+#include <QDataStream>
+#include <QIODevice>
 #include <QGraphicsItem>
+
+QString InkPath::toBase64(const QPainterPath &path)
+{
+    QByteArray bytes;
+    QDataStream stream(&bytes, QIODevice::WriteOnly);
+    stream << path;
+    return QString::fromLatin1(bytes.toBase64());
+}
+
+QPainterPath InkPath::fromBase64(const QString &encoded)
+{
+    QPainterPath path;
+    QByteArray bytes = QByteArray::fromBase64(encoded.toLatin1());
+    if (bytes.isEmpty())
+        return path;
+    QDataStream stream(&bytes, QIODevice::ReadOnly);
+    stream >> path;
+    return path;
+}
 
 void InkObject::eraseScenePath(const QPainterPath &scenePath)
 {

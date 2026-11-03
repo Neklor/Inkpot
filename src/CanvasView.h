@@ -20,6 +20,7 @@ public:
         Brush,
         Line,
         Eraser,
+        Fill,
         Text
     };
 
@@ -49,6 +50,9 @@ public:
 
 signals:
     void zoomChanged(double factor);
+
+    // Raised when the bucket found nothing to fill at the clicked spot.
+    void fillRejected();
 
 protected:
     void mousePressEvent(QMouseEvent *event) override;
