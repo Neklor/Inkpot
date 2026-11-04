@@ -25,18 +25,26 @@
     <p>Features:</p>
     <p xml:lang="de">Eigenschaften:</p>
     <ul>
-      <li>Brush, line, eraser and text tools</li>
-      <li>The eraser works inside objects without destroying their shape</li>
+      <li>Brush, line, shape, bucket fill, eraser and text tools</li>
+      <li>Shapes: rectangle, ellipse, triangle, heart and star</li>
+      <li>The eraser and the bucket work across objects without destroying them</li>
+      <li>Objects can be moved, scaled, turned and recoloured at any time</li>
+      <li>Object list, undo and redo</li>
+      <li>Opens HEIF and HEIC pictures from phones</li>
       <li>Resizable canvas with a lockable aspect ratio</li>
-      <li>Project format that keeps every object editable</li>
-      <li>Export to PNG, JPEG, BMP, TIFF and WebP</li>
+      <li>Project format that keeps every object editable, and export to
+          common picture formats</li>
     </ul>
     <ul xml:lang="de">
-      <li>Werkzeuge für Pinsel, Linie, Radiergummi und Text</li>
-      <li>Der Radiergummi wirkt innerhalb von Objekten, ohne ihre Form zu zerstören</li>
+      <li>Werkzeuge für Pinsel, Linie, Formen, Farbeimer, Radiergummi und Text</li>
+      <li>Formen: Rechteck, Ellipse, Dreieck, Herz und Stern</li>
+      <li>Radiergummi und Farbeimer wirken objektübergreifend, ohne etwas zu zerstören</li>
+      <li>Objekte lassen sich jederzeit verschieben, skalieren, drehen und umfärben</li>
+      <li>Objektliste, Rückgängig und Wiederholen</li>
+      <li>Öffnet HEIF- und HEIC-Bilder vom Telefon</li>
       <li>Frei einstellbare Arbeitsfläche mit feststellbarem Seitenverhältnis</li>
-      <li>Projektformat, das jedes Objekt bearbeitbar hält</li>
-      <li>Export nach PNG, JPEG, BMP, TIFF und WebP</li>
+      <li>Projektformat, das jedes Objekt bearbeitbar hält, und Export in
+          gängige Bildformate</li>
     </ul>
   </description>
 
@@ -64,23 +72,19 @@
 
   <content_rating type="oars-1.1"/>
 
-  <!--
-    Vor einer Veröffentlichung auf Flathub wird mindestens ein Bildschirmfoto
-    gebraucht; es muss unter einer dauerhaft erreichbaren URL liegen:
-
-    <screenshots>
-      <screenshot type="default">
-        <image>https://raw.githubusercontent.com/Neklor/Inkpot/main/data/screenshots/main.png</image>
-        <caption>The main window with an open drawing</caption>
-      </screenshot>
-    </screenshots>
-  -->
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/Neklor/Inkpot/main/docs/screenshot.png</image>
+      <caption>The main window with a drawing and the object list</caption>
+      <caption xml:lang="de">Das Hauptfenster mit einer Zeichnung und der Objektliste</caption>
+    </screenshot>
+  </screenshots>
 
   <releases>
-    <release version="0.1.0" date="2026-11-03" type="development">
+    <release version="1.0.0" date="2026-11-04">
       <description>
-        <p>First development release with the basic program and object handling.</p>
-        <p xml:lang="de">Erste Entwicklungsfassung mit Grundprogramm und Objektfähigkeit.</p>
+        <p>First release.</p>
+        <p xml:lang="de">Erste Veröffentlichung.</p>
       </description>
     </release>
   </releases>

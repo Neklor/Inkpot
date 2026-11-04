@@ -337,6 +337,26 @@ QPen shacklePen(const QColor &color)
 
 }   // namespace
 
+QIcon fromPath(const QPainterPath &path, const QColor &accent, const QColor &outline,
+               bool filled)
+{
+    QPixmap pixmap = createPixmap();
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    if (filled) {
+        painter.setPen(QPen(outline, 2.5));
+        painter.setBrush(accent);
+    } else {
+        painter.setPen(QPen(accent, 6.0));
+        painter.setBrush(Qt::NoBrush);
+    }
+    painter.drawPath(path);
+
+    painter.end();
+    return QIcon(pixmap);
+}
+
 QIcon picture(const QColor &color)
 {
     QPixmap pixmap = createPixmap();

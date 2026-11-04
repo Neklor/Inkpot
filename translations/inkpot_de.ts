@@ -4,7 +4,7 @@
 <context>
     <name>CanvasScene</name>
     <message>
-        <location filename="../src/CanvasScene.cpp" line="+340"/>
+        <location filename="../src/CanvasScene.cpp" line="+343"/>
         <source>Move objects</source>
         <translation>Objekte verschieben</translation>
     </message>
@@ -42,7 +42,7 @@
 <context>
     <name>CanvasView</name>
     <message>
-        <location filename="../src/CanvasView.cpp" line="+287"/>
+        <location filename="../src/CanvasView.cpp" line="+307"/>
         <source>Draw line</source>
         <translation>Linie ziehen</translation>
     </message>
@@ -94,7 +94,7 @@
 <context>
     <name>MainWindow</name>
     <message>
-        <location filename="../src/MainWindow.cpp" line="+98"/>
+        <location filename="../src/MainWindow.cpp" line="+102"/>
         <source>There is nothing to fill at this spot</source>
         <translation>Hier gibt es nichts zu füllen</translation>
     </message>
@@ -249,7 +249,30 @@
         <translation>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;Ein kleines Malprogramm, in dem alles Gemalte ein eigenes Objekt bleibt.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Veröffentlicht unter der GNU General Public License, Fassung 3.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;%4&quot;&gt;%4&lt;/a&gt;&lt;/p&gt;</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+30"/>
+        <source>Shape</source>
+        <translation>Form</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <location line="+62"/>
+        <source>Draw a shape - hold Shift to keep it even</source>
+        <translation>Eine Form zeichnen - mit Umschalt bleibt sie gleichseitig</translation>
+    </message>
+    <message>
+        <location line="-29"/>
+        <source>Filled</source>
+        <translation>Gefüllt</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>%1 (R)
+%2</source>
+        <translation>%1 (R)
+%2</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Tools</source>
         <translation>Werkzeuge</translation>
     </message>
@@ -270,16 +293,16 @@
     </message>
     <message>
         <location line="+3"/>
-        <location line="+177"/>
-        <location line="+183"/>
+        <location line="+184"/>
+        <location line="+198"/>
         <location line="+11"/>
         <location line="+8"/>
-        <location line="+23"/>
+        <location line="+32"/>
         <source>Open</source>
         <translation>Öffnen</translation>
     </message>
     <message>
-        <location line="-401"/>
+        <location line="-432"/>
         <source>Open (Ctrl+O)</source>
         <translation>Öffnen (Strg+O)</translation>
     </message>
@@ -339,7 +362,7 @@
         <translation>Eine geschlossene Fläche füllen - wirkt objektübergreifend</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location line="+6"/>
         <source>Text</source>
         <translation>Text</translation>
     </message>
@@ -422,7 +445,7 @@
         <translation>Neue Arbeitsfläche %1 × %2</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+31"/>
         <source>Inkpot project (*.ipot *.inkpot)</source>
         <translation>Inkpot-Projekt (*.ipot *.inkpot)</translation>
     </message>
@@ -452,7 +475,7 @@
         <translation>Inkpot-Projekt (*.ipot)</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+16"/>
         <source>PNG image (*.png)</source>
         <translation>PNG-Bild (*.png)</translation>
     </message>
@@ -477,7 +500,7 @@
         <translation>WebP-Bild (*.webp)</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+21"/>
         <location line="+19"/>
         <source>Export</source>
         <translation>Exportieren</translation>
@@ -489,13 +512,13 @@
     </message>
     <message>
         <location line="+20"/>
-        <location line="+172"/>
+        <location line="+181"/>
         <location line="+9"/>
         <source>The file %1 could not be written.</source>
         <translation>Die Datei %1 konnte nicht geschrieben werden.</translation>
     </message>
     <message>
-        <location line="-177"/>
+        <location line="-186"/>
         <source>Exported to %1</source>
         <translation>Exportiert nach %1</translation>
     </message>
@@ -565,7 +588,7 @@ Möchtest Du die Änderungen speichern?</translation>
         <translation>%1 geöffnet</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+20"/>
         <source>The image %1 could not be loaded: %2</source>
         <translation>Das Bild %1 konnte nicht geladen werden: %2</translation>
     </message>
@@ -666,7 +689,7 @@ Möchtest Du die Änderungen speichern?</translation>
 <context>
     <name>ObjectListDock</name>
     <message>
-        <location filename="../src/ObjectListDock.cpp" line="+53"/>
+        <location filename="../src/ObjectListDock.cpp" line="+62"/>
         <source>Objects</source>
         <translation>Objekte</translation>
     </message>
@@ -692,6 +715,39 @@ Möchtest Du die Änderungen speichern?</translation>
         <location filename="../src/TextItem.cpp" line="+143"/>
         <source>Add caption</source>
         <translation>Beschriftung hinzufügen</translation>
+    </message>
+</context>
+<context>
+    <name>ShapeItem</name>
+    <message>
+        <location filename="../src/ShapeItem.cpp" line="+67"/>
+        <source>Ellipse</source>
+        <translation>Ellipse</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Rectangle</source>
+        <translation>Rechteck</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Triangle</source>
+        <translation>Dreieck</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Heart</source>
+        <translation>Herz</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Star</source>
+        <translation>Stern</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Shape</source>
+        <translation>Form</translation>
     </message>
 </context>
 <context>

@@ -5,6 +5,8 @@
 #include <QPoint>
 #include <QPointF>
 
+#include "ShapeItem.h"
+
 class CanvasScene;
 class StrokeItem;
 class TextItem;
@@ -21,6 +23,7 @@ public:
         Line,
         Eraser,
         Fill,
+        Shape,
         Text
     };
 
@@ -40,6 +43,12 @@ public:
     // Font size for newly created captions.
     qreal fontPointSize() const { return m_fontPointSize; }
     void setFontPointSize(qreal pointSize);
+
+    // Which shape the shape tool draws, and whether it comes out solid.
+    ShapeItem::Kind shapeKind() const { return m_shapeKind; }
+    void setShapeKind(ShapeItem::Kind kind) { m_shapeKind = kind; }
+    bool shapesFilled() const { return m_shapesFilled; }
+    void setShapesFilled(bool filled) { m_shapesFilled = filled; }
 
     double zoomFactor() const;
     void setZoomFactor(double factor);
@@ -72,6 +81,10 @@ private:
     qreal m_fontPointSize = 24.0;
 
     StrokeItem *m_activeStroke = nullptr;
+    ShapeItem *m_activeShape = nullptr;
+    QPointF m_shapeOrigin;
+    ShapeItem::Kind m_shapeKind = ShapeItem::Kind::Rectangle;
+    bool m_shapesFilled = true;
     bool m_erasing = false;
     QPointF m_lastErasePos;
 

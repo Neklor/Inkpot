@@ -7,9 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.0] - 2026-11-03
+## [1.0.0] - 2026-11-04
 
-First development release: milestone 1, the basic program.
+First release.
 
 ### Added
 
@@ -31,9 +31,15 @@ First development release: milestone 1, the basic program.
   into and deleted like any other.
 - Font size field that follows the selected caption; dragging its handles
   changes the font size instead of distorting the text.
-- File menu with new (preset and custom sizes), open, save, save as, export to
-  PNG, JPEG, BMP, TIFF and WebP, copy to clipboard, paste, print and quit.
+- File menu with new (preset and custom sizes), open, save, save as, export,
+  copy to clipboard, paste, print and quit. The export dialog offers the
+  picture formats the installed Qt image plugins can actually write, rather
+  than a fixed list.
 - Project format `*.ipot` that keeps every object editable.
+- Shape tool with rectangle, ellipse, triangle, heart and star, drawn solid or
+  as an outline. Holding Shift keeps the sides even.
+- Opens HEIF and HEIC pictures through libheif, the format phones write by
+  default. The support is optional at build time.
 - Object list on the right: every object with its colour, topmost first.
   Picking a row selects the object and the other way round, with Ctrl for
   several and Shift for a block. It hides through the View menu and the window
@@ -51,5 +57,5 @@ First development release: milestone 1, the basic program.
   the toolbar so it cannot fall out of step, and an about dialog carrying
   version, author, licence and homepage.
 
-[Unreleased]: https://github.com/Neklor/Inkpot/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/Neklor/Inkpot/releases/tag/v0.1.0
+[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.0.0

@@ -11,6 +11,7 @@
 #include <QTimer>
 
 #include "FillItem.h"
+#include "ShapeItem.h"
 #include "FloodFill.h"
 #include "ImageItem.h"
 #include "StrokeItem.h"
@@ -33,6 +34,8 @@ QGraphicsItem *createObjectForType(const QString &type)
         return new TextItem;
     if (type == QLatin1String("fill"))
         return new FillItem;
+    if (type == QLatin1String("shape"))
+        return new ShapeItem;
     return nullptr;
 }
 

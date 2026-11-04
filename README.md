@@ -2,23 +2,32 @@
 
 **A paint program for Linux in which everything you draw stays an object.**
 
+[![Release](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Download&color=27AE60)](../../releases/latest)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-2C3E50)](LICENSE)
 [![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-00457C?logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
 *(Deutsche Fassung weiter unten — [zur deutschen Fassung](#inkpot-deutsch))*
 
-Inkpot is a small paint program written in C++ with Qt 6. Brush strokes,
-straight lines, captions and pasted images are objects in their own right: they
-can be selected, moved, scaled, recoloured and deleted at any time, long after
-they were drawn. The project format keeps them that way.
+![Inkpot – the main window with shapes, a brush stroke and the object list](docs/screenshot.png)
 
-> **Early development.** Milestone 1 — the basic program — is in place. The
-> project is not released yet, so there are no packages to download.
+Inkpot is a paint program written in C++ with Qt 6. Everything you draw stays
+an object of its own: brush strokes, lines, shapes, captions, filled areas and
+pasted pictures can be selected, moved, turned, scaled, recoloured and deleted
+at any time, long after they were drawn. The project format keeps them that
+way, so a drawing never hardens into a flat picture.
+
+> ### ☕ Inkpot is free
+>
+> If you find it useful, you can support its development with a donation.
+>
+> [![Donate with PayPal](https://img.shields.io/badge/Donate%20with%20PayPal-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
 ## Features
 
 **Tools**
-* Selection, brush, straight line, eraser, bucket fill and text
+* Selection, brush, straight line, shapes, bucket fill, eraser and text
+* Shapes: rectangle, ellipse, triangle, heart and star, solid or outlined.
+  Hold Shift while dragging to keep the sides even
 * The eraser works *inside* objects: the erased area is masked out while the
   original shape is kept in the project file
 * The bucket fills an enclosed area the way a raster paint program does, but
@@ -56,7 +65,9 @@ they were drawn. The project format keeps them that way.
 
 **Files**
 * Project format `*.ipot` (JSON) that keeps every object editable
-* Export to PNG, JPEG, BMP, TIFF and WebP
+* Opens HEIF and HEIC pictures, the format phones write by default
+* Exports to the picture formats the installed Qt image plugins can write,
+  PNG and JPEG always among them
 * Copy to clipboard, paste, print
 
 ## Building
@@ -65,11 +76,15 @@ Requirements (Debian, Ubuntu, Linux Mint):
 
 ```bash
 sudo apt install build-essential cmake ninja-build qt6-base-dev \
-                 qt6-base-dev-tools qt6-l10n-tools libgl1-mesa-dev
+                 qt6-base-dev-tools qt6-l10n-tools libheif-dev \
+                 qt6-image-formats-plugins libgl1-mesa-dev
 ```
 
-`qt6-l10n-tools` provides `lupdate` and `lrelease` for the translations.
-Without it Inkpot still builds, it simply runs untranslated.
+Two of these are optional. `qt6-l10n-tools` provides `lupdate` and `lrelease`
+for the translations; without it Inkpot still builds, it simply runs
+untranslated. `libheif-dev` adds HEIF and HEIC support; without it those files
+cannot be opened. `qt6-image-formats-plugins` widens the list of picture
+formats Qt can read and write, TIFF and WebP among them.
 
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -100,6 +115,7 @@ from the menus themselves so the list stays current.
 | Line | `L` |
 | Eraser | `E` |
 | Bucket fill | `F` |
+| Shapes | `R` |
 | Text | `T` |
 | Edit a caption later | double click with the selection tool |
 | Recolour objects | select them, then the colour button |
@@ -110,6 +126,7 @@ from the menus themselves so the list stays current.
 | Actual size / fit in window | `Ctrl+0` / `Ctrl+9` |
 | Pan the view | drag with the middle mouse button |
 | Turn in 15 degree steps | hold `Shift` while dragging the turning handle |
+| Keep a shape even | hold `Shift` while drawing it |
 
 ## Translations
 
@@ -164,8 +181,10 @@ flatpak-builder --user --install --force-clean build-flatpak \
 flatpak run io.github.neklor.Inkpot
 ```
 
-Before a release on Flathub at least one screenshot under a permanent URL is
-still missing; the place for it is prepared in the AppStream file.
+The screenshot shown at the top doubles as the picture in software centres;
+it lives in `docs/screenshot.png` and the AppStream file points at it.
+`tools/make-social-preview.py` builds the card GitHub shows when the project
+is linked somewhere.
 
 ## Project structure
 
@@ -178,6 +197,8 @@ still missing; the place for it is prepared in the AppStream file.
 | `src/ResizeHandle.*` | handles for canvas and objects |
 | `src/StrokeItem.*` | object: brush stroke and line |
 | `src/FillItem.*` | object: filled area |
+| `src/ShapeItem.*` | object: shape |
+| `src/HeifImage.*` | reading HEIF and HEIC pictures |
 | `src/FloodFill.*` | working out the area a bucket fill covers |
 | `src/ImageItem.*` | object: image |
 | `src/TextItem.*` | object: caption |
@@ -190,6 +211,8 @@ still missing; the place for it is prepared in the AppStream file.
 | `translations/` | translation catalogues |
 | `data/` | icon, desktop entry, AppStream and MIME data |
 | `flatpak/` | Flatpak manifest |
+| `tools/` | helper scripts that are not part of the program |
+| `docs/` | screenshot and the social preview card |
 
 ## Contributing
 
@@ -226,21 +249,33 @@ Copyright © 2026 Christoph Krogmann
 
 **Ein Malprogramm für Linux, in dem alles Gemalte ein Objekt bleibt.**
 
+[![Release](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Herunterladen&color=27AE60)](../../releases/latest)
 [![Lizenz: GPL-3.0](https://img.shields.io/badge/Lizenz-GPL--3.0-2C3E50)](LICENSE)
 [![Mit PayPal spenden](https://img.shields.io/badge/Spenden-PayPal-00457C?logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
-Inkpot ist ein kleines Malprogramm in C++ mit Qt 6. Pinselstriche, gerade
-Linien, Beschriftungen und eingefügte Bilder sind eigenständige Objekte: Sie
-lassen sich jederzeit auswählen, verschieben, skalieren, umfärben und löschen —
-auch lange nachdem sie entstanden sind. Das Projektformat hält sie so.
+*(English version above — [jump to English](#inkpot))*
 
-> **Frühe Entwicklung.** Meilenstein 1 — das Grundprogramm — steht. Das Projekt
-> ist noch nicht veröffentlicht, es gibt also noch nichts herunterzuladen.
+![Inkpot – das Hauptfenster mit Formen, einem Pinselstrich und der Objektliste](docs/screenshot.png)
+
+Inkpot ist ein Malprogramm in C++ mit Qt 6. Alles Gemalte bleibt ein eigenes
+Objekt: Pinselstriche, Linien, Formen, Beschriftungen, gefüllte Flächen und
+eingefügte Bilder lassen sich jederzeit auswählen, verschieben, drehen,
+skalieren, umfärben und löschen — auch lange nachdem sie entstanden sind. Das
+Projektformat hält sie so; eine Zeichnung erstarrt nie zu einem flachen Bild.
+
+> ### ☕ Inkpot ist kostenlos
+>
+> Wenn es dir gefällt, kannst du die Weiterentwicklung mit einer Spende
+> unterstützen.
+>
+> [![Mit PayPal spenden](https://img.shields.io/badge/Mit%20PayPal%20spenden-00457C?style=for-the-badge&logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
 ## Funktionen
 
 **Werkzeuge**
-* Auswahl, Pinsel, gerade Linie, Radiergummi, Farbeimer und Text
+* Auswahl, Pinsel, gerade Linie, Formen, Farbeimer, Radiergummi und Text
+* Formen: Rechteck, Ellipse, Dreieck, Herz und Stern, gefüllt oder als Umriss.
+  Mit gehaltener Umschalttaste bleiben die Seiten gleich lang
 * Der Radiergummi wirkt *innerhalb* von Objekten: Die radierte Stelle wird
   ausgespart, die ursprüngliche Form bleibt in der Projektdatei erhalten
 * Der Farbeimer füllt geschlossene Flächen wie in einem Pixel-Malprogramm,
@@ -279,7 +314,9 @@ auch lange nachdem sie entstanden sind. Das Projektformat hält sie so.
 
 **Dateien**
 * Projektformat `*.ipot` (JSON), das jedes Objekt bearbeitbar hält
-* Export nach PNG, JPEG, BMP, TIFF und WebP
+* Öffnet HEIF- und HEIC-Bilder, das Format, das Telefone standardmäßig schreiben
+* Export in die Bildformate, die die installierten Qt-Bildmodule schreiben
+  können; PNG und JPEG sind immer dabei
 * In die Zwischenablage kopieren, einfügen, drucken
 
 ## Bauen
@@ -288,11 +325,16 @@ Voraussetzungen (Debian, Ubuntu, Linux Mint):
 
 ```bash
 sudo apt install build-essential cmake ninja-build qt6-base-dev \
-                 qt6-base-dev-tools qt6-l10n-tools libgl1-mesa-dev
+                 qt6-base-dev-tools qt6-l10n-tools libheif-dev \
+                 qt6-image-formats-plugins libgl1-mesa-dev
 ```
 
-`qt6-l10n-tools` liefert `lupdate` und `lrelease` für die Übersetzungen. Ohne
-das Paket baut Inkpot trotzdem, läuft dann aber unübersetzt.
+Zwei davon sind freiwillig. `qt6-l10n-tools` liefert `lupdate` und `lrelease`
+für die Übersetzungen; ohne das Paket baut Inkpot trotzdem, läuft dann aber
+unübersetzt. `libheif-dev` bringt die HEIF- und HEIC-Unterstützung; ohne das
+Paket lassen sich solche Dateien nicht öffnen. `qt6-image-formats-plugins`
+erweitert die Bildformate, die Qt lesen und schreiben kann, darunter TIFF und
+WebP.
 
 ```bash
 cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release
@@ -323,6 +365,7 @@ aus den Menüs selbst zusammengestellt und bleibt damit aktuell.
 | Linie | `L` |
 | Radiergummi | `E` |
 | Farbeimer | `F` |
+| Formen | `R` |
 | Text | `T` |
 | Beschriftung später ändern | Doppelklick mit dem Auswahlwerkzeug |
 | Objekte umfärben | auswählen, dann der Farbknopf |
@@ -333,6 +376,7 @@ aus den Menüs selbst zusammengestellt und bleibt damit aktuell.
 | Originalgröße / Einpassen | `Strg+0` / `Strg+9` |
 | Ansicht verschieben | Ziehen mit der mittleren Maustaste |
 | In 15-Grad-Schritten drehen | `Umschalt` beim Ziehen des Dreh-Anfassers |
+| Form gleichseitig halten | `Umschalt` beim Aufziehen der Form |
 
 ## Übersetzungen
 
@@ -387,9 +431,10 @@ flatpak-builder --user --install --force-clean build-flatpak \
 flatpak run io.github.neklor.Inkpot
 ```
 
-Vor einer Veröffentlichung auf Flathub fehlt noch mindestens ein Bildschirmfoto
-unter einer dauerhaften URL; die Stelle dafür ist in der AppStream-Datei
-vorbereitet.
+Das Bildschirmfoto oben dient zugleich als Bild in den Software-Zentren; es
+liegt in `docs/screenshot.png`, die AppStream-Datei zeigt darauf.
+`tools/make-social-preview.py` erzeugt die Vorschaukarte, die GitHub zeigt,
+wenn das Projekt irgendwo verlinkt wird.
 
 ## Projektstruktur
 
@@ -402,6 +447,8 @@ vorbereitet.
 | `src/ResizeHandle.*` | Anfasspunkte für Arbeitsfläche und Objekte |
 | `src/StrokeItem.*` | Objekt: Pinselstrich und Linie |
 | `src/FillItem.*` | Objekt: gefüllte Fläche |
+| `src/ShapeItem.*` | Objekt: Form |
+| `src/HeifImage.*` | Liest HEIF- und HEIC-Bilder |
 | `src/FloodFill.*` | Ermittelt die Fläche, die der Farbeimer füllt |
 | `src/ImageItem.*` | Objekt: Bild |
 | `src/TextItem.*` | Objekt: Beschriftung |
@@ -414,6 +461,8 @@ vorbereitet.
 | `translations/` | Übersetzungskataloge |
 | `data/` | Symbol, Desktop-Eintrag, AppStream- und MIME-Daten |
 | `flatpak/` | Flatpak-Manifest |
+| `tools/` | Hilfsskripte, die nicht zum Programm gehören |
+| `docs/` | Bildschirmfoto und die Vorschaukarte |
 
 ## Mitarbeit
 

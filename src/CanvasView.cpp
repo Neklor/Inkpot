@@ -9,6 +9,7 @@
 #include <QWheelEvent>
 
 #include "CanvasScene.h"
+#include "ShapeItem.h"
 #include "StrokeItem.h"
 #include "TextItem.h"
 
@@ -67,6 +68,9 @@ void CanvasView::applyCursor()
         break;
     case Tool::Fill:
         viewport()->setCursor(Qt::PointingHandCursor);
+        break;
+    case Tool::Shape:
+        viewport()->setCursor(Qt::CrossCursor);
         break;
     default:
         viewport()->setCursor(Qt::CrossCursor);
@@ -207,6 +211,15 @@ void CanvasView::mousePressEvent(QMouseEvent *event)
             event->accept();
             return;
 
+        case Tool::Shape:
+            m_shapeOrigin = scenePos;
+            m_activeShape = new ShapeItem(m_shapeKind, m_toolColor, m_shapesFilled, m_toolSize);
+            m_activeShape->setGeometry(scenePos, scenePos,
+                                       event->modifiers() & Qt::ShiftModifier);
+            m_canvas->addObject(m_activeShape);
+            event->accept();
+            return;
+
         case Tool::Text:
             placeTextAt(scenePos);
             event->accept();
@@ -244,6 +257,13 @@ void CanvasView::mouseMoveEvent(QMouseEvent *event)
             m_activeStroke->setLineEnd(scenePos);
         else
             m_activeStroke->extendTo(scenePos);
+        event->accept();
+        return;
+    }
+
+    if (m_activeShape) {
+        m_activeShape->setGeometry(m_shapeOrigin, mapToScene(event->pos()),
+                                   event->modifiers() & Qt::ShiftModifier);
         event->accept();
         return;
     }
@@ -288,6 +308,19 @@ void CanvasView::mouseReleaseEvent(QMouseEvent *event)
                                                              : tr("Draw stroke"));
         }
         m_activeStroke = nullptr;
+        event->accept();
+        return;
+    }
+
+    if (m_activeShape && event->button() == Qt::LeftButton) {
+        m_activeShape->setGeometry(m_shapeOrigin, mapToScene(event->pos()),
+                                   event->modifiers() & Qt::ShiftModifier);
+        // A click without dragging leaves nothing behind.
+        if (m_activeShape->isTooSmall())
+            m_canvas->removeObjectLater(m_activeShape);
+        else
+            m_canvas->commitAddedObject(m_activeShape, ShapeItem::nameFor(m_shapeKind));
+        m_activeShape = nullptr;
         event->accept();
         return;
     }

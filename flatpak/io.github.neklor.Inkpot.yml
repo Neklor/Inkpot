@@ -34,8 +34,21 @@ modules:
     sources:
       - type: dir
         path: ..
-      # Für die Veröffentlichung stattdessen:
+      # Für Flathub stattdessen die feste Fassung verwenden. Flathub verlangt
+      # neben dem Tag auch den vollständigen Commit-Hash:
+      #     git rev-parse v1.0.0
       # - type: git
       #   url: https://github.com/Neklor/Inkpot.git
-      #   tag: v0.1.0
-      #   commit: <vollständiger Commit-Hash des Tags>
+      #   tag: v1.0.0
+      #   commit: <Ausgabe von git rev-parse v1.0.0>
+
+# HEIF- und HEIC-Unterstützung
+#
+# Inkpot sucht libheif beim Bauen und kommt ohne sie aus; dann fehlt nur das
+# Öffnen von HEIC-Dateien. Ob die Laufzeitumgebung libheif schon mitbringt,
+# zeigt:
+#     flatpak run --command=sh org.kde.Sdk//6.11 -c 'ls /usr/lib/*/libheif.so*'
+#
+# Fehlt sie, muss sie vor inkpot als eigenes Modul gebaut werden — libde265
+# für das Dekodieren und libheif selbst. Beide Einträge brauchen für Flathub
+# eine Prüfsumme der heruntergeladenen Archive.

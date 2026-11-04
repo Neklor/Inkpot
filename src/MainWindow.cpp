@@ -14,6 +14,7 @@
 #include <QIcon>
 #include <QImage>
 #include <QImageReader>
+#include <QImageWriter>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonParseError>
@@ -32,6 +33,7 @@
 #include <QUndoStack>
 #include <QStatusBar>
 #include <QToolBar>
+#include <QActionGroup>
 #include <QToolButton>
 
 #include "CanvasScene.h"
@@ -40,6 +42,8 @@
 #include "ImageItem.h"
 #include "NewCanvasDialog.h"
 #include "ObjectListDock.h"
+#include "HeifImage.h"
+#include "ShapeItem.h"
 #include "ShortcutsDialog.h"
 #include "TextItem.h"
 
@@ -300,6 +304,78 @@ void MainWindow::createToolAction(QToolBar *toolBar, const QString &name, const 
     m_toolGroup->addAction(action);
 }
 
+// The shape tool is one button with a menu: clicking it draws the shape that
+// is currently chosen, the arrow beside it picks another.
+void MainWindow::createShapeTool(QToolBar *toolBar, const QColor &symbolColor)
+{
+    m_shapeAction = toolBar->addAction(tr("Shape"));
+    m_shapeAction->setCheckable(true);
+    m_shapeAction->setShortcut(QKeySequence(QStringLiteral("R")));
+    m_shapeAction->setStatusTip(tr("Draw a shape - hold Shift to keep it even"));
+    connect(m_shapeAction, &QAction::triggered, this,
+            [this] { m_view->setTool(CanvasView::Tool::Shape); });
+    m_toolGroup->addAction(m_shapeAction);
+
+    auto *menu = new QMenu(this);
+    auto *kinds = new QActionGroup(this);
+    kinds->setExclusive(true);
+
+    const QList<ShapeItem::Kind> order = {
+        ShapeItem::Kind::Rectangle, ShapeItem::Kind::Ellipse, ShapeItem::Kind::Triangle,
+        ShapeItem::Kind::Heart, ShapeItem::Kind::Star
+    };
+
+    for (ShapeItem::Kind kind : order) {
+        QAction *entry = menu->addAction(ShapeItem::nameFor(kind));
+        entry->setCheckable(true);
+        entry->setChecked(kind == m_view->shapeKind());
+        entry->setData(int(kind));
+        entry->setIcon(Icons::fromPath(ShapeItem::pathFor(kind, QRectF(10, 10, 44, 44)),
+                                       m_view->toolColor(), symbolColor, true));
+        kinds->addAction(entry);
+        m_shapeKindActions.append(entry);
+
+        connect(entry, &QAction::triggered, this, [this, kind] {
+            m_view->setShapeKind(kind);
+            m_view->setTool(CanvasView::Tool::Shape);
+            m_shapeAction->setChecked(true);
+            updateShapeAction();
+        });
+    }
+
+    menu->addSeparator();
+    m_shapeFilledAction = menu->addAction(tr("Filled"));
+    m_shapeFilledAction->setCheckable(true);
+    m_shapeFilledAction->setChecked(m_view->shapesFilled());
+    connect(m_shapeFilledAction, &QAction::toggled, this, [this](bool filled) {
+        m_view->setShapesFilled(filled);
+        updateShapeAction();
+    });
+
+    if (auto *button = qobject_cast<QToolButton *>(toolBar->widgetForAction(m_shapeAction))) {
+        button->setMenu(menu);
+        button->setPopupMode(QToolButton::MenuButtonPopup);
+    }
+
+    updateShapeAction();
+}
+
+// The button shows the shape it would draw, in the colour it would use.
+void MainWindow::updateShapeAction()
+{
+    if (!m_shapeAction)
+        return;
+
+    const ShapeItem::Kind kind = m_view->shapeKind();
+    m_shapeAction->setIcon(Icons::fromPath(ShapeItem::pathFor(kind, QRectF(10, 10, 44, 44)),
+                                           m_view->toolColor(),
+                                           palette().color(QPalette::ButtonText),
+                                           m_view->shapesFilled()));
+    m_shapeAction->setToolTip(tr("%1 (R)\n%2")
+                                  .arg(ShapeItem::nameFor(kind),
+                                       tr("Draw a shape - hold Shift to keep it even")));
+}
+
 void MainWindow::createToolBar()
 {
     QToolBar *toolBar = addToolBar(tr("Tools"));
@@ -352,6 +428,8 @@ void MainWindow::createToolBar()
                      tr("Fill an enclosed area - works across objects"),
                      int(CanvasView::Tool::Fill));
     m_fillAction = m_toolGroup->actions().last();
+
+    createShapeTool(toolBar, symbolColor);
 
     createToolAction(toolBar, tr("Text"), Icons::text(symbolColor), QStringLiteral("T"),
                      tr("Place a caption - double-click edits it later"),
@@ -488,6 +566,11 @@ void MainWindow::open()
     for (const QByteArray &format : formats)
         imagePatterns.append(QStringLiteral("*.%1").arg(QString::fromLatin1(format)));
 
+    // Qt brings no reader for HEIF; libheif does that part.
+    if (HeifImage::isSupported())
+        imagePatterns << QStringLiteral("*.heic") << QStringLiteral("*.heif")
+                       << QStringLiteral("*.hif");
+
     const QString filter = QStringLiteral("%1;;%2;;%3")
                                .arg(tr("Inkpot project (*.ipot *.inkpot)"),
                                     tr("Images (%1)").arg(imagePatterns.join(QLatin1Char(' '))),
@@ -538,14 +621,29 @@ bool MainWindow::saveAs()
 
 void MainWindow::exportImage()
 {
-    // Filter text -> default extension
-    const QVector<QPair<QString, QString>> formats = {
-        { tr("PNG image (*.png)"),          QStringLiteral("png")  },
-        { tr("JPEG image (*.jpg *.jpeg)"),  QStringLiteral("jpg")  },
-        { tr("BMP image (*.bmp)"),          QStringLiteral("bmp")  },
-        { tr("TIFF image (*.tif *.tiff)"),  QStringLiteral("tif")  },
-        { tr("WebP image (*.webp)"),        QStringLiteral("webp") },
+    // Only offer what this build of Qt can actually write. Which formats are
+    // there depends on the installed image plugins, so the list is asked for
+    // rather than assumed.
+    const QList<QPair<QString, QString>> known = {
+        { tr("PNG image (*.png)"),         QStringLiteral("png")  },
+        { tr("JPEG image (*.jpg *.jpeg)"), QStringLiteral("jpg")  },
+        { tr("BMP image (*.bmp)"),         QStringLiteral("bmp")  },
+        { tr("TIFF image (*.tif *.tiff)"), QStringLiteral("tif")  },
+        { tr("WebP image (*.webp)"),       QStringLiteral("webp") },
     };
+
+    const QList<QByteArray> writable = QImageWriter::supportedImageFormats();
+    QList<QPair<QString, QString>> formats;
+    for (const auto &candidate : known) {
+        const QByteArray suffix = candidate.second.toLatin1();
+        const QByteArray alias = suffix == "jpg" ? QByteArray("jpeg")
+                               : suffix == "tif" ? QByteArray("tiff")
+                                                 : suffix;
+        if (writable.contains(suffix) || writable.contains(alias))
+            formats.append(candidate);
+    }
+    if (formats.isEmpty())
+        formats.append(known.first());
 
     QStringList filters;
     for (const auto &format : formats)
@@ -714,13 +812,22 @@ bool MainWindow::loadFile(const QString &path)
 
 bool MainWindow::loadImageFile(const QString &path)
 {
-    QImageReader reader(path);
-    reader.setAutoTransform(true);
-    const QImage image = reader.read();
+    QImage image;
+    QString problem;
+
+    if (HeifImage::looksLikeHeif(path)) {
+        image = HeifImage::load(path, &problem);
+    } else {
+        QImageReader reader(path);
+        reader.setAutoTransform(true);
+        image = reader.read();
+        problem = reader.errorString();
+    }
+
     if (image.isNull()) {
         QMessageBox::warning(this, tr("Open"),
                              tr("The image %1 could not be loaded: %2")
-                                 .arg(QFileInfo(path).fileName(), reader.errorString()));
+                                 .arg(QFileInfo(path).fileName(), problem));
         return false;
     }
 
@@ -885,6 +992,7 @@ void MainWindow::updateColorButton()
         m_brushAction->setIcon(Icons::brush(m_view->toolColor(), symbolColor));
     if (m_fillAction)
         m_fillAction->setIcon(Icons::bucket(m_view->toolColor(), symbolColor));
+    updateShapeAction();
 }
 
 QString MainWindow::aspectRatioText(const QSize &size)

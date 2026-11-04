@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QIcon>
+#include <QList>
 #include <QMainWindow>
 #include <QSize>
 #include <QString>
@@ -69,6 +70,8 @@ private:
     void updateSizeControls();
     void updateObjectInfo();
     void updateZoomInfo(double factor);
+    void createShapeTool(QToolBar *toolBar, const QColor &symbolColor);
+    void updateShapeAction();
     void chooseToolColor();
     void updateColorButton();
     void updateObjectControls();
@@ -96,6 +99,9 @@ private:
     QDoubleSpinBox *m_fontSizeSpin = nullptr;
     QAction *m_brushAction = nullptr;
     QAction *m_fillAction = nullptr;
+    QAction *m_shapeAction = nullptr;
+    QAction *m_shapeFilledAction = nullptr;
+    QList<QAction *> m_shapeKindActions;
     QAction *m_undoAction = nullptr;
     QAction *m_redoAction = nullptr;
     QActionGroup *m_toolGroup = nullptr;

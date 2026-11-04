@@ -12,6 +12,7 @@
 #include "Icons.h"
 #include "ImageItem.h"
 #include "InkObject.h"
+#include "ShapeItem.h"
 #include "StrokeItem.h"
 #include "TextItem.h"
 
@@ -38,7 +39,10 @@ QString rowLabel(QGraphicsItem *item, InkObject *object)
 QIcon ObjectListDock::iconFor(QGraphicsItem *item, InkObject *object, const QColor &outline)
 {
     const QColor colour = object->color().isValid() ? object->color() : outline;
-    const QString key = object->typeName() + QLatin1Char('/') + colour.name(QColor::HexArgb);
+    QString key = object->typeName() + QLatin1Char('/') + colour.name(QColor::HexArgb);
+    if (auto *figure = dynamic_cast<ShapeItem *>(item)) {
+        key += QStringLiteral("/%1/%2").arg(int(figure->kind())).arg(int(figure->isFilled()));
+    }
 
     const auto cached = m_iconCache.constFind(key);
     if (cached != m_iconCache.constEnd())
@@ -51,6 +55,9 @@ QIcon ObjectListDock::iconFor(QGraphicsItem *item, InkObject *object, const QCol
         icon = Icons::bucket(colour, outline);
     else if (dynamic_cast<TextItem *>(item))
         icon = Icons::text(colour);
+    else if (auto *figure = dynamic_cast<ShapeItem *>(item))
+        icon = Icons::fromPath(ShapeItem::pathFor(figure->kind(), QRectF(10, 10, 44, 44)),
+                               colour, outline, figure->isFilled());
     else if (dynamic_cast<ImageItem *>(item))
         icon = Icons::picture(outline);
 

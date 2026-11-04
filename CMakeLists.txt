@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 project(Inkpot
-    VERSION 0.1.0
+    VERSION 1.0.0
     DESCRIPTION "Draw and edit pictures made of objects"
     HOMEPAGE_URL "https://github.com/Neklor/Inkpot"
     LANGUAGES CXX)
@@ -28,6 +28,22 @@ find_package(Qt6 6.4 REQUIRED COMPONENTS Widgets PrintSupport)
 # untranslated.
 find_package(Qt6 6.4 QUIET COMPONENTS LinguistTools)
 
+# HEIF and HEIC support is optional. The pkg-config file of libheif pulls in
+# further packages that are not always installed, so the library is looked up
+# directly.
+find_path(HEIF_INCLUDE_DIR NAMES libheif/heif.h)
+find_library(HEIF_LIBRARY NAMES heif)
+
+if(HEIF_INCLUDE_DIR AND HEIF_LIBRARY)
+    set(INKPOT_HAVE_HEIF ON)
+    message(STATUS "libheif found - HEIF and HEIC pictures can be opened")
+else()
+    set(INKPOT_HAVE_HEIF OFF)
+    message(STATUS
+        "libheif not found - building without HEIF and HEIC support. "
+        "On Debian and Ubuntu it comes with the libheif-dev package.")
+endif()
+
 qt_standard_project_setup()
 
 set(INKPOT_SOURCES
@@ -50,6 +66,8 @@ set(INKPOT_SOURCES
     src/NewCanvasDialog.h
     src/ObjectListDock.cpp
     src/ObjectListDock.h
+    src/ShapeItem.cpp
+    src/ShapeItem.h
     src/ShortcutsDialog.cpp
     src/ShortcutsDialog.h
     src/Commands.cpp
@@ -60,6 +78,8 @@ set(INKPOT_SOURCES
     src/FloodFill.h
     src/Icons.cpp
     src/Icons.h
+    src/HeifImage.cpp
+    src/HeifImage.h
     src/InkObject.cpp
     src/InkObject.h
 )
@@ -81,6 +101,12 @@ target_link_libraries(inkpot PRIVATE
     Qt6::Widgets
     Qt6::PrintSupport
 )
+
+if(INKPOT_HAVE_HEIF)
+    target_compile_definitions(inkpot PRIVATE INKPOT_HAVE_HEIF)
+    target_include_directories(inkpot PRIVATE ${HEIF_INCLUDE_DIR})
+    target_link_libraries(inkpot PRIVATE ${HEIF_LIBRARY})
+endif()
 
 # ---------------------------------------------------------------- Translations
 

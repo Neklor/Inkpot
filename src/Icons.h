@@ -4,6 +4,7 @@
 #include <QIcon>
 
 class QPainter;
+class QPainterPath;
 
 class QColor;
 
@@ -29,6 +30,10 @@ QIcon bucket(const QColor &accent, const QColor &outline);
 QIcon plus(const QColor &color);      // New
 QIcon folder(const QColor &color);    // Open
 QIcon picture(const QColor &color);   // an image object in the list
+
+// Draws a ready made outline as an icon, used for the shape menu.
+QIcon fromPath(const QPainterPath &path, const QColor &accent, const QColor &outline,
+               bool filled);
 
 // The usual curved arrows for undo and redo.
 QIcon undo(const QColor &color);
