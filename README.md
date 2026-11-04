@@ -2,7 +2,7 @@
 
 **A paint program for Linux in which everything you draw stays an object.**
 
-[![Version](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Version&color=27AE60)](../../releases/latest)
+[![Download](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Download%20.deb&color=27AE60)](../../releases/latest)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-2C3E50)](LICENSE)
 [![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-00457C?logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
@@ -15,6 +15,10 @@ an object of its own: brush strokes, lines, shapes, captions, filled areas and
 pasted pictures can be selected, moved, turned, scaled, recoloured and deleted
 at any time, long after they were drawn. The project format keeps them that
 way, so a drawing never hardens into a flat picture.
+
+**[⬇ Download and install](../../releases/latest)** — for Ubuntu, Linux Mint
+and Debian as a `.deb` package. To install it, simply open the downloaded file.
+[For other distributions, see here](#other-distributions--from-source).
 
 > ### ☕ Inkpot is free
 >
@@ -72,20 +76,41 @@ way, so a drawing never hardens into a flat picture.
 
 ## Installing
 
-**Debian, Ubuntu and Linux Mint:** a `.deb` package hangs on the
-[latest release](../../releases/latest). Download it and double-click it, or:
+### Ubuntu, Linux Mint and Debian — without the terminal
+
+1. Open the **[releases page](../../releases/latest)** and, under *Assets*,
+   click the file ending in **`.deb`** — it is called
+   `inkpot_<version>_amd64.deb`.
+
+   > Do not take "Source code (zip)" or "Source code (tar.gz)". That is the
+   > source code for developers and cannot be installed by double-clicking.
+
+2. **Double-click** the downloaded file. The package manager opens and asks
+   for your password.
+3. That is all — **Inkpot** is now in the application menu under *Graphics*.
+
+The menu entry, the program icon and the file type for `*.ipot` come with it.
+Inkpot can be removed like any other program through the software manager.
+
+If you prefer the terminal:
 
 ```bash
-sudo apt install ./inkpot_1.0.0_amd64.deb
+cd ~/Downloads && sudo apt install ./inkpot_*_amd64.deb
 ```
 
-It brings the menu entry, the icon and the file type for `*.ipot` with it. The
-package is built against the Qt version of Ubuntu 24.04, so it installs on
-that and anything newer.
+The package is built against the Qt version of Ubuntu 24.04, so it installs on
+that and on anything newer. Updates do not arrive on their own: watch the
+releases page, or use the **Watch → Custom → Releases** button at the top of
+this project page to be told about new versions.
 
-A package on **Flathub** is being considered, which would also make Inkpot
-findable in the software centres of Linux Mint, Fedora and others. Until then,
-everything else is built from source.
+### Other distributions — from source
+
+Fedora, Arch, openSUSE and everything else: build Inkpot yourself, see
+[Building](#building) below. It needs nothing but Qt 6 and a compiler.
+
+A package on **Flathub** is being considered. That would make Inkpot findable
+in the software centres of Linux Mint, Fedora and others, and updates would
+arrive through the system like any other program.
 
 ## Building
 
@@ -268,7 +293,7 @@ Copyright © 2026 Christoph Krogmann
 
 **Ein Malprogramm für Linux, in dem alles Gemalte ein Objekt bleibt.**
 
-[![Version](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Version&color=27AE60)](../../releases/latest)
+[![Herunterladen](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Download%20.deb&color=27AE60)](../../releases/latest)
 [![Lizenz: GPL-3.0](https://img.shields.io/badge/Lizenz-GPL--3.0-2C3E50)](LICENSE)
 [![Mit PayPal spenden](https://img.shields.io/badge/Spenden-PayPal-00457C?logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
@@ -281,6 +306,11 @@ Objekt: Pinselstriche, Linien, Formen, Beschriftungen, gefüllte Flächen und
 eingefügte Bilder lassen sich jederzeit auswählen, verschieben, drehen,
 skalieren, umfärben und löschen — auch lange nachdem sie entstanden sind. Das
 Projektformat hält sie so; eine Zeichnung erstarrt nie zu einem flachen Bild.
+
+**[⬇ Herunterladen und installieren](../../releases/latest)** — für Ubuntu,
+Linux Mint und Debian als `.deb`-Paket. Zum Installieren einfach die
+heruntergeladene Datei öffnen.
+[Für andere Distributionen siehe hier](#andere-distributionen--über-den-quellcode).
 
 > ### ☕ Inkpot ist kostenlos
 >
@@ -340,21 +370,42 @@ Projektformat hält sie so; eine Zeichnung erstarrt nie zu einem flachen Bild.
 
 ## Installieren
 
-**Debian, Ubuntu und Linux Mint:** An der
-[neuesten Veröffentlichung](../../releases/latest) hängt ein `.deb`-Paket.
-Herunterladen und doppelklicken, oder im Terminal:
+### Ubuntu, Linux Mint und Debian — ohne Terminal
+
+1. Die **[Releases-Seite](../../releases/latest)** öffnen und unter *Assets*
+   die Datei mit der Endung **`.deb`** anklicken — sie heißt
+   `inkpot_<Version>_amd64.deb`.
+
+   > Nicht „Source code (zip)" oder „Source code (tar.gz)" nehmen! Das ist der
+   > Quellcode für Entwickler und lässt sich nicht per Doppelklick
+   > installieren.
+
+2. Die heruntergeladene Datei **doppelklicken**. Die Paketverwaltung öffnet
+   sich und fragt nach dem Passwort.
+3. Fertig — **Inkpot** steht im Anwendungsmenü unter *Grafik*.
+
+Menüeintrag, Programmsymbol und der Dateityp für `*.ipot` kommen mit. Entfernen
+lässt sich Inkpot wie jedes andere Programm über die Anwendungsverwaltung.
+
+Wer das Terminal bevorzugt:
 
 ```bash
-sudo apt install ./inkpot_1.0.0_amd64.deb
+cd ~/Downloads && sudo apt install ./inkpot_*_amd64.deb
 ```
 
-Menüeintrag, Programmsymbol und der Dateityp für `*.ipot` kommen mit. Das
-Paket ist gegen die Qt-Fassung von Ubuntu 24.04 gebaut und lässt sich dort und
-auf allem Neueren installieren.
+Das Paket ist gegen die Qt-Fassung von Ubuntu 24.04 gebaut und lässt sich dort
+und auf allem Neueren installieren. Aktualisierungen kommen nicht von allein:
+auf die Releases-Seite schauen, oder oben auf dieser Projektseite über
+**Watch → Custom → Releases** benachrichtigen lassen.
 
-Ein Paket bei **Flathub** wird erwogen; damit wäre Inkpot auch in der
-Anwendungsverwaltung von Linux Mint, Fedora und anderen zu finden. Bis dahin
-gilt für alles Übrige: aus dem Quellcode bauen.
+### Andere Distributionen — über den Quellcode
+
+Fedora, Arch, openSUSE und alles andere: Inkpot selbst bauen, siehe
+[Bauen](#bauen). Nötig sind nur Qt 6 und ein Übersetzer.
+
+Ein Paket bei **Flathub** wird erwogen. Damit wäre Inkpot in der
+Anwendungsverwaltung von Linux Mint, Fedora und anderen zu finden, und
+Aktualisierungen kämen wie bei jedem anderen Programm über das System.
 
 ## Bauen
 
