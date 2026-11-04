@@ -2,7 +2,7 @@
 
 **A paint program for Linux in which everything you draw stays an object.**
 
-[![Release](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Download&color=27AE60)](../../releases/latest)
+[![Version](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Version&color=27AE60)](../../releases/latest)
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL--3.0-2C3E50)](LICENSE)
 [![Donate with PayPal](https://img.shields.io/badge/Donate-PayPal-00457C?logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
@@ -249,7 +249,7 @@ Copyright © 2026 Christoph Krogmann
 
 **Ein Malprogramm für Linux, in dem alles Gemalte ein Objekt bleibt.**
 
-[![Release](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Herunterladen&color=27AE60)](../../releases/latest)
+[![Version](https://img.shields.io/github/v/release/Neklor/Inkpot?label=Version&color=27AE60)](../../releases/latest)
 [![Lizenz: GPL-3.0](https://img.shields.io/badge/Lizenz-GPL--3.0-2C3E50)](LICENSE)
 [![Mit PayPal spenden](https://img.shields.io/badge/Spenden-PayPal-00457C?logo=paypal&logoColor=white)](https://paypal.me/CKrogmann)
 
