@@ -70,6 +70,23 @@ way, so a drawing never hardens into a flat picture.
   PNG and JPEG always among them
 * Copy to clipboard, paste, print
 
+## Installing
+
+**Debian, Ubuntu and Linux Mint:** a `.deb` package hangs on the
+[latest release](../../releases/latest). Download it and double-click it, or:
+
+```bash
+sudo apt install ./inkpot_1.0.0_amd64.deb
+```
+
+It brings the menu entry, the icon and the file type for `*.ipot` with it. The
+package is built against the Qt version of Ubuntu 24.04, so it installs on
+that and anything newer.
+
+A package on **Flathub** is being considered, which would also make Inkpot
+findable in the software centres of Linux Mint, Fedora and others. Until then,
+everything else is built from source.
+
 ## Building
 
 Requirements (Debian, Ubuntu, Linux Mint):
@@ -171,6 +188,7 @@ pulls new and changed strings into every `.ts` file.
 | `data/io.github.neklor.Inkpot.xml` | MIME type for `*.ipot` |
 | `data/icons/hicolor/scalable/apps/…svg` | application icon |
 | `flatpak/io.github.neklor.Inkpot.yml` | Flatpak manifest |
+| `tools/build-deb.sh` | builds the Debian package |
 
 Building a Flatpak locally:
 
@@ -212,6 +230,7 @@ is linked somewhere.
 | `data/` | icon, desktop entry, AppStream and MIME data |
 | `flatpak/` | Flatpak manifest |
 | `tools/` | helper scripts that are not part of the program |
+| `packaging/` | the maintainer scripts of the Debian package |
 | `docs/` | screenshot and the social preview card |
 
 ## Contributing
@@ -319,6 +338,24 @@ Projektformat hält sie so; eine Zeichnung erstarrt nie zu einem flachen Bild.
   können; PNG und JPEG sind immer dabei
 * In die Zwischenablage kopieren, einfügen, drucken
 
+## Installieren
+
+**Debian, Ubuntu und Linux Mint:** An der
+[neuesten Veröffentlichung](../../releases/latest) hängt ein `.deb`-Paket.
+Herunterladen und doppelklicken, oder im Terminal:
+
+```bash
+sudo apt install ./inkpot_1.0.0_amd64.deb
+```
+
+Menüeintrag, Programmsymbol und der Dateityp für `*.ipot` kommen mit. Das
+Paket ist gegen die Qt-Fassung von Ubuntu 24.04 gebaut und lässt sich dort und
+auf allem Neueren installieren.
+
+Ein Paket bei **Flathub** wird erwogen; damit wäre Inkpot auch in der
+Anwendungsverwaltung von Linux Mint, Fedora und anderen zu finden. Bis dahin
+gilt für alles Übrige: aus dem Quellcode bauen.
+
 ## Bauen
 
 Voraussetzungen (Debian, Ubuntu, Linux Mint):
@@ -421,6 +458,7 @@ neue und geänderte Texte in alle `.ts`-Dateien.
 | `data/io.github.neklor.Inkpot.xml` | MIME-Typ für `*.ipot` |
 | `data/icons/hicolor/scalable/apps/…svg` | Anwendungssymbol |
 | `flatpak/io.github.neklor.Inkpot.yml` | Flatpak-Manifest |
+| `tools/build-deb.sh` | Baut das Debian-Paket |
 
 Flatpak lokal bauen:
 
@@ -462,6 +500,7 @@ wenn das Projekt irgendwo verlinkt wird.
 | `data/` | Symbol, Desktop-Eintrag, AppStream- und MIME-Daten |
 | `flatpak/` | Flatpak-Manifest |
 | `tools/` | Hilfsskripte, die nicht zum Programm gehören |
+| `packaging/` | Die Betreuerskripte des Debian-Pakets |
 | `docs/` | Bildschirmfoto und die Vorschaukarte |
 
 ## Mitarbeit

@@ -1,13 +1,14 @@
 # Flatpak-Manifest für Inkpot.
 #
+# Diese Datei ist zugleich die Datei, die bei Flathub eingereicht wird: ein
+# Pull Request an github.com/flathub/flathub, Zweig new-pr, der genau sie im
+# Wurzelverzeichnis hinzufügt. Der Name muss der Anwendungs-ID entsprechen.
+#
 # Lokal bauen und ausprobieren:
 #   flatpak install flathub org.kde.Platform//6.11 org.kde.Sdk//6.11
 #   flatpak-builder --user --install --force-clean build-flatpak \
 #       flatpak/io.github.neklor.Inkpot.yml
 #   flatpak run io.github.neklor.Inkpot
-#
-# Für eine Veröffentlichung auf Flathub muss die Quelle eine feste Fassung
-# sein: unten den dir-Eintrag gegen den git-Eintrag mit Tag tauschen.
 
 id: io.github.neklor.Inkpot
 runtime: org.kde.Platform
@@ -16,13 +17,18 @@ sdk: org.kde.Sdk
 command: inkpot
 
 finish-args:
+  # Fenster und Grafik
   - --share=ipc
   - --socket=wayland
   - --socket=fallback-x11
   - --device=dri
-  # Zugriff auf eigene Bilder und Dokumente zum Öffnen und Speichern
+
+  # Bilder und Projektdateien. Alles Übrige läuft über den Dateiportal-Dialog,
+  # den Qt in einer Sandbox von sich aus verwendet; dafür braucht es keine
+  # weitere Berechtigung.
   - --filesystem=xdg-pictures
   - --filesystem=xdg-documents
+
   # Drucken
   - --socket=cups
 
@@ -32,23 +38,11 @@ modules:
     config-opts:
       - -DCMAKE_BUILD_TYPE=Release
     sources:
-      - type: dir
-        path: ..
-      # Für Flathub stattdessen die feste Fassung verwenden. Flathub verlangt
-      # neben dem Tag auch den vollständigen Commit-Hash:
-      #     git rev-parse v1.0.0
-      # - type: git
-      #   url: https://github.com/Neklor/Inkpot.git
-      #   tag: v1.0.0
-      #   commit: <Ausgabe von git rev-parse v1.0.0>
+      - type: git
+        url: https://github.com/Neklor/Inkpot.git
+        tag: v1.0.0
+        commit: a9c5e98ee9cdbb0c628a9d29f06696e6d5b95135
 
-# HEIF- und HEIC-Unterstützung
-#
-# Inkpot sucht libheif beim Bauen und kommt ohne sie aus; dann fehlt nur das
-# Öffnen von HEIC-Dateien. Ob die Laufzeitumgebung libheif schon mitbringt,
-# zeigt:
-#     flatpak run --command=sh org.kde.Sdk//6.11 -c 'ls /usr/lib/*/libheif.so*'
-#
-# Fehlt sie, muss sie vor inkpot als eigenes Modul gebaut werden — libde265
-# für das Dekodieren und libheif selbst. Beide Einträge brauchen für Flathub
-# eine Prüfsumme der heruntergeladenen Archive.
+      # Zum Bauen aus dem Arbeitsverzeichnis stattdessen:
+      # - type: dir
+      #   path: ..

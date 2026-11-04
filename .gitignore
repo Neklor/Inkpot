@@ -43,5 +43,8 @@ CLAUDE.local.md
 *.a
 inkpot
 
+# Gebaute Pakete gehören an die Release-Seite, nicht ins Repo
+*.deb
+
 # Testausgaben
 *.ipot.bak

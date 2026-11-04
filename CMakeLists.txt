@@ -195,3 +195,45 @@ install(FILES data/${INKPOT_APP_ID}.xml
 
 install(FILES data/icons/hicolor/scalable/apps/${INKPOT_APP_ID}.svg
         DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
+
+# ------------------------------------------------------------ Debian package
+#
+# Built with tools/build-deb.sh, which configures with the prefix /usr and then
+# runs cpack. The install rules above are reused, so nothing is described twice.
+
+set(CPACK_PACKAGE_NAME "inkpot")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "${INKPOT_AUTHOR}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "${PROJECT_DESCRIPTION}")
+set(CPACK_PACKAGE_HOMEPAGE_URL "${PROJECT_HOMEPAGE_URL}")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
+set(CPACK_PACKAGING_INSTALL_PREFIX "/usr")
+set(CPACK_GENERATOR "DEB")
+
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Christoph Krogmann <ch.krogmann@outlook.de>")
+set(CPACK_DEBIAN_PACKAGE_SECTION "graphics")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+
+# Works out the needed libraries from the binary itself, so the list cannot
+# drift away from what was actually linked.
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+# Not needed to run, but they widen what can be opened and saved.
+set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "qt6-image-formats-plugins")
+
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+set(CPACK_DEBIAN_PACKAGE_CONTROL_EXTRA
+    "${CMAKE_CURRENT_SOURCE_DIR}/packaging/deb/postinst"
+    "${CMAKE_CURRENT_SOURCE_DIR}/packaging/deb/postrm")
+
+# The one line summary above becomes the first line of the field; what follows
+# is the long description. CPack indents it, so the lines carry no spaces of
+# their own - with them the paragraph would break apart.
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
+"Brush strokes, lines, shapes, captions, filled areas and pasted pictures are
+objects in their own right: they can be selected, moved, turned, scaled,
+recoloured and deleted at any time, long after they were drawn. The eraser
+and the bucket fill work across objects without destroying them, and the
+project format keeps every object editable.")
+
+include(CPack)
