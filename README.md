@@ -200,9 +200,9 @@ The strings in the sources are English; translations live in
 [`translations/`](translations/) as Qt Linguist catalogues. German, French and
 Spanish ship with the program and follow the system language on their own.
 
-> The French and Spanish catalogues were not written by native speakers.
-> They should be serviceable, but corrections are very welcome — a pull
-> request or an issue with the wrong wording is enough.
+> The French and Spanish catalogues were translated with AI and then checked
+> by me. As I am not a native speaker of either, corrections are very welcome
+> — a pull request or an issue naming the better wording is enough.
 
 A translation can be edited either with `linguist6 translations/inkpot_de.ts`
 or in a text editor, the files are readable XML:
@@ -523,10 +523,10 @@ Die Texte im Quelltext sind englisch; Übersetzungen liegen unter
 und Spanisch werden mitgeliefert und richten sich von selbst nach der
 Systemsprache.
 
-> Die französische und die spanische Fassung stammen nicht von
-> Muttersprachlern. Sie sollten brauchbar sein, über Korrekturen freue ich
-> mich aber sehr — ein Pull Request oder ein Issue mit der richtigen
-> Formulierung genügt.
+> Die französische und die spanische Fassung wurden mit KI übersetzt und von
+> mir durchgesehen. Da ich in beiden kein Muttersprachler bin, sind
+> Korrekturen sehr willkommen — ein Pull Request oder ein Issue mit der
+> besseren Formulierung genügt.
 
 Eine Übersetzung kann bearbeitet werden — entweder mit `linguist6 translations/inkpot_de.ts`
 oder im Texteditor, die Dateien sind lesbares XML:
