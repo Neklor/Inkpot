@@ -26,7 +26,7 @@ cd inkpot
 cp /path/to/PKGBUILD .
 makepkg --printsrcinfo > .SRCINFO      # has to be regenerated on every change
 git add PKGBUILD .SRCINFO
-git commit -m "Add inkpot 1.0.0"
+git commit -m "Add inkpot 1.1.0"
 git push
 ```
 
