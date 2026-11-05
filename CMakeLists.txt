@@ -112,6 +112,8 @@ endif()
 
 set(INKPOT_TS_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/translations/inkpot_de.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/inkpot_es.ts
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/inkpot_fr.ts
 )
 
 # Debian and Ubuntu split the Linguist tools: the programs come with

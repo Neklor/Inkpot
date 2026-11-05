@@ -146,7 +146,7 @@
     <message>
         <location line="+4"/>
         <source>&amp;Paste</source>
-        <translation>&amp;Einfügen</translation>
+        <translation>Ein&amp;fügen</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -216,7 +216,7 @@
     <message>
         <location line="+9"/>
         <source>&amp;Object List</source>
-        <translation>&amp;Objektliste</translation>
+        <translation>Objekt&amp;liste</translation>
     </message>
     <message>
         <location line="+3"/>
