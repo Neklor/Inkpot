@@ -1,0 +1,36 @@
+# Maintainer: Christoph Krogmann <ch.krogmann@outlook.de>
+
+pkgname=inkpot
+pkgver=1.0.0
+pkgrel=1
+pkgdesc="A paint program where everything you draw stays an object"
+arch=('x86_64')
+url="https://github.com/Neklor/Inkpot"
+license=('GPL-3.0-only')
+
+# qt6-base carries Core, Gui, Widgets, PrintSupport and DBus, which is
+# everything the binary links against besides libheif and the system
+# libraries. hicolor-icon-theme owns the directory the icon goes into.
+depends=('qt6-base' 'libheif' 'hicolor-icon-theme')
+
+# qt6-tools brings lrelease and the CMake package for it, without which the
+# German translation would not be built.
+makedepends=('cmake' 'ninja' 'qt6-tools')
+
+optdepends=('qt6-imageformats: export to TIFF and WebP')
+
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('9474e98f5173bd8f93de8911766369388d33375ff20d4ce83fb507aa34dd3420')
+
+build() {
+    cmake -S "Inkpot-$pkgver" -B build -G Ninja \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr
+    cmake --build build
+}
+
+package() {
+    DESTDIR="$pkgdir" cmake --install build
+    install -Dm644 "Inkpot-$pkgver/LICENSE" \
+        "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
+}

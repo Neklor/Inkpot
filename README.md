@@ -103,9 +103,22 @@ that and on anything newer. Updates do not arrive on their own: watch the
 releases page, or use the **Watch → Custom → Releases** button at the top of
 this project page to be told about new versions.
 
+### Arch, Manjaro, EndeavourOS
+
+A `PKGBUILD` is in the repository. Nothing has to be published first — the one
+file is enough:
+
+```bash
+curl -O https://raw.githubusercontent.com/Neklor/Inkpot/main/packaging/aur/PKGBUILD
+makepkg -si
+```
+
+It fetches the release, builds it and hands the package to pacman, so Inkpot
+can later be removed again with `pacman -R inkpot`.
+
 ### Other distributions — from source
 
-Fedora, Arch, openSUSE and everything else: build Inkpot yourself, see
+Fedora, openSUSE and everything else: build Inkpot yourself, see
 [Building](#building) below. It needs nothing but Qt 6 and a compiler.
 
 A package on **Flathub** is being considered. That would make Inkpot findable
@@ -255,7 +268,8 @@ is linked somewhere.
 | `data/` | icon, desktop entry, AppStream and MIME data |
 | `flatpak/` | Flatpak manifest |
 | `tools/` | helper scripts that are not part of the program |
-| `packaging/` | the maintainer scripts of the Debian package |
+| `packaging/deb/` | the maintainer scripts of the Debian package |
+| `packaging/aur/` | the PKGBUILD for Arch |
 | `docs/` | screenshot and the social preview card |
 
 ## Contributing
@@ -398,9 +412,22 @@ und auf allem Neueren installieren. Aktualisierungen kommen nicht von allein:
 auf die Releases-Seite schauen, oder oben auf dieser Projektseite über
 **Watch → Custom → Releases** benachrichtigen lassen.
 
+### Arch, Manjaro, EndeavourOS
+
+Im Repository liegt eine `PKGBUILD`. Es muss nichts veröffentlicht sein, die
+eine Datei genügt:
+
+```bash
+curl -O https://raw.githubusercontent.com/Neklor/Inkpot/main/packaging/aur/PKGBUILD
+makepkg -si
+```
+
+Sie holt die Veröffentlichung, baut sie und übergibt das Paket an pacman —
+entfernen lässt sich Inkpot später wieder mit `pacman -R inkpot`.
+
 ### Andere Distributionen — über den Quellcode
 
-Fedora, Arch, openSUSE und alles andere: Inkpot selbst bauen, siehe
+Fedora, openSUSE und alles andere: Inkpot selbst bauen, siehe
 [Bauen](#bauen). Nötig sind nur Qt 6 und ein Übersetzer.
 
 Ein Paket bei **Flathub** wird erwogen. Damit wäre Inkpot in der
@@ -551,7 +578,8 @@ wenn das Projekt irgendwo verlinkt wird.
 | `data/` | Symbol, Desktop-Eintrag, AppStream- und MIME-Daten |
 | `flatpak/` | Flatpak-Manifest |
 | `tools/` | Hilfsskripte, die nicht zum Programm gehören |
-| `packaging/` | Die Betreuerskripte des Debian-Pakets |
+| `packaging/deb/` | Die Betreuerskripte des Debian-Pakets |
+| `packaging/aur/` | Die PKGBUILD für Arch |
 | `docs/` | Bildschirmfoto und die Vorschaukarte |
 
 ## Mitarbeit
