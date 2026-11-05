@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-05
+
+### Added
+
+- French and Spanish translations. Both were machine translated and then read
+  through by the author, who is not a native speaker of either, so the README
+  asks for corrections.
+- A Debian package, built from the existing install rules with CPack through
+  `tools/build-deb.sh`, and a `PKGBUILD` for Arch and the distributions based
+  on it. Neither has to be published anywhere first.
+
+### Fixed
+
+- Access keys in the German menus. Exportieren and Einfügen both claimed E,
+  Originalgröße and Objektliste both O; a duplicate within one menu leaves
+  both entries unreachable by keyboard.
+- The export dialog offered TIFF and WebP whether or not Qt could write them.
+
 ## [1.0.0] - 2026-11-04
 
 First release.
@@ -57,5 +75,6 @@ First release.
   the toolbar so it cannot fall out of step, and an about dialog carrying
   version, author, licence and homepage.
 
-[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.0.0
