@@ -30,6 +30,9 @@ ui_*.h
 *~
 *.swp
 
+# Eigenes Werkzeug, das nur der Autor braucht
+tools/make-social-preview.py
+
 # Claude Code
 .claude/
 CLAUDE.md
