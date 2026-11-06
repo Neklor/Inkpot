@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Filled areas had jagged edges once they were scaled up. The bucket fill
+  took the shape of the area from the canvas pixel by pixel, so every
+  slanted edge was a staircase that grew along with the object. The area is
+  now found on a picture drawn three times larger, and its outline is
+  straightened and then traced with curves, so slanted edges stay clean,
+  round edges stay round and the points of a star stay sharp. Areas filled
+  with an earlier version keep the outline they were saved with.
+
 ## [1.1.1] - 2026-11-06
 
 ### Fixed
