@@ -81,6 +81,12 @@
   </screenshots>
 
   <releases>
+    <release version="1.1.1" date="2026-11-06">
+      <description>
+        <p>Repairs the Debian package, which would not install on Debian 13.</p>
+        <p xml:lang="de">Repariert das Debian-Paket, das sich unter Debian 13 nicht installieren ließ.</p>
+      </description>
+    </release>
     <release version="1.1.0" date="2026-11-05">
       <description>
         <p>Adds French and Spanish, and repairs the access keys in the German menus.</p>

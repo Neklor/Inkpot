@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2026-11-06
+
+### Fixed
+
+- The Debian package would not install on Debian 13. Ubuntu and Linux Mint
+  carry the 64-bit `time_t` transition in the names of the Qt 6 library
+  packages, Debian kept the plain ones, and the package was built with the
+  Ubuntu names alone. Both spellings are now accepted. The program itself is
+  unchanged.
+
 ## [1.1.0] - 2026-11-05
 
 ### Added
@@ -75,6 +85,7 @@ First release.
   the toolbar so it cannot fall out of step, and an about dialog carrying
   version, author, licence and homepage.
 
-[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.0.0
