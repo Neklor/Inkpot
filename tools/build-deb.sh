@@ -29,17 +29,46 @@ rm -f build-deb/*.deb
 ( cd build-deb && cpack -G DEB )
 
 # dpkg-shlibdeps can only name the packages of the system it runs on. Ubuntu
-# and Mint carry the 64-bit time_t transition in the package names
-# (libqt6gui6t64), Debian 13 kept the plain ones (libqt6gui6), so a package
-# built here will not install there. Each such dependency therefore gets the
-# other spelling added as an alternative; apt is satisfied once one of the two
-# is present.
+# and Mint carry the 64-bit time_t transition in the names of the Qt 6
+# libraries (libqt6gui6t64), Debian kept the plain ones (libqt6gui6), and
+# Debian 13 does one of each: libqt6core6t64 but libqt6gui6. A package would
+# therefore only install on the kind of system it was built on. Every Qt 6
+# dependency is listed under both names instead, whichever way round it was
+# written; apt is satisfied as soon as one of the two is there.
 deb=$(ls -1 build-deb/*.deb)
-work=build-deb/relax-depends
+work=build-deb/both-names
 rm -rf "$work"
 dpkg-deb -R "$deb" "$work"
-sed -i -E '/^Depends:/ s/([a-z0-9][a-z0-9+.-]*)t64 (\([^)]*\))/\1t64 \2 | \1 \2/g' \
-    "$work/DEBIAN/control"
+awk '
+/^Depends:/ {
+    value = substr($0, 10)
+    out = ""
+    while (length(value) > 0) {
+        comma = index(value, ", ")
+        if (comma > 0) { part = substr(value, 1, comma - 1); value = substr(value, comma + 2) }
+        else           { part = value; value = "" }
+
+        name = part; rest = ""
+        space = index(part, " ")
+        if (space > 0) { name = substr(part, 1, space - 1); rest = substr(part, space) }
+
+        other = ""
+        if (name ~ /^libqt6[a-z]+[0-9]+t64$/)
+            other = substr(name, 1, length(name) - 3)
+        else if (name ~ /^libqt6[a-z]+[0-9]+$/)
+            other = name "t64"
+
+        if (other != "")
+            part = part " | " other rest
+
+        out = (out == "" ? part : out ", " part)
+    }
+    print "Depends: " out
+    next
+}
+{ print }
+' "$work/DEBIAN/control" > "$work/DEBIAN/control.new"
+mv "$work/DEBIAN/control.new" "$work/DEBIAN/control"
 dpkg-deb --build --root-owner-group "$work" "$deb" > /dev/null
 rm -rf "$work"
 
