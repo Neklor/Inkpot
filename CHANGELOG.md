@@ -7,15 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.2] - 2026-11-06
+
 ### Fixed
 
 - Filled areas had jagged edges once they were scaled up. The bucket fill
   took the shape of the area from the canvas pixel by pixel, so every
   slanted edge was a staircase that grew along with the object. The area is
   now found on a picture drawn three times larger, and its outline is
-  straightened and then traced with curves, so slanted edges stay clean,
-  round edges stay round and the points of a star stay sharp. Areas filled
-  with an earlier version keep the outline they were saved with.
+  straightened and then traced with curves, so slanted edges stay clean and
+  round edges stay round. Areas filled with an earlier version keep the
+  outline they were saved with.
+
+  Filling takes longer for it: about a quarter of a second on a canvas of
+  1564 by 1020 pixels, where it used to be hundredths. A filled area also
+  still stops a little short of a sharp point, because that is where the
+  enclosed area really ends - about three pixels at the point of a star,
+  down from four and a half.
 
 ## [1.1.1] - 2026-11-06
 
@@ -95,7 +103,8 @@ First release.
   the toolbar so it cannot fall out of step, and an about dialog carrying
   version, author, licence and homepage.
 
-[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.2...HEAD
+[1.1.2]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.2
 [1.1.1]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.0
 [1.0.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.0.0
