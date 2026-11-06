@@ -34,6 +34,7 @@
 #include <QStatusBar>
 #include <QToolBar>
 #include <QActionGroup>
+#include <QProxyStyle>
 #include <QToolButton>
 
 #include "CanvasScene.h"
@@ -48,6 +49,30 @@
 #include "TextItem.h"
 
 namespace {
+
+// The shape tool is the only button in the window with a dropdown, and it is
+// the one place that has to be aimed at: the arrow beside the button is a few
+// pixels wide and the rows of the menu are the size of a text line. That is
+// fine with a mouse and awkward with a finger. This gives that button and
+// that menu larger pictures and a wider arrow, and leaves the rest of the
+// window as the desktop theme draws it.
+class RoomyStyle : public QProxyStyle
+{
+public:
+    int pixelMetric(PixelMetric metric, const QStyleOption *option,
+                    const QWidget *widget) const override
+    {
+        switch (metric) {
+        case PM_SmallIconSize:
+            return 26;
+        case PM_MenuButtonIndicator:
+            return 22;
+        default:
+            break;
+        }
+        return QProxyStyle::pixelMetric(metric, option, widget);
+    }
+};
 
 const char *kProjectSuffix = "ipot";
 
@@ -352,9 +377,14 @@ void MainWindow::createShapeTool(QToolBar *toolBar, const QColor &symbolColor)
         updateShapeAction();
     });
 
+    auto *roomy = new RoomyStyle;
+    roomy->setParent(this);
+    menu->setStyle(roomy);
+
     if (auto *button = qobject_cast<QToolButton *>(toolBar->widgetForAction(m_shapeAction))) {
         button->setMenu(menu);
         button->setPopupMode(QToolButton::MenuButtonPopup);
+        button->setStyle(roomy);
     }
 
     updateShapeAction();

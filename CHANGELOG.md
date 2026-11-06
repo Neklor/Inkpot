@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- The shape tool's dropdown is easier to hit: larger pictures in the menu,
+  taller rows and a wider arrow beside the button. It was the one control in
+  the window that had to be aimed at, which a test on a touchscreen made
+  plain.
+
 ## [1.1.2] - 2026-11-06
 
 ### Fixed
