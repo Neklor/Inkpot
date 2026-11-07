@@ -1,0 +1,64 @@
+name: Bug report
+description: Something in Inkpot does not work the way it should
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time. The more precise this first message is,
+        the fewer questions have to come back to you.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What did you do, and what did Inkpot do instead of what you expected?
+      placeholder: |
+        I filled a shape with the bucket and made it larger afterwards.
+        The slanted edges came out as a staircase.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: How to see it happen
+      description: >
+        The steps someone else would follow to get the same result. A picture
+        or an example file says more than a paragraph - you can drop either
+        straight into this box.
+      placeholder: |
+        1. Draw a star
+        2. Take the bucket and click inside it
+        3. Drag a corner handle to make the filled area larger
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Inkpot version
+      description: Help, then About shows it.
+      placeholder: "1.1.2"
+    validations:
+      required: true
+
+  - type: input
+    id: system
+    attributes:
+      label: Distribution and version
+      placeholder: "Linux Mint 22.3, Debian 13, Arch, ..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: install
+    attributes:
+      label: How did it get onto the machine?
+      options:
+        - The .deb package from the releases page
+        - Compiled from source
+        - PKGBUILD on Arch or a distribution based on it
+        - Some other way
+    validations:
+      required: false
