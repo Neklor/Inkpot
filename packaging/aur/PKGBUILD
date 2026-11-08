@@ -1,7 +1,7 @@
 # Maintainer: Christoph Krogmann <ch.krogmann@outlook.de>
 
 pkgname=inkpot
-pkgver=1.1.2
+pkgver=1.1.3
 pkgrel=1
 pkgdesc="A paint program where everything you draw stays an object"
 arch=('x86_64')
@@ -20,7 +20,7 @@ makedepends=('cmake' 'ninja' 'qt6-tools')
 optdepends=('qt6-imageformats: export to TIFF and WebP')
 
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('b8864bd4d23a5b1e5ae686719b73d77b1a3ed2a4deb205734b353ad924a56d3d')
+sha256sums=('a761f2cda87857bee9a1353e5b1ec3201fee6d30fdc69fdc9976fbb2d918a77c')
 
 build() {
     cmake -S "Inkpot-$pkgver" -B build -G Ninja \
