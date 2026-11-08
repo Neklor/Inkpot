@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.3] - 2026-11-08
+
 ### Fixed
 
 - Filled areas of shapes with straight edges came out bent when they were
@@ -23,6 +25,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   taller rows and a wider arrow beside the button. It was the one control in
   the window that had to be aimed at, which a test on a touchscreen made
   plain.
+
+- The Debian package lists the Qt 6 libraries under both the name Ubuntu
+  uses and the name Debian uses, whichever of the two the machine it was
+  built on happens to use. Until now only one direction was covered, so a
+  package built on Debian would not have installed on Ubuntu or Mint.
 
 ## [1.1.2] - 2026-11-06
 
@@ -120,7 +127,8 @@ First release.
   the toolbar so it cannot fall out of step, and an about dialog carrying
   version, author, licence and homepage.
 
-[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.2...HEAD
+[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.3...HEAD
+[1.1.3]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.3
 [1.1.2]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.2
 [1.1.1]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.1
 [1.1.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.0
