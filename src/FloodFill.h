@@ -28,13 +28,17 @@ QPainterPath regionAt(const QImage &image, const QPoint &start, int tolerance = 
 // that line, is kept. tolerance is measured in the coordinates of the path.
 QPainterPath straightened(const QPainterPath &path, qreal tolerance);
 
-// Traces the outline with curves instead of keeping it a chain of segments.
+// Traces the round parts of the outline with curves.
 //
-// Where the outline turns gently it is replaced by curves that run through
-// the middles of the segments, which is what makes a round edge round again.
-// Where it turns by more than cornerDegrees the point is kept as it is, so
-// the tip of a star stays a tip. This is the same idea as the tracing that
-// turns a scanned drawing into a vector picture.
-QPainterPath traced(const QPainterPath &path, qreal cornerDegrees = 60.0);
+// After straightening, a straight edge of the drawing is one long segment
+// and a round one is a chain of short segments. Only the short chains are
+// replaced by curves, so a circle comes out round while the edges of a star
+// stay dead straight. A point where the outline turns by more than
+// cornerDegrees is kept as it is either way, so a tip stays a tip.
+//
+// roundness says how long a segment may be, as a fraction of the diagonal of
+// the area the outline covers, before it counts as a straight edge.
+QPainterPath traced(const QPainterPath &path, qreal cornerDegrees = 60.0,
+                    qreal roundness = 0.15);
 
 }   // namespace FloodFill

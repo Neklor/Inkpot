@@ -148,16 +148,21 @@ QPointF middle(const QPointF &a, const QPointF &b)
     return QPointF((a.x() + b.x()) / 2.0, (a.y() + b.y()) / 2.0);
 }
 
-void traceRing(const QPolygonF &ring, qreal cornerDegrees, QPainterPath &into)
+void traceRing(const QPolygonF &ring, qreal cornerDegrees, qreal longEdge, QPainterPath &into)
 {
     const int count = ring.size();
     if (count < 3)
         return;
 
+    // A point is left alone where the outline turns sharply, and also where
+    // it runs into a long segment: that segment is a straight edge of the
+    // drawing, and bending it would be an invention.
     QVector<bool> corner(count, false);
     int corners = 0;
     for (int i = 0; i < count; ++i) {
-        if (turnAt(ring, i) > cornerDegrees) {
+        const qreal before = QLineF(ring.at((i - 1 + count) % count), ring.at(i)).length();
+        const qreal after = QLineF(ring.at(i), ring.at((i + 1) % count)).length();
+        if (turnAt(ring, i) > cornerDegrees || before > longEdge || after > longEdge) {
             corner[i] = true;
             ++corners;
         }
@@ -198,17 +203,21 @@ void traceRing(const QPolygonF &ring, qreal cornerDegrees, QPainterPath &into)
 
 }   // namespace
 
-QPainterPath FloodFill::traced(const QPainterPath &path, qreal cornerDegrees)
+QPainterPath FloodFill::traced(const QPainterPath &path, qreal cornerDegrees, qreal roundness)
 {
     QPainterPath curved;
     curved.setFillRule(path.fillRule());
+
+    const QRectF area = path.boundingRect();
+    const qreal diagonal = QLineF(area.topLeft(), area.bottomRight()).length();
+    const qreal longEdge = qMax(qreal(2.0), diagonal * roundness);
 
     const QList<QPolygonF> rings = path.toSubpathPolygons();
     for (const QPolygonF &ring : rings) {
         QPolygonF closed = ring;
         if (!closed.isEmpty() && closed.first() == closed.last())
             closed.removeLast();
-        traceRing(closed, cornerDegrees, curved);
+        traceRing(closed, cornerDegrees, longEdge, curved);
     }
 
     return curved.isEmpty() ? path : curved;

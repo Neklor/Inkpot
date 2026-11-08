@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Filled areas of shapes with straight edges came out bent when they were
+  made much larger. Tracing the outline with curves, added in 1.1.2, was
+  applied to every part of it that was not a sharp corner, so the arms of a
+  star sagged and its points drooped. Only the round parts are traced now: a
+  straight edge of the drawing survives the fill as one long segment, a round
+  one as a chain of short segments, and the two are told apart by that. A
+  star keeps straight arms and sharp points, a circle stays round.
+
 ### Changed
 
 - The shape tool's dropdown is easier to hit: larger pictures in the menu,
