@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.19)
 
 project(Inkpot
-    VERSION 1.1.3
+    VERSION 1.2.0
     DESCRIPTION "Draw and edit pictures made of objects"
     HOMEPAGE_URL "https://github.com/Neklor/Inkpot"
     LANGUAGES CXX)

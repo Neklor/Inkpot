@@ -7,14 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Fixed
-
-- In the list of shortcuts, the mouse gestures were set flush right and
-  wrapped, which left their lines starting at a different place each time.
-  They read from the left now, in a held back tone, and a key named inside
-  such a line is drawn as a key: Ctrl carries a cap of its own while the
-  mouse wheel beside it stays text. The entry for undo also said what it
-  would undo, so it changed with every step; it gives its plain name there.
+## [1.2.0] - 2026-11-13
 
 ### Added
 
@@ -29,6 +22,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   Backward in the Edit menu on Ctrl+Page Up and Ctrl+Page Down. Several
   objects move at once and keep their order among themselves, and a row can
   also be dragged straight to where it belongs.
+
+### Fixed
+
+- In the list of shortcuts, the mouse gestures were set flush right and
+  wrapped, which left their lines starting at a different place each time.
+  They read from the left now, in a held back tone, and a key named inside
+  such a line is drawn as a key: Ctrl carries a cap of its own while the
+  mouse wheel beside it stays text. The entry for undo also said what it
+  would undo, so it changed with every step; it gives its plain name there.
 
 ## [1.1.3] - 2026-11-08
 
@@ -150,7 +152,8 @@ First release.
   the toolbar so it cannot fall out of step, and an about dialog carrying
   version, author, licence and homepage.
 
-[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.1.3...HEAD
+[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.2.0
 [1.1.3]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.3
 [1.1.2]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.2
 [1.1.1]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.1
