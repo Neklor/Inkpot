@@ -3,7 +3,9 @@
 #include <QDialogButtonBox>
 #include <QFont>
 #include <QGridLayout>
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QPalette>
 #include <QList>
 #include <QMenu>
 #include <QMenuBar>
@@ -49,6 +51,76 @@ void collect(const QMenu *menu, QList<Entry> &entries)
     }
 }
 
+// A key is drawn as the cap one presses. Everything else is text.
+QLabel *keycap(const QString &text, QWidget *parent)
+{
+    auto *cap = new QLabel(text, parent);
+    cap->setFrameShape(QFrame::StyledPanel);
+    cap->setAlignment(Qt::AlignCenter);
+    cap->setMargin(3);
+    cap->setTextInteractionFlags(Qt::TextSelectableByMouse);
+    return cap;
+}
+
+// Explaining text next to the keys, held back a little so the keys stay the
+// thing the eye lands on. Mixed with the window colour rather than taken
+// from a fixed grey, which keeps it readable on a dark theme too.
+QColor mutedText(const QPalette &palette)
+{
+    const QColor text = palette.color(QPalette::WindowText);
+    const QColor behind = palette.color(QPalette::Window);
+    const auto blend = [](int a, int b) { return (a * 72 + b * 28) / 100; };
+    return QColor(blend(text.red(), behind.red()),
+                  blend(text.green(), behind.green()),
+                  blend(text.blue(), behind.blue()));
+}
+
+// A mouse entry is a sentence, but it may name a key in the middle of it:
+// "[Ctrl] + mouse wheel". What stands in brackets becomes a keycap, the rest
+// stays text. Returns nothing when there is no key in the line.
+QWidget *mixedRow(const QString &text, const QPalette &palette)
+{
+    if (!text.contains(QLatin1Char('[')))
+        return nullptr;
+
+    auto *row = new QWidget;
+    auto *line = new QHBoxLayout(row);
+    line->setContentsMargins(0, 0, 0, 0);
+    line->setSpacing(4);
+
+    int at = 0;
+    while (at < text.size()) {
+        const int open = text.indexOf(QLatin1Char('['), at);
+        if (open < 0)
+            break;
+        const int close = text.indexOf(QLatin1Char(']'), open);
+        if (close < 0)
+            break;
+
+        const QString before = text.mid(at, open - at).trimmed();
+        if (!before.isEmpty()) {
+            auto *plain = new QLabel(before);
+            QPalette faded = plain->palette();
+            faded.setColor(QPalette::WindowText, mutedText(palette));
+            plain->setPalette(faded);
+            line->addWidget(plain);
+        }
+        line->addWidget(keycap(text.mid(open + 1, close - open - 1), row));
+        at = close + 1;
+    }
+
+    const QString rest = text.mid(at).trimmed();
+    if (!rest.isEmpty()) {
+        auto *plain = new QLabel(rest);
+        QPalette faded = plain->palette();
+        faded.setColor(QPalette::WindowText, mutedText(palette));
+        plain->setPalette(faded);
+        line->addWidget(plain);
+    }
+    line->addStretch();
+    return row;
+}
+
 // framed marks real key combinations, which get a keycap look. The mouse
 // entries are whole sentences and are set as plain, wrapping text instead.
 void addSection(QVBoxLayout *layout, const QString &title, const QList<Entry> &entries,
@@ -73,19 +145,24 @@ void addSection(QVBoxLayout *layout, const QString &title, const QList<Entry> &e
     for (const Entry &entry : entries) {
         grid->addWidget(new QLabel(entry.action), row, 0);
 
-        auto *keys = new QLabel(entry.keys);
-        keys->setWordWrap(true);
-        keys->setTextInteractionFlags(Qt::TextSelectableByMouse);
         if (framed) {
-            keys->setFrameShape(QFrame::StyledPanel);
-            keys->setAlignment(Qt::AlignCenter);
-            keys->setMargin(3);
+            auto *keys = keycap(entry.keys, nullptr);
+            keys->setWordWrap(true);
+            grid->addWidget(keys, row, 1);
+        } else if (QWidget *mixed = mixedRow(entry.keys, heading->palette())) {
+            grid->addWidget(mixed, row, 1);
         } else {
+            auto *keys = new QLabel(entry.keys);
+            keys->setWordWrap(true);
+            keys->setTextInteractionFlags(Qt::TextSelectableByMouse);
             // Wrapped text set flush right leaves a ragged left edge, which
             // is what makes a two line entry hard to read.
             keys->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+            QPalette faded = keys->palette();
+            faded.setColor(QPalette::WindowText, mutedText(heading->palette()));
+            keys->setPalette(faded);
+            grid->addWidget(keys, row, 1);
         }
-        grid->addWidget(keys, row, 1);
         ++row;
     }
     layout->addLayout(grid);
@@ -126,7 +203,8 @@ ShortcutsDialog::ShortcutsDialog(QMenuBar *menuBar, QToolBar *toolBar, QWidget *
     }
 
     addSection(layout, tr("Mouse"), {
-        { tr("Zoom"),                   tr("Ctrl + mouse wheel") },
+        //: Anything in square brackets is drawn as a key to press.
+        { tr("Zoom"),                   tr("[Ctrl] + mouse wheel") },
         { tr("Pan the view"),           tr("Drag with the middle mouse button") },
         { tr("Edit a caption"),         tr("Double click with the selection tool") },
         { tr("Select several objects"), tr("Drag a rubber band with the selection tool") },

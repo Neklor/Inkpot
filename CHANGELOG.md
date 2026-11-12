@@ -11,8 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - In the list of shortcuts, the mouse gestures were set flush right and
   wrapped, which left their lines starting at a different place each time.
-  They read from the left now. The entry for undo also said what it would
-  undo, so it changed with every step; it gives its plain name there.
+  They read from the left now, in a held back tone, and a key named inside
+  such a line is drawn as a key: Ctrl carries a cap of its own while the
+  mouse wheel beside it stays text. The entry for undo also said what it
+  would undo, so it changed with every step; it gives its plain name there.
 
 ### Added
 

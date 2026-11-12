@@ -660,11 +660,8 @@ Do you want to save your changes?</source>
     </message>
     <message>
         <source>Zoom</source>
+        <extracomment>Anything in square brackets is drawn as a key to press.</extracomment>
         <translation>Zoom</translation>
-    </message>
-    <message>
-        <source>Ctrl + mouse wheel</source>
-        <translation>Ctrl + rueda del ratón</translation>
     </message>
     <message>
         <source>Pan the view</source>
@@ -689,6 +686,10 @@ Do you want to save your changes?</source>
     <message>
         <source>Drag a rubber band with the selection tool</source>
         <translation>Arrastrar un marco con la herramienta de selección</translation>
+    </message>
+    <message>
+        <source>[Ctrl] + mouse wheel</source>
+        <translation>[Ctrl] + rueda del ratón</translation>
     </message>
 </context>
 <context>

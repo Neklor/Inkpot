@@ -660,11 +660,8 @@ Möchtest Du die Änderungen speichern?</translation>
     </message>
     <message>
         <source>Zoom</source>
+        <extracomment>Anything in square brackets is drawn as a key to press.</extracomment>
         <translation>Zoomen</translation>
-    </message>
-    <message>
-        <source>Ctrl + mouse wheel</source>
-        <translation>Strg + Mausrad</translation>
     </message>
     <message>
         <source>Pan the view</source>
@@ -689,6 +686,10 @@ Möchtest Du die Änderungen speichern?</translation>
     <message>
         <source>Drag a rubber band with the selection tool</source>
         <translation>Mit dem Auswahlwerkzeug ein Gummiband aufziehen</translation>
+    </message>
+    <message>
+        <source>[Ctrl] + mouse wheel</source>
+        <translation>[Strg] + Mausrad</translation>
     </message>
 </context>
 <context>
