@@ -8,7 +8,6 @@
 #include <QListWidget>
 #include <QMenu>
 #include <QPalette>
-#include <QShortcut>
 #include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
@@ -96,14 +95,35 @@ ObjectListDock::ObjectListDock(CanvasScene *scene, QWidget *parent)
 
     const QColor symbol = palette().color(QPalette::WindowText);
 
+    // A tooltip that does not name the key leaves the key undiscovered.
+    const auto withKey = [](const QString &text, const QAction *action) {
+        return QStringLiteral("%1  (%2)")
+            .arg(text, action->shortcut().toString(QKeySequence::NativeText));
+    };
+
+    m_renameAction = new QAction(tr("&Rename Object"), this);
+    m_renameAction->setShortcut(QKeySequence(Qt::Key_F2));
+    m_renameAction->setToolTip(withKey(tr("Give the selected object a name"), m_renameAction));
+    connect(m_renameAction, &QAction::triggered, this, &ObjectListDock::startRenaming);
+
+    m_forwardAction = new QAction(Icons::stackForward(symbol), tr("Bring &Forward"), this);
+    m_forwardAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_PageUp));
+    m_forwardAction->setToolTip(
+        withKey(tr("Bring the selected objects one place forward"), m_forwardAction));
+    connect(m_forwardAction, &QAction::triggered, this, [this] { restack(true); });
+
+    m_backwardAction = new QAction(Icons::stackBackward(symbol), tr("Send &Backward"), this);
+    m_backwardAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_PageDown));
+    m_backwardAction->setToolTip(
+        withKey(tr("Send the selected objects one place back"), m_backwardAction));
+    connect(m_backwardAction, &QAction::triggered, this, [this] { restack(false); });
+
     m_forwardButton = new QToolButton(this);
-    m_forwardButton->setIcon(Icons::stackForward(symbol));
-    m_forwardButton->setToolTip(tr("Bring the selected objects one place forward"));
+    m_forwardButton->setDefaultAction(m_forwardAction);
     m_forwardButton->setAutoRaise(true);
 
     m_backwardButton = new QToolButton(this);
-    m_backwardButton->setIcon(Icons::stackBackward(symbol));
-    m_backwardButton->setToolTip(tr("Send the selected objects one place back"));
+    m_backwardButton->setDefaultAction(m_backwardAction);
     m_backwardButton->setAutoRaise(true);
 
     auto *buttons = new QHBoxLayout;
@@ -124,14 +144,13 @@ ObjectListDock::ObjectListDock(CanvasScene *scene, QWidget *parent)
     // visibly out of reach.
     const auto updateButtons = [this] {
         const bool any = !m_scene->selectedItems().isEmpty();
-        m_forwardButton->setEnabled(any);
-        m_backwardButton->setEnabled(any);
+        m_forwardAction->setEnabled(any);
+        m_backwardAction->setEnabled(any);
+        m_renameAction->setEnabled(m_scene->singleSelectedObject() != nullptr);
     };
     updateButtons();
     connect(m_scene, &QGraphicsScene::selectionChanged, this, updateButtons);
 
-    connect(m_forwardButton, &QToolButton::clicked, this, [this] { restack(true); });
-    connect(m_backwardButton, &QToolButton::clicked, this, [this] { restack(false); });
     connect(m_list, &QListWidget::itemChanged, this, &ObjectListDock::renameRow);
 
     // Dragging a row is carried out as a removal and an insertion, so the
@@ -146,11 +165,6 @@ ObjectListDock::ObjectListDock(CanvasScene *scene, QWidget *parent)
     connect(m_list->model(), &QAbstractItemModel::rowsInserted, this, orderMayHaveChanged);
     connect(m_list, &QListWidget::customContextMenuRequested,
             this, &ObjectListDock::showMenu);
-
-    // F2 is the usual key for this and is not taken anywhere else.
-    auto *rename = new QShortcut(QKeySequence(Qt::Key_F2), m_list);
-    rename->setContext(Qt::WidgetShortcut);
-    connect(rename, &QShortcut::activated, this, &ObjectListDock::startRenaming);
 
     // Only a changed set of objects rebuilds the list. Turning and scaling
     // report through objectPropertiesChanged on every mouse move, and
@@ -260,8 +274,25 @@ void ObjectListDock::renameRow(QListWidgetItem *row)
 
 void ObjectListDock::startRenaming()
 {
-    if (QListWidgetItem *row = m_list->currentItem())
-        m_list->editItem(row);
+    // The key works wherever the window has focus, so the row is looked up
+    // from what is selected on the canvas rather than from the list.
+    QListWidgetItem *row = nullptr;
+    if (QGraphicsItem *only = m_scene->singleSelectedObject()) {
+        for (int i = 0; i < m_list->count() && !row; ++i) {
+            if (itemOf(m_list->item(i)) == only)
+                row = m_list->item(i);
+        }
+    }
+    if (!row)
+        row = m_list->currentItem();
+    if (!row)
+        return;
+
+    if (isHidden())
+        show();   // renaming in a list nobody can see would be a riddle
+
+    m_list->setCurrentItem(row);
+    m_list->editItem(row);
 }
 
 void ObjectListDock::restack(bool forward)
@@ -273,27 +304,15 @@ void ObjectListDock::showMenu(const QPoint &where)
 {
     QListWidgetItem *row = m_list->itemAt(where);
 
-    QMenu menu(this);
-    QAction *rename = menu.addAction(tr("Rename"));
-    rename->setShortcut(QKeySequence(Qt::Key_F2));
-    rename->setEnabled(row != nullptr);
-    menu.addSeparator();
-    QAction *forward = menu.addAction(tr("Bring forward"));
-    QAction *backward = menu.addAction(tr("Send backward"));
-
-    const bool anySelected = !m_list->selectedItems().isEmpty();
-    forward->setEnabled(anySelected);
-    backward->setEnabled(anySelected);
-
-    QAction *chosen = menu.exec(m_list->viewport()->mapToGlobal(where));
-    if (chosen == rename && row) {
+    if (row)
         m_list->setCurrentItem(row);
-        m_list->editItem(row);
-    } else if (chosen == forward) {
-        restack(true);
-    } else if (chosen == backward) {
-        restack(false);
-    }
+
+    QMenu menu(this);
+    menu.addAction(m_renameAction);
+    menu.addSeparator();
+    menu.addAction(m_forwardAction);
+    menu.addAction(m_backwardAction);
+    menu.exec(m_list->viewport()->mapToGlobal(where));
 }
 
 void ObjectListDock::applyListOrder()

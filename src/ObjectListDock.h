@@ -8,6 +8,7 @@ class CanvasScene;
 class QGraphicsItem;
 class QColor;
 class QListWidget;
+class QAction;
 class QListWidgetItem;
 class QToolButton;
 
@@ -27,6 +28,14 @@ class ObjectListDock : public QDockWidget
 public:
     explicit ObjectListDock(CanvasScene *scene, QWidget *parent = nullptr);
 
+    // The three steps the list offers, so the window can put them into its
+    // menu as well. Keeping one action per step rather than a button here
+    // and an entry there is what lets the shortcut help find them and the
+    // tooltips name the keys.
+    QAction *renameAction() const { return m_renameAction; }
+    QAction *forwardAction() const { return m_forwardAction; }
+    QAction *backwardAction() const { return m_backwardAction; }
+
 private:
     void rebuild();
     void showSceneSelection();
@@ -45,6 +54,9 @@ private:
     QListWidget *m_list;
     QToolButton *m_forwardButton;
     QToolButton *m_backwardButton;
+    QAction *m_renameAction;
+    QAction *m_forwardAction;
+    QAction *m_backwardAction;
 
     // Drawing an icon means painting a pixmap, so each kind and colour is
     // drawn once and then reused.
