@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Objects can be given a name of their own. Double click a row in the object
+  list, press F2 or pick Rename from its context menu; an empty name puts
+  back what the object is. The name is kept in the project file, and a file
+  written by an older version simply has none.
+
+- Objects can be moved through the stack, which decides who covers whom. Two
+  buttons below the object list and the entries Bring Forward and Send
+  Backward in the Edit menu, on Ctrl+] and Ctrl+[. Several objects move at
+  once and keep their order among themselves.
+
 ## [1.1.3] - 2026-11-08
 
 ### Fixed

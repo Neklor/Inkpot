@@ -228,3 +228,55 @@ void TextCommand::undo()
     m_item->applyPlacement();
     m_scene->objectsWereChanged();
 }
+
+RenameCommand::RenameCommand(CanvasScene *scene, QGraphicsItem *item,
+                             const QString &before, const QString &after)
+    : QUndoCommand(QCoreApplication::translate("Commands", "Rename object"))
+    , m_scene(scene)
+    , m_item(item)
+    , m_before(before)
+    , m_after(after)
+{
+}
+
+void RenameCommand::undo()
+{
+    if (auto *object = dynamic_cast<InkObject *>(m_item))
+        object->setName(m_before);
+    m_scene->objectsWereChanged();
+}
+
+void RenameCommand::redo()
+{
+    if (auto *object = dynamic_cast<InkObject *>(m_item))
+        object->setName(m_after);
+    m_scene->objectsWereChanged();
+}
+
+StackCommand::StackCommand(CanvasScene *scene, const QString &text,
+                           const QList<QGraphicsItem *> &items,
+                           const QList<qreal> &before, const QList<qreal> &after)
+    : QUndoCommand(text)
+    , m_scene(scene)
+    , m_items(items)
+    , m_before(before)
+    , m_after(after)
+{
+}
+
+void StackCommand::apply(const QList<qreal> &values)
+{
+    for (int i = 0; i < m_items.size() && i < values.size(); ++i)
+        m_items.at(i)->setZValue(values.at(i));
+    m_scene->objectsWereChanged();
+}
+
+void StackCommand::undo()
+{
+    apply(m_before);
+}
+
+void StackCommand::redo()
+{
+    apply(m_after);
+}

@@ -31,6 +31,15 @@ public:
     // Name shown in the user interface.
     virtual QString displayName() const = 0;
 
+    // A name the user gave this object, empty unless one was typed in. The
+    // object list shows it in place of what the object is, so a drawing with
+    // many pieces can be read without guessing from the icons.
+    QString name() const { return m_name; }
+    void setName(const QString &name) { m_name = name.trimmed(); }
+
+    // What the object should be called in the user interface.
+    QString label() const { return m_name.isEmpty() ? displayName() : m_name; }
+
     // Every object is a QGraphicsItem as well.
     virtual QGraphicsItem *asItem() = 0;
 
@@ -73,6 +82,7 @@ protected:
     // The shape minus the erased parts, used for hit testing.
     QPainterPath withoutErasedArea(const QPainterPath &path) const;
 
+    QString m_name;
     QPainterPath m_erasedMask;   // in item coordinates
     qreal m_angle = 0.0;
     qreal m_scaleX = 1.0;

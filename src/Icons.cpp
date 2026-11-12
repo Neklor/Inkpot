@@ -4,6 +4,7 @@
 #include <QPainter>
 #include <QPainterPath>
 #include <QPixmap>
+#include <QPolygonF>
 
 namespace {
 
@@ -433,6 +434,49 @@ QIcon curvedArrow(const QColor &color, bool mirrored)
 
     painter.end();
     return QIcon(pixmap);
+}
+
+namespace {
+
+// An arrow pointing away from a line: up means out in front of the rest of
+// the drawing, down means behind it.
+QIcon stackArrow(const QColor &color, bool forward)
+{
+    QPixmap pixmap = createPixmap();
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    if (!forward) {
+        painter.translate(0.0, 64.0);
+        painter.scale(1.0, -1.0);
+    }
+
+    QPen pen(color, 7.0);
+    pen.setCapStyle(Qt::RoundCap);
+    painter.setPen(pen);
+    painter.drawLine(QPointF(12.0, 54.0), QPointF(52.0, 54.0));   // the others
+    painter.drawLine(QPointF(32.0, 44.0), QPointF(32.0, 22.0));   // the shaft
+
+    QPolygonF head;
+    head << QPointF(32.0, 8.0) << QPointF(47.0, 26.0) << QPointF(17.0, 26.0);
+    painter.setPen(Qt::NoPen);
+    painter.setBrush(color);
+    painter.drawPolygon(head);
+
+    painter.end();
+    return QIcon(pixmap);
+}
+
+}   // namespace
+
+QIcon stackForward(const QColor &color)
+{
+    return stackArrow(color, true);
+}
+
+QIcon stackBackward(const QColor &color)
+{
+    return stackArrow(color, false);
 }
 
 QIcon undo(const QColor &color)

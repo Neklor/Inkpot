@@ -152,3 +152,42 @@ private:
     QString m_before;
     QString m_after;
 };
+
+// Giving an object a name of its own, or taking it away again.
+class RenameCommand : public QUndoCommand
+{
+public:
+    RenameCommand(CanvasScene *scene, QGraphicsItem *item,
+                  const QString &before, const QString &after);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    CanvasScene *m_scene;
+    QGraphicsItem *m_item;
+    QString m_before;
+    QString m_after;
+};
+
+// Moving objects up or down the stack. The whole order is kept on both sides
+// rather than the step itself, which makes undo exact even when several
+// objects move at once.
+class StackCommand : public QUndoCommand
+{
+public:
+    StackCommand(CanvasScene *scene, const QString &text,
+                 const QList<QGraphicsItem *> &items,
+                 const QList<qreal> &before, const QList<qreal> &after);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    void apply(const QList<qreal> &values);
+
+    CanvasScene *m_scene;
+    QList<QGraphicsItem *> m_items;
+    QList<qreal> m_before;
+    QList<qreal> m_after;
+};

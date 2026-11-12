@@ -36,6 +36,11 @@ QIcon fromPath(const QPainterPath &path, const QColor &accent, const QColor &out
                bool filled);
 
 // The usual curved arrows for undo and redo.
+// Moving an object through the stack: a plain arrow over a line that stands
+// for the rest of the drawing.
+QIcon stackForward(const QColor &color);
+QIcon stackBackward(const QColor &color);
+
 QIcon undo(const QColor &color);
 QIcon redo(const QColor &color);
 

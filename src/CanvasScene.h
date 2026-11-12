@@ -86,6 +86,15 @@ public:
     void selectAllObjects();
     QGraphicsItem *singleSelectedObject() const;
 
+    // Giving one object a name of its own. An empty name takes it away again
+    // and the list falls back to saying what the object is.
+    void renameObject(QGraphicsItem *item, const QString &name);
+
+    // Moving the selected objects one place up or down the stack, which is
+    // what decides who covers whom. Several at once keep their order among
+    // themselves. Returns false when nothing could move.
+    bool restackSelection(bool forward);
+
     // Properties of the selection.
     bool setSelectedObjectsColor(const QColor &color);
     QColor selectedObjectColor() const;

@@ -2,10 +2,17 @@
 
 #include <algorithm>
 
+#include <QAction>
 #include <QGraphicsItem>
+#include <QHBoxLayout>
 #include <QListWidget>
+#include <QMenu>
 #include <QPalette>
+#include <QShortcut>
+#include <QToolButton>
+#include <QVBoxLayout>
 #include <QVariant>
+#include <QWidget>
 
 #include "CanvasScene.h"
 #include "FillItem.h"
@@ -20,9 +27,13 @@ namespace {
 
 constexpr int kItemRole = Qt::UserRole + 1;
 
-// A caption is easier to recognise by what it says than by its type.
+// A given name wins; otherwise a caption is easier to recognise by what it
+// says than by its type.
 QString rowLabel(QGraphicsItem *item, InkObject *object)
 {
+    if (!object->name().isEmpty())
+        return object->name();
+
     if (auto *text = dynamic_cast<TextItem *>(item)) {
         QString content = text->toPlainText().simplified();
         if (!content.isEmpty()) {
@@ -76,7 +87,56 @@ ObjectListDock::ObjectListDock(CanvasScene *scene, QWidget *parent)
     m_list->setSelectionMode(QAbstractItemView::ExtendedSelection);
     m_list->setIconSize(QSize(20, 20));
     m_list->setUniformItemSizes(true);
-    setWidget(m_list);
+    m_list->setEditTriggers(QAbstractItemView::DoubleClicked
+                            | QAbstractItemView::SelectedClicked);
+    m_list->setContextMenuPolicy(Qt::CustomContextMenu);
+
+    const QColor symbol = palette().color(QPalette::WindowText);
+
+    m_forwardButton = new QToolButton(this);
+    m_forwardButton->setIcon(Icons::stackForward(symbol));
+    m_forwardButton->setToolTip(tr("Bring the selected objects one place forward"));
+    m_forwardButton->setAutoRaise(true);
+
+    m_backwardButton = new QToolButton(this);
+    m_backwardButton->setIcon(Icons::stackBackward(symbol));
+    m_backwardButton->setToolTip(tr("Send the selected objects one place back"));
+    m_backwardButton->setAutoRaise(true);
+
+    auto *buttons = new QHBoxLayout;
+    buttons->setContentsMargins(0, 0, 0, 0);
+    buttons->addWidget(m_forwardButton);
+    buttons->addWidget(m_backwardButton);
+    buttons->addStretch();
+
+    auto *body = new QWidget(this);
+    auto *column = new QVBoxLayout(body);
+    column->setContentsMargins(2, 2, 2, 2);
+    column->setSpacing(2);
+    column->addWidget(m_list);
+    column->addLayout(buttons);
+    setWidget(body);
+
+    // A button that does nothing when pressed is worse than one that is
+    // visibly out of reach.
+    const auto updateButtons = [this] {
+        const bool any = !m_scene->selectedItems().isEmpty();
+        m_forwardButton->setEnabled(any);
+        m_backwardButton->setEnabled(any);
+    };
+    updateButtons();
+    connect(m_scene, &QGraphicsScene::selectionChanged, this, updateButtons);
+
+    connect(m_forwardButton, &QToolButton::clicked, this, [this] { restack(true); });
+    connect(m_backwardButton, &QToolButton::clicked, this, [this] { restack(false); });
+    connect(m_list, &QListWidget::itemChanged, this, &ObjectListDock::renameRow);
+    connect(m_list, &QListWidget::customContextMenuRequested,
+            this, &ObjectListDock::showMenu);
+
+    // F2 is the usual key for this and is not taken anywhere else.
+    auto *rename = new QShortcut(QKeySequence(Qt::Key_F2), m_list);
+    rename->setContext(Qt::WidgetShortcut);
+    connect(rename, &QShortcut::activated, this, &ObjectListDock::startRenaming);
 
     // Only a changed set of objects rebuilds the list. Turning and scaling
     // report through objectPropertiesChanged on every mouse move, and
@@ -110,6 +170,7 @@ void ObjectListDock::rebuild()
             continue;
 
         auto *row = new QListWidgetItem(iconFor(item, object, outline), rowLabel(item, object));
+        row->setFlags(row->flags() | Qt::ItemIsEditable);
         row->setData(kItemRole, QVariant::fromValue(reinterpret_cast<quintptr>(item)));
         m_list->addItem(row);
         row->setSelected(item->isSelected());
@@ -145,4 +206,71 @@ void ObjectListDock::applyListSelection()
             item->setSelected(entry->isSelected());
     }
     m_syncing = false;
+}
+
+QGraphicsItem *ObjectListDock::itemOf(const QListWidgetItem *row) const
+{
+    if (!row)
+        return nullptr;
+    return reinterpret_cast<QGraphicsItem *>(row->data(kItemRole).value<quintptr>());
+}
+
+void ObjectListDock::renameRow(QListWidgetItem *row)
+{
+    if (m_syncing)
+        return;
+
+    QGraphicsItem *item = itemOf(row);
+    if (!item)
+        return;
+
+    // An empty name means the object goes back to being called what it is.
+    m_scene->renameObject(item, row->text());
+
+    // Whatever the object ends up being called is what the row has to show,
+    // which is not the typed text when the name was cleared.
+    auto *object = dynamic_cast<InkObject *>(item);
+    if (object && row->text() != rowLabel(item, object)) {
+        m_syncing = true;
+        row->setText(rowLabel(item, object));
+        m_syncing = false;
+    }
+}
+
+void ObjectListDock::startRenaming()
+{
+    if (QListWidgetItem *row = m_list->currentItem())
+        m_list->editItem(row);
+}
+
+void ObjectListDock::restack(bool forward)
+{
+    m_scene->restackSelection(forward);
+}
+
+void ObjectListDock::showMenu(const QPoint &where)
+{
+    QListWidgetItem *row = m_list->itemAt(where);
+
+    QMenu menu(this);
+    QAction *rename = menu.addAction(tr("Rename"));
+    rename->setShortcut(QKeySequence(Qt::Key_F2));
+    rename->setEnabled(row != nullptr);
+    menu.addSeparator();
+    QAction *forward = menu.addAction(tr("Bring forward"));
+    QAction *backward = menu.addAction(tr("Send backward"));
+
+    const bool anySelected = !m_list->selectedItems().isEmpty();
+    forward->setEnabled(anySelected);
+    backward->setEnabled(anySelected);
+
+    QAction *chosen = menu.exec(m_list->viewport()->mapToGlobal(where));
+    if (chosen == rename && row) {
+        m_list->setCurrentItem(row);
+        m_list->editItem(row);
+    } else if (chosen == forward) {
+        restack(true);
+    } else if (chosen == backward) {
+        restack(false);
+    }
 }

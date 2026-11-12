@@ -253,6 +253,20 @@ void MainWindow::createActions()
     deselectAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+Shift+A")));
     connect(deselectAction, &QAction::triggered, this, [this] { m_scene->clearSelection(); });
 
+    editMenu->addSeparator();
+
+    // Which object covers which. The same two steps sit as buttons under the
+    // object list, where the order can be seen while it changes.
+    QAction *forwardAction = editMenu->addAction(tr("Bring &Forward"));
+    forwardAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+]")));
+    connect(forwardAction, &QAction::triggered, this,
+            [this] { m_scene->restackSelection(true); });
+
+    QAction *backwardAction = editMenu->addAction(tr("Send &Backward"));
+    backwardAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+[")));
+    connect(backwardAction, &QAction::triggered, this,
+            [this] { m_scene->restackSelection(false); });
+
     QMenu *viewMenu = menuBar()->addMenu(tr("&View"));
 
     QAction *zoomInAction = viewMenu->addAction(tr("Zoom &In"));

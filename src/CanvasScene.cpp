@@ -693,6 +693,64 @@ TextItem *CanvasScene::singleSelectedText() const
     return dynamic_cast<TextItem *>(singleSelectedObject());
 }
 
+void CanvasScene::renameObject(QGraphicsItem *item, const QString &name)
+{
+    auto *object = dynamic_cast<InkObject *>(item);
+    if (!object)
+        return;
+
+    const QString wanted = name.trimmed();
+    if (wanted == object->name())
+        return;
+
+    m_undoStack->push(new RenameCommand(this, item, object->name(), wanted));
+}
+
+bool CanvasScene::restackSelection(bool forward)
+{
+    QList<QGraphicsItem *> all = objects();
+    std::sort(all.begin(), all.end(), [](QGraphicsItem *a, QGraphicsItem *b) {
+        return a->zValue() < b->zValue();
+    });
+    if (all.size() < 2)
+        return false;
+
+    QList<qreal> before;
+    before.reserve(all.size());
+    for (QGraphicsItem *item : all)
+        before << item->zValue();
+
+    // Each selected object trades places with its unselected neighbour. Going
+    // through the list from the far end means a block of selected objects
+    // travels as one and keeps its own order.
+    QList<QGraphicsItem *> order = all;
+    if (forward) {
+        for (int i = order.size() - 2; i >= 0; --i) {
+            if (order.at(i)->isSelected() && !order.at(i + 1)->isSelected())
+                order.swapItemsAt(i, i + 1);
+        }
+    } else {
+        for (int i = 1; i < order.size(); ++i) {
+            if (order.at(i)->isSelected() && !order.at(i - 1)->isSelected())
+                order.swapItemsAt(i, i - 1);
+        }
+    }
+    if (order == all)
+        return false;   // already at the end of the stack, or nothing selected
+
+    // The places keep their numbers and the objects move between them, so the
+    // values stay as tidy as they were.
+    QList<qreal> after;
+    after.reserve(all.size());
+    for (QGraphicsItem *item : all)
+        after << before.at(order.indexOf(item));
+
+    m_undoStack->push(new StackCommand(this,
+                                       forward ? tr("Bring forward") : tr("Send backward"),
+                                       all, before, after));
+    return true;
+}
+
 bool CanvasScene::fillAt(const QPointF &scenePos, const QColor &color, int tolerance)
 {
     const QRectF page = pageRect();
@@ -933,6 +991,8 @@ QJsonObject CanvasScene::toJson() const
         json[QStringLiteral("x")] = item->pos().x();
         json[QStringLiteral("y")] = item->pos().y();
         json[QStringLiteral("z")] = item->zValue();
+        if (!object->name().isEmpty())
+            json[QStringLiteral("name")] = object->name();
 
         // Angle and scale are written instead of the raw matrix: that keeps
         // the file readable and lets the matrix be rebuilt in the right order.
@@ -999,6 +1059,8 @@ bool CanvasScene::fromJson(const QJsonObject &json, QString *error)
 
         object->setPlacement(objectJson.value(QStringLiteral("rotation")).toDouble(0.0),
                              scaleX, scaleY);
+
+        object->setName(objectJson.value(QStringLiteral("name")).toString());
 
         const QString erased = objectJson.value(QStringLiteral("erased")).toString();
         if (!erased.isEmpty())
