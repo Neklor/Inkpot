@@ -257,13 +257,18 @@ void MainWindow::createActions()
 
     // Which object covers which. The same two steps sit as buttons under the
     // object list, where the order can be seen while it changes.
+    //
+    // Page up and down sit in the same place on every keyboard layout, which
+    // the brackets that other drawing programs use do not: on a German one
+    // they need AltGr, so the whole thing would read Ctrl+AltGr+9. Plain
+    // page up and down scroll the canvas, hence Ctrl.
     QAction *forwardAction = editMenu->addAction(tr("Bring &Forward"));
-    forwardAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+]")));
+    forwardAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_PageUp));
     connect(forwardAction, &QAction::triggered, this,
             [this] { m_scene->restackSelection(true); });
 
     QAction *backwardAction = editMenu->addAction(tr("Send &Backward"));
-    backwardAction->setShortcut(QKeySequence(QStringLiteral("Ctrl+[")));
+    backwardAction->setShortcut(QKeySequence(Qt::CTRL | Qt::Key_PageDown));
     connect(backwardAction, &QAction::triggered, this,
             [this] { m_scene->restackSelection(false); });
 

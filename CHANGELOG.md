@@ -15,10 +15,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   written by an older version simply has none.
 
 - Objects can be moved through the stack, which decides who covers whom. Two
-  buttons below the object list and the entries Bring Forward and Send
-  Backward in the Edit menu, on Ctrl+] and Ctrl+[. Several objects move at
-  once and keep their order among themselves. A row can also be dragged
-  straight to where it belongs.
+  buttons below the object list, and the entries Bring Forward and Send
+  Backward in the Edit menu on Ctrl+Page Up and Ctrl+Page Down. Several
+  objects move at once and keep their order among themselves, and a row can
+  also be dragged straight to where it belongs.
 
 ## [1.1.3] - 2026-11-08
 
