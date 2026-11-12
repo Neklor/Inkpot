@@ -9,6 +9,7 @@
 #include <QMenu>
 #include <QPalette>
 #include <QShortcut>
+#include <QTimer>
 #include <QToolButton>
 #include <QVBoxLayout>
 #include <QVariant>
@@ -90,6 +91,8 @@ ObjectListDock::ObjectListDock(CanvasScene *scene, QWidget *parent)
     m_list->setEditTriggers(QAbstractItemView::DoubleClicked
                             | QAbstractItemView::SelectedClicked);
     m_list->setContextMenuPolicy(Qt::CustomContextMenu);
+    m_list->setDragDropMode(QAbstractItemView::InternalMove);
+    m_list->setDefaultDropAction(Qt::MoveAction);
 
     const QColor symbol = palette().color(QPalette::WindowText);
 
@@ -130,6 +133,17 @@ ObjectListDock::ObjectListDock(CanvasScene *scene, QWidget *parent)
     connect(m_forwardButton, &QToolButton::clicked, this, [this] { restack(true); });
     connect(m_backwardButton, &QToolButton::clicked, this, [this] { restack(false); });
     connect(m_list, &QListWidget::itemChanged, this, &ObjectListDock::renameRow);
+
+    // Dragging a row is carried out as a removal and an insertion, so the
+    // order is read once both are done rather than on each half.
+    const auto orderMayHaveChanged = [this] {
+        if (m_syncing)
+            return;
+        QTimer::singleShot(0, this, &ObjectListDock::applyListOrder);
+    };
+    connect(m_list->model(), &QAbstractItemModel::rowsMoved, this, orderMayHaveChanged);
+    connect(m_list->model(), &QAbstractItemModel::rowsRemoved, this, orderMayHaveChanged);
+    connect(m_list->model(), &QAbstractItemModel::rowsInserted, this, orderMayHaveChanged);
     connect(m_list, &QListWidget::customContextMenuRequested,
             this, &ObjectListDock::showMenu);
 
@@ -224,17 +238,24 @@ void ObjectListDock::renameRow(QListWidgetItem *row)
     if (!item)
         return;
 
-    // An empty name means the object goes back to being called what it is.
-    m_scene->renameObject(item, row->text());
+    // This also fires while a dragged row is being filled in, field by
+    // field, and renaming from here would rebuild the list under Qt's feet
+    // while it is still writing to the row. So the object and the typed text
+    // are taken along and the work is done once that is over.
+    const QString typed = row->text();
+    QTimer::singleShot(0, this, [this, item, typed] {
+        if (!m_scene->objects().contains(item))
+            return;   // the object went away in the meantime
 
-    // Whatever the object ends up being called is what the row has to show,
-    // which is not the typed text when the name was cleared.
-    auto *object = dynamic_cast<InkObject *>(item);
-    if (object && row->text() != rowLabel(item, object)) {
-        m_syncing = true;
-        row->setText(rowLabel(item, object));
-        m_syncing = false;
-    }
+        // An empty name means the object goes back to being called what it
+        // is. A rename of its own rebuilds the list through the scene; only
+        // when nothing changed does the row have to be put right here.
+        m_scene->renameObject(item, typed);
+        if (auto *object = dynamic_cast<InkObject *>(item)) {
+            if (object->label() != typed)
+                rebuild();
+        }
+    });
 }
 
 void ObjectListDock::startRenaming()
@@ -273,4 +294,25 @@ void ObjectListDock::showMenu(const QPoint &where)
     } else if (chosen == backward) {
         restack(false);
     }
+}
+
+void ObjectListDock::applyListOrder()
+{
+    if (m_syncing)
+        return;
+
+    QList<QGraphicsItem *> topFirst;
+    topFirst.reserve(m_list->count());
+    for (int row = 0; row < m_list->count(); ++row) {
+        if (QGraphicsItem *item = itemOf(m_list->item(row)))
+            topFirst << item;
+    }
+
+    // A half finished move would name fewer objects than there are. Leaving
+    // it alone is right: the next signal arrives with the list complete.
+    if (topFirst.size() != m_scene->objectCount())
+        return;
+
+    if (!m_scene->setStackOrder(topFirst))
+        rebuild();   // nothing changed, so put the rows back where they belong
 }

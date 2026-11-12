@@ -751,6 +751,48 @@ bool CanvasScene::restackSelection(bool forward)
     return true;
 }
 
+bool CanvasScene::setStackOrder(const QList<QGraphicsItem *> &topFirst)
+{
+    QList<QGraphicsItem *> all = objects();
+    if (topFirst.size() != all.size())
+        return false;
+
+    // The order has to name the objects that are actually there, no more and
+    // no less, or the stack would end up with holes or duplicates.
+    for (QGraphicsItem *item : topFirst) {
+        if (!all.contains(item))
+            return false;
+    }
+
+    std::sort(all.begin(), all.end(), [](QGraphicsItem *a, QGraphicsItem *b) {
+        return a->zValue() < b->zValue();
+    });
+
+    QList<qreal> before;
+    before.reserve(all.size());
+    for (QGraphicsItem *item : all)
+        before << item->zValue();
+
+    // The places keep their numbers; only who stands on them changes.
+    QList<QGraphicsItem *> bottomFirst = topFirst;
+    std::reverse(bottomFirst.begin(), bottomFirst.end());
+
+    QList<qreal> after;
+    after.reserve(all.size());
+    bool moved = false;
+    for (QGraphicsItem *item : all) {
+        const qreal z = before.at(bottomFirst.indexOf(item));
+        if (!qFuzzyCompare(z, item->zValue()))
+            moved = true;
+        after << z;
+    }
+    if (!moved)
+        return false;
+
+    m_undoStack->push(new StackCommand(this, tr("Reorder objects"), all, before, after));
+    return true;
+}
+
 bool CanvasScene::fillAt(const QPointF &scenePos, const QColor &color, int tolerance)
 {
     const QRectF page = pageRect();

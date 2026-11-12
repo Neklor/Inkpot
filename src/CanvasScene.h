@@ -95,6 +95,11 @@ public:
     // themselves. Returns false when nothing could move.
     bool restackSelection(bool forward);
 
+    // Putting the whole stack in a given order, topmost first, as one step in
+    // the history. Returns false when the order is unchanged or does not
+    // name exactly the objects that are there.
+    bool setStackOrder(const QList<QGraphicsItem *> &topFirst);
+
     // Properties of the selection.
     bool setSelectedObjectsColor(const QColor &color);
     QColor selectedObjectColor() const;

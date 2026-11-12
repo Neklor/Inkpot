@@ -18,7 +18,8 @@ class QToolButton;
 // block of them with Shift, which the list widget handles on its own.
 //
 // A row can be renamed in place, by double click, by F2 or from the context
-// menu, and the two buttons below move the selection through the stack.
+// menu. The two buttons below move the selection through the stack, and a
+// row can also be dragged to its place.
 class ObjectListDock : public QDockWidget
 {
     Q_OBJECT
@@ -34,6 +35,7 @@ private:
     void startRenaming();
     void showMenu(const QPoint &where);
     void restack(bool forward);
+    void applyListOrder();
 
     QGraphicsItem *itemOf(const QListWidgetItem *row) const;
 
