@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
+<?xml version='1.0' encoding='utf-8'?>
 <TS version="2.1" language="fr_FR">
 <context>
     <name>CanvasScene</name>
@@ -31,6 +30,18 @@
         <source>The file is not an Inkpot project.</source>
         <translation>Ce fichier n'est pas un projet Inkpot.</translation>
     </message>
+    <message>
+        <source>Bring forward</source>
+        <translation>Avancer d'un rang</translation>
+    </message>
+    <message>
+        <source>Send backward</source>
+        <translation>Reculer d'un rang</translation>
+    </message>
+    <message>
+        <source>Reorder objects</source>
+        <translation>Réordonner les objets</translation>
+    </message>
 </context>
 <context>
     <name>CanvasView</name>
@@ -60,6 +71,10 @@
     <message>
         <source>Edit caption</source>
         <translation>Modifier le texte</translation>
+    </message>
+    <message>
+        <source>Rename object</source>
+        <translation>Renommer l'objet</translation>
     </message>
 </context>
 <context>
@@ -549,6 +564,30 @@ Voulez-vous enregistrer les modifications ?</translation>
     <message>
         <source>Objects</source>
         <translation>Objets</translation>
+    </message>
+    <message>
+        <source>&amp;Rename Object</source>
+        <translation>Reno&amp;mmer l'objet</translation>
+    </message>
+    <message>
+        <source>Give the selected object a name</source>
+        <translation>Donner un nom à l'objet sélectionné</translation>
+    </message>
+    <message>
+        <source>Bring &amp;Forward</source>
+        <translation>&amp;Avancer d'un rang</translation>
+    </message>
+    <message>
+        <source>Bring the selected objects one place forward</source>
+        <translation>Avancer les objets sélectionnés d'un rang</translation>
+    </message>
+    <message>
+        <source>Send &amp;Backward</source>
+        <translation>Rec&amp;uler d'un rang</translation>
+    </message>
+    <message>
+        <source>Send the selected objects one place back</source>
+        <translation>Reculer les objets sélectionnés d'un rang</translation>
     </message>
 </context>
 <context>

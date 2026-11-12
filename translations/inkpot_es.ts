@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
+<?xml version='1.0' encoding='utf-8'?>
 <TS version="2.1" language="es_ES">
 <context>
     <name>CanvasScene</name>
@@ -31,6 +30,18 @@
         <source>The file is not an Inkpot project.</source>
         <translation>El archivo no es un proyecto de Inkpot.</translation>
     </message>
+    <message>
+        <source>Bring forward</source>
+        <translation>Traer adelante</translation>
+    </message>
+    <message>
+        <source>Send backward</source>
+        <translation>Enviar atrás</translation>
+    </message>
+    <message>
+        <source>Reorder objects</source>
+        <translation>Reordenar objetos</translation>
+    </message>
 </context>
 <context>
     <name>CanvasView</name>
@@ -60,6 +71,10 @@
     <message>
         <source>Edit caption</source>
         <translation>Editar texto</translation>
+    </message>
+    <message>
+        <source>Rename object</source>
+        <translation>Renombrar objeto</translation>
     </message>
 </context>
 <context>
@@ -549,6 +564,30 @@ Do you want to save your changes?</source>
     <message>
         <source>Objects</source>
         <translation>Objetos</translation>
+    </message>
+    <message>
+        <source>&amp;Rename Object</source>
+        <translation>Reno&amp;mbrar objeto</translation>
+    </message>
+    <message>
+        <source>Give the selected object a name</source>
+        <translation>Dar un nombre al objeto seleccionado</translation>
+    </message>
+    <message>
+        <source>Bring &amp;Forward</source>
+        <translation>Traer ad&amp;elante</translation>
+    </message>
+    <message>
+        <source>Bring the selected objects one place forward</source>
+        <translation>Traer los objetos seleccionados un lugar adelante</translation>
+    </message>
+    <message>
+        <source>Send &amp;Backward</source>
+        <translation>Enviar atrá&amp;s</translation>
+    </message>
+    <message>
+        <source>Send the selected objects one place back</source>
+        <translation>Enviar los objetos seleccionados un lugar atrás</translation>
     </message>
 </context>
 <context>
