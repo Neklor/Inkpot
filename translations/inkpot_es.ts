@@ -531,6 +531,14 @@ Do you want to save your changes?</source>
             <numerusform>Color de %n objetos cambiado</numerusform>
         </translation>
     </message>
+    <message>
+        <source>Undo</source>
+        <translation>Deshacer</translation>
+    </message>
+    <message>
+        <source>Redo</source>
+        <translation>Rehacer</translation>
+    </message>
 </context>
 <context>
     <name>NewCanvasDialog</name>

@@ -230,11 +230,13 @@ void MainWindow::createActions()
     const QColor symbolColour = palette().color(QPalette::ButtonText);
 
     m_undoAction = m_scene->undoStack()->createUndoAction(this, tr("&Undo"));
+    m_undoAction->setProperty("shortcutTitle", tr("Undo"));
     m_undoAction->setShortcut(QKeySequence::Undo);
     m_undoAction->setIcon(Icons::undo(symbolColour));
     editMenu->addAction(m_undoAction);
 
     m_redoAction = m_scene->undoStack()->createRedoAction(this, tr("&Redo"));
+    m_redoAction->setProperty("shortcutTitle", tr("Redo"));
     m_redoAction->setShortcuts({ QKeySequence::Redo, QKeySequence(QStringLiteral("Ctrl+Y")) });
     m_redoAction->setIcon(Icons::redo(symbolColour));
     editMenu->addAction(m_redoAction);

@@ -531,6 +531,14 @@ Voulez-vous enregistrer les modifications ?</translation>
             <numerusform>Couleur de %n objets modifiée</numerusform>
         </translation>
     </message>
+    <message>
+        <source>Undo</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>Redo</source>
+        <translation>Rétablir</translation>
+    </message>
 </context>
 <context>
     <name>NewCanvasDialog</name>

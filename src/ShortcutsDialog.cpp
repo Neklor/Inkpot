@@ -19,9 +19,15 @@ struct Entry {
 };
 
 // Menu titles and action names carry the markers for their access keys.
+//
+// Undo and redo say what they would undo, so their text changes with every
+// step and would read "Undo Reorder objects" here. Those two carry a plain
+// name of their own in the icon text, which is what this list wants.
 QString plainTitle(const QAction *action)
 {
-    QString text = action->text();
+    QString text = action->property("shortcutTitle").toString();
+    if (text.isEmpty())
+        text = action->text();
     text.remove(QLatin1Char('&'));
     return text;
 }
@@ -75,7 +81,9 @@ void addSection(QVBoxLayout *layout, const QString &title, const QList<Entry> &e
             keys->setAlignment(Qt::AlignCenter);
             keys->setMargin(3);
         } else {
-            keys->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
+            // Wrapped text set flush right leaves a ragged left edge, which
+            // is what makes a two line entry hard to read.
+            keys->setAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         }
         grid->addWidget(keys, row, 1);
         ++row;

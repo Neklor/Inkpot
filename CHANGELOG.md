@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- In the list of shortcuts, the mouse gestures were set flush right and
+  wrapped, which left their lines starting at a different place each time.
+  They read from the left now. The entry for undo also said what it would
+  undo, so it changed with every step; it gives its plain name there.
+
 ### Added
 
 - Objects can be given a name of their own. Double click a row in the object
