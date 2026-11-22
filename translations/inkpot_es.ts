@@ -539,6 +539,10 @@ Do you want to save your changes?</source>
         <source>Redo</source>
         <translation>Rehacer</translation>
     </message>
+    <message>
+        <source>%1 %</source>
+        <translation>%1 %</translation>
+    </message>
 </context>
 <context>
     <name>NewCanvasDialog</name>

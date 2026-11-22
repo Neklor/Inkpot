@@ -539,6 +539,10 @@ Möchtest Du die Änderungen speichern?</translation>
         <source>Redo</source>
         <translation>Wiederholen</translation>
     </message>
+    <message>
+        <source>%1 %</source>
+        <translation>%1 %</translation>
+    </message>
 </context>
 <context>
     <name>NewCanvasDialog</name>

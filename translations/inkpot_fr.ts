@@ -539,6 +539,10 @@ Voulez-vous enregistrer les modifications ?</translation>
         <source>Redo</source>
         <translation>Rétablir</translation>
     </message>
+    <message>
+        <source>%1 %</source>
+        <translation>%1 %</translation>
+    </message>
 </context>
 <context>
     <name>NewCanvasDialog</name>

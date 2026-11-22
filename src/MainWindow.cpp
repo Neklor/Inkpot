@@ -487,6 +487,29 @@ void MainWindow::createToolBar()
     m_colorButton->setAutoRaise(true);
     m_colorButton->setIconSize(QSize(24, 24));
     connect(m_colorButton, &QToolButton::clicked, this, &MainWindow::chooseToolColor);
+
+    // How much of what is underneath shows through. The colour dialog can set
+    // this too, but it is buried in a slider there, and a colour you can see
+    // through is useful often enough to deserve its own two clicks.
+    m_opacityMenu = new QMenu(this);
+    auto *steps = new QActionGroup(this);
+    steps->setExclusive(true);
+    for (int percent : { 100, 75, 50, 25 }) {
+        QAction *step = m_opacityMenu->addAction(tr("%1 %").arg(percent));
+        step->setCheckable(true);
+        step->setData(percent);
+        steps->addAction(step);
+        m_opacityActions.append(step);
+        connect(step, &QAction::triggered, this, [this, percent] { applyOpacity(percent); });
+    }
+
+    auto *roomy = new RoomyStyle;
+    roomy->setParent(this);
+    m_opacityMenu->setStyle(roomy);
+    m_colorButton->setMenu(m_opacityMenu);
+    m_colorButton->setPopupMode(QToolButton::MenuButtonPopup);
+    m_colorButton->setStyle(roomy);
+
     toolBar->addWidget(m_colorButton);
     updateColorButton();
 
@@ -980,6 +1003,45 @@ void MainWindow::chooseToolColor()
     updateColorButton();
 }
 
+void MainWindow::applyOpacity(int percent)
+{
+    // The colour that is being worked with: the selection's if there is one.
+    const QColor selected = m_scene->selectedObjectColor();
+    QColor colour = selected.isValid() ? selected : m_view->toolColor();
+    if (!colour.isValid())
+        return;
+
+    colour.setAlpha(qBound(0, qRound(percent * 255.0 / 100.0), 255));
+
+    m_view->setToolColor(colour);
+    if (m_scene->setSelectedObjectsColor(colour)) {
+        const int count = m_scene->selectedItems().size();
+        statusBar()->showMessage(tr("Changed the colour of %n object(s)", nullptr, count), 3000);
+    }
+    updateColorButton();
+}
+
+void MainWindow::updateOpacityMenu(const QColor &shown)
+{
+    if (!shown.isValid())
+        return;
+
+    const int percent = qRound(shown.alpha() * 100.0 / 255.0);
+    for (QAction *step : m_opacityActions) {
+        const int mine = step->data().toInt();
+
+        // Each entry shows the current colour at its own strength, so the
+        // menu answers what the step would do rather than naming a number.
+        QColor preview = shown;
+        preview.setAlpha(qRound(mine * 255.0 / 100.0));
+        step->setIcon(Icons::swatch(preview, 24));
+
+        // Within half a step counts as being on it, since the dialog can
+        // leave the alpha anywhere between.
+        step->setChecked(qAbs(percent - mine) <= 12);
+    }
+}
+
 void MainWindow::applyFontSizeToSelection(double pointSize)
 {
     if (m_updatingControls)
@@ -1020,6 +1082,7 @@ void MainWindow::updateColorButton()
     const QColor shown = selected.isValid() ? selected : m_view->toolColor();
 
     m_colorButton->setIcon(Icons::swatch(shown));
+    updateOpacityMenu(shown);
 
     // The bristles of the brush icon always show the drawing colour, not the
     // colour of the selection - that is what you actually paint with.

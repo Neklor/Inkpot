@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- The colour button carries a small menu of opacity steps - 100, 75, 50 and
+  25 percent - which apply to the colour in hand and to whatever is
+  selected. Each step shows that very colour at its own strength, and the
+  one in force is ticked. The colour dialog can set this too, but it is
+  buried in a slider there.
+
 ### Fixed
 
 - The colour button in the toolbar showed a see-through colour as if it were

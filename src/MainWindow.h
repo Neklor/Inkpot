@@ -15,6 +15,7 @@ class QDoubleSpinBox;
 class QLabel;
 class QSpinBox;
 class QToolBar;
+class QMenu;
 class QToolButton;
 
 class MainWindow : public QMainWindow
@@ -73,6 +74,8 @@ private:
     void createShapeTool(QToolBar *toolBar, const QColor &symbolColor);
     void updateShapeAction();
     void chooseToolColor();
+    void applyOpacity(int percent);
+    void updateOpacityMenu(const QColor &shown);
     void updateColorButton();
     void updateObjectControls();
     void applyFontSizeToSelection(double pointSize);
@@ -95,6 +98,8 @@ private:
     QAction *m_deleteAction = nullptr;
     QAction *m_pasteAction = nullptr;
     QToolButton *m_colorButton = nullptr;
+    QMenu *m_opacityMenu = nullptr;
+    QList<QAction *> m_opacityActions;
     QDoubleSpinBox *m_toolSizeSpin = nullptr;
     QDoubleSpinBox *m_fontSizeSpin = nullptr;
     QAction *m_brushAction = nullptr;
