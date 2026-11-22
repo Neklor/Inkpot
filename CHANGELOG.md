@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-22
+
 ### Added
 
 - A line can be drawn by its numbers. The button beside the line tool, on
@@ -175,7 +177,8 @@ First release.
   the toolbar so it cannot fall out of step, and an about dialog carrying
   version, author, licence and homepage.
 
-[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/Neklor/Inkpot/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.3.0
 [1.2.0]: https://github.com/Neklor/Inkpot/releases/tag/v1.2.0
 [1.1.3]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.3
 [1.1.2]: https://github.com/Neklor/Inkpot/releases/tag/v1.1.2
