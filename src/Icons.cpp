@@ -469,6 +469,35 @@ QIcon stackArrow(const QColor &color, bool forward)
 
 }   // namespace
 
+QIcon swatch(const QColor &color, int size)
+{
+    QPixmap pixmap(size, size);
+    pixmap.fill(Qt::transparent);
+
+    QPainter painter(&pixmap);
+
+    // The chequer is drawn first and the colour over it. An opaque colour
+    // covers it completely, so this costs nothing where there is nothing to
+    // show, and a see-through one lets it come through exactly as much as it
+    // lets anything else through.
+    const int square = qMax(3, size / 4);
+    for (int y = 0; y < size; y += square) {
+        for (int x = 0; x < size; x += square) {
+            const bool dark = ((x / square) + (y / square)) % 2 == 0;
+            painter.fillRect(x, y, square, square,
+                             dark ? QColor(0xBD, 0xBD, 0xC2) : QColor(0xEC, 0xEC, 0xF0));
+        }
+    }
+    painter.fillRect(0, 0, size, size, color);
+
+    painter.setPen(QPen(QColor(0x40, 0x40, 0x44), 1.0));
+    painter.setBrush(Qt::NoBrush);
+    painter.drawRect(0, 0, size - 1, size - 1);
+    painter.end();
+
+    return QIcon(pixmap);
+}
+
 QIcon stackForward(const QColor &color)
 {
     return stackArrow(color, true);

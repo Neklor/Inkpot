@@ -1019,13 +1019,7 @@ void MainWindow::updateColorButton()
     const QColor selected = m_scene->selectedObjectColor();
     const QColor shown = selected.isValid() ? selected : m_view->toolColor();
 
-    QPixmap pixmap(24, 24);
-    pixmap.fill(shown);
-    QPainter painter(&pixmap);
-    painter.setPen(QPen(QColor(0x40, 0x40, 0x44), 1.0));
-    painter.drawRect(0, 0, 23, 23);
-    painter.end();
-    m_colorButton->setIcon(QIcon(pixmap));
+    m_colorButton->setIcon(Icons::swatch(shown));
 
     // The bristles of the brush icon always show the drawing colour, not the
     // colour of the selection - that is what you actually paint with.

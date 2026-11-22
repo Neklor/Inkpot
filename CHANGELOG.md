@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- The colour button in the toolbar showed a see-through colour as if it were
+  a pale one, because it was simply filled with it and mixed into the grey
+  behind. It is drawn over a chequer now, the way the colour dialog shows
+  one, so a colour you can see through looks like one.
+
 ## [1.2.0] - 2026-11-13
 
 ### Added

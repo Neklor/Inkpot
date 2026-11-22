@@ -36,6 +36,10 @@ QIcon fromPath(const QPainterPath &path, const QColor &accent, const QColor &out
                bool filled);
 
 // The usual curved arrows for undo and redo.
+// The colour as it is shown on a button: drawn over the chequer that stands
+// for what is not there, so a colour you can see through looks like one.
+QIcon swatch(const QColor &color, int size = 24);
+
 // Moving an object through the stack: a plain arrow over a line that stands
 // for the rest of the drawing.
 QIcon stackForward(const QColor &color);
