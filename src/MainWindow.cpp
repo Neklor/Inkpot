@@ -468,7 +468,14 @@ void MainWindow::createToolBar()
     // of the tools that stay pressed. It sits beside the line tool because
     // that is what it is about.
     QAction *exactLine = toolBar->addAction(Icons::exactLine(symbolColor), tr("Exact Line"));
-    exactLine->setToolTip(tr("Draw a line by its direction and length, or change a selected one"));
+
+    // Shift and the key of the line tool: the same thing, done by numbers.
+    exactLine->setShortcut(QKeySequence(QStringLiteral("Shift+L")));
+    exactLine->setToolTip(QStringLiteral("%1 (%2)\n%3")
+                              .arg(tr("Exact Line"),
+                                   exactLine->shortcut().toString(QKeySequence::NativeText),
+                                   tr("Draw a line by its direction and length, "
+                                      "or change a selected one")));
     exactLine->setStatusTip(tr("Give a line an exact direction and length"));
     connect(exactLine, &QAction::triggered, this, &MainWindow::drawExactLine);
 

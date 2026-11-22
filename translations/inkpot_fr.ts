@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="fr_FR">
 <context>
     <name>CanvasScene</name>
@@ -8,11 +9,11 @@
     </message>
     <message>
         <source>Scale object</source>
-        <translation>Redimensionner l'objet</translation>
+        <translation>Redimensionner l&apos;objet</translation>
     </message>
     <message>
         <source>Turn object</source>
-        <translation>Faire pivoter l'objet</translation>
+        <translation>Faire pivoter l&apos;objet</translation>
     </message>
     <message>
         <source>Add object</source>
@@ -28,15 +29,15 @@
     </message>
     <message>
         <source>The file is not an Inkpot project.</source>
-        <translation>Ce fichier n'est pas un projet Inkpot.</translation>
+        <translation>Ce fichier n&apos;est pas un projet Inkpot.</translation>
     </message>
     <message>
         <source>Bring forward</source>
-        <translation>Avancer d'un rang</translation>
+        <translation>Avancer d&apos;un rang</translation>
     </message>
     <message>
         <source>Send backward</source>
-        <translation>Reculer d'un rang</translation>
+        <translation>Reculer d&apos;un rang</translation>
     </message>
     <message>
         <source>Reorder objects</source>
@@ -74,7 +75,7 @@
     </message>
     <message>
         <source>Rename object</source>
-        <translation>Renommer l'objet</translation>
+        <translation>Renommer l&apos;objet</translation>
     </message>
     <message>
         <source>Set the line</source>
@@ -121,7 +122,7 @@
     </message>
     <message>
         <source>Zero degrees points to the right, and the count runs anticlockwise, so ninety degrees points up.</source>
-        <translation>Zéro degré pointe vers la droite et le compte tourne dans le sens inverse des aiguilles d'une montre : quatre-vingt-dix degrés pointent donc vers le haut.</translation>
+        <translation>Zéro degré pointe vers la droite et le compte tourne dans le sens inverse des aiguilles d&apos;une montre : quatre-vingt-dix degrés pointent donc vers le haut.</translation>
     </message>
     <message>
         <source>Change</source>
@@ -154,7 +155,7 @@
     <name>MainWindow</name>
     <message>
         <source>There is nothing to fill at this spot</source>
-        <translation>Il n'y a rien à remplir à cet endroit</translation>
+        <translation>Il n&apos;y a rien à remplir à cet endroit</translation>
     </message>
     <message>
         <source>&amp;File</source>
@@ -262,7 +263,7 @@
     </message>
     <message>
         <source>&amp;About Inkpot</source>
-        <translation>À &amp;propos d'Inkpot</translation>
+        <translation>À &amp;propos d&apos;Inkpot</translation>
     </message>
     <message>
         <source>About &amp;Qt</source>
@@ -270,11 +271,11 @@
     </message>
     <message>
         <source>About Inkpot</source>
-        <translation>À propos d'Inkpot</translation>
+        <translation>À propos d&apos;Inkpot</translation>
     </message>
     <message>
-        <source>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;A small paint program in which everything you draw stays an object of its own.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Licensed under the GNU General Public License, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href="%4"&gt;%4&lt;/a&gt;&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;Un petit programme de dessin dans lequel tout ce que vous dessinez reste un objet à part entière.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Distribué sous la licence publique générale GNU, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href="%4"&gt;%4&lt;/a&gt;&lt;/p&gt;</translation>
+        <source>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;A small paint program in which everything you draw stays an object of its own.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Licensed under the GNU General Public License, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;%4&quot;&gt;%4&lt;/a&gt;&lt;/p&gt;</source>
+        <translation>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;Un petit programme de dessin dans lequel tout ce que vous dessinez reste un objet à part entière.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Distribué sous la licence publique générale GNU, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;%4&quot;&gt;%4&lt;/a&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Shape</source>
@@ -352,7 +353,7 @@
     </message>
     <message>
         <source>Erase inside objects</source>
-        <translation>Effacer à l'intérieur des objets</translation>
+        <translation>Effacer à l&apos;intérieur des objets</translation>
     </message>
     <message>
         <source>Fill</source>
@@ -372,7 +373,7 @@
     </message>
     <message>
         <source>Choose a colour — recolours the selected objects and applies to new ones</source>
-        <translation>Choisir une couleur — recolore les objets sélectionnés et s'applique aux nouveaux</translation>
+        <translation>Choisir une couleur — recolore les objets sélectionnés et s&apos;applique aux nouveaux</translation>
     </message>
     <message>
         <source> Size: </source>
@@ -480,7 +481,7 @@
     </message>
     <message>
         <source>The file %1 could not be written.</source>
-        <translation>Le fichier %1 n'a pas pu être écrit.</translation>
+        <translation>Le fichier %1 n&apos;a pas pu être écrit.</translation>
     </message>
     <message>
         <source>Exported to %1</source>
@@ -492,11 +493,11 @@
     </message>
     <message>
         <source>The clipboard does not contain an image</source>
-        <translation>Le presse-papiers ne contient pas d'image</translation>
+        <translation>Le presse-papiers ne contient pas d&apos;image</translation>
     </message>
     <message>
         <source>Paste image</source>
-        <translation>Coller l'image</translation>
+        <translation>Coller l&apos;image</translation>
     </message>
     <message>
         <source>Image pasted as a new object</source>
@@ -529,7 +530,7 @@ Voulez-vous enregistrer les modifications ?</translation>
     </message>
     <message>
         <source>The file %1 could not be read.</source>
-        <translation>Le fichier %1 n'a pas pu être lu.</translation>
+        <translation>Le fichier %1 n&apos;a pas pu être lu.</translation>
     </message>
     <message>
         <source>The file %1 is damaged: %2</source>
@@ -541,7 +542,7 @@ Voulez-vous enregistrer les modifications ?</translation>
     </message>
     <message>
         <source>The image %1 could not be loaded: %2</source>
-        <translation>L'image %1 n'a pas pu être chargée : %2</translation>
+        <translation>L&apos;image %1 n&apos;a pas pu être chargée : %2</translation>
     </message>
     <message>
         <source>Import image</source>
@@ -654,34 +655,34 @@ Voulez-vous enregistrer les modifications ?</translation>
     </message>
     <message>
         <source>&amp;Rename Object</source>
-        <translation>Reno&amp;mmer l'objet</translation>
+        <translation>Reno&amp;mmer l&apos;objet</translation>
     </message>
     <message>
         <source>Give the selected object a name</source>
-        <translation>Donner un nom à l'objet sélectionné</translation>
+        <translation>Donner un nom à l&apos;objet sélectionné</translation>
     </message>
     <message>
         <source>Bring &amp;Forward</source>
-        <translation>&amp;Avancer d'un rang</translation>
+        <translation>&amp;Avancer d&apos;un rang</translation>
     </message>
     <message>
         <source>Bring the selected objects one place forward</source>
-        <translation>Avancer les objets sélectionnés d'un rang</translation>
+        <translation>Avancer les objets sélectionnés d&apos;un rang</translation>
     </message>
     <message>
         <source>Send &amp;Backward</source>
-        <translation>Rec&amp;uler d'un rang</translation>
+        <translation>Rec&amp;uler d&apos;un rang</translation>
     </message>
     <message>
         <source>Send the selected objects one place back</source>
-        <translation>Reculer les objets sélectionnés d'un rang</translation>
+        <translation>Reculer les objets sélectionnés d&apos;un rang</translation>
     </message>
 </context>
 <context>
     <name>QObject</name>
     <message>
         <source>Drag to turn the object, hold Shift for 15 degree steps</source>
-        <translation>Faire glisser pour pivoter l'objet, maintenir Maj pour des pas de 15 degrés</translation>
+        <translation>Faire glisser pour pivoter l&apos;objet, maintenir Maj pour des pas de 15 degrés</translation>
     </message>
     <message>
         <source>Drag to resize the canvas</source>
@@ -689,7 +690,7 @@ Voulez-vous enregistrer les modifications ?</translation>
     </message>
     <message>
         <source>Drag to scale the object</source>
-        <translation>Faire glisser pour redimensionner l'objet</translation>
+        <translation>Faire glisser pour redimensionner l&apos;objet</translation>
     </message>
     <message>
         <source>Add caption</source>
@@ -756,7 +757,7 @@ Voulez-vous enregistrer les modifications ?</translation>
     </message>
     <message>
         <source>Double click with the selection tool</source>
-        <translation>Double-clic avec l'outil de sélection</translation>
+        <translation>Double-clic avec l&apos;outil de sélection</translation>
     </message>
     <message>
         <source>Select several objects</source>
@@ -764,7 +765,7 @@ Voulez-vous enregistrer les modifications ?</translation>
     </message>
     <message>
         <source>Drag a rubber band with the selection tool</source>
-        <translation>Tracer un cadre avec l'outil de sélection</translation>
+        <translation>Tracer un cadre avec l&apos;outil de sélection</translation>
     </message>
     <message>
         <source>[Ctrl] + mouse wheel</source>
@@ -789,7 +790,7 @@ Voulez-vous enregistrer les modifications ?</translation>
     <name>main</name>
     <message>
         <source>Draw and edit pictures made of objects.</source>
-        <translation>Dessiner et modifier des images composées d'objets.</translation>
+        <translation>Dessiner et modifier des images composées d&apos;objets.</translation>
     </message>
     <message>
         <source>file</source>

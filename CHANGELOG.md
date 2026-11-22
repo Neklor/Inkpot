@@ -9,13 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- A line can be drawn by its numbers. The button beside the line tool asks
-  for a starting point, a direction in degrees and a length, and shows while
-  typing where the line will end. Zero degrees points to the right and the
-  count runs anticlockwise, the way it does on paper. With a straight line
-  selected the same button shows its direction and length and changes it
-  instead. Each new line starts where the last one ended, so a run of walls
-  can be typed one after another.
+- A line can be drawn by its numbers. The button beside the line tool, on
+  Shift+L, asks for a starting point, a direction in degrees and a length,
+  and shows while typing where the line will end. Zero degrees points to
+  the right and the count runs anticlockwise, the way it does on paper.
+  With a straight line selected the same button shows its direction and
+  length and changes it instead. Each new line starts where the last one
+  ended, so a run of walls can be typed one after another.
 
 - The colour button carries a small menu of opacity steps - 100, 75, 50 and
   25 percent - which apply to the colour in hand and to whatever is

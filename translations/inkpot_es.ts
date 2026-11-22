@@ -1,4 +1,5 @@
-<?xml version='1.0' encoding='utf-8'?>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
 <TS version="2.1" language="es_ES">
 <context>
     <name>CanvasScene</name>
@@ -273,8 +274,8 @@
         <translation>Acerca de Inkpot</translation>
     </message>
     <message>
-        <source>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;A small paint program in which everything you draw stays an object of its own.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Licensed under the GNU General Public License, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href="%4"&gt;%4&lt;/a&gt;&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;Un pequeño programa de dibujo en el que todo lo que dibuja sigue siendo un objeto propio.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Publicado bajo la Licencia Pública General de GNU, versión 3.&lt;/p&gt;&lt;p&gt;&lt;a href="%4"&gt;%4&lt;/a&gt;&lt;/p&gt;</translation>
+        <source>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;A small paint program in which everything you draw stays an object of its own.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Licensed under the GNU General Public License, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;%4&quot;&gt;%4&lt;/a&gt;&lt;/p&gt;</source>
+        <translation>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;Un pequeño programa de dibujo en el que todo lo que dibuja sigue siendo un objeto propio.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Publicado bajo la Licencia Pública General de GNU, versión 3.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;%4&quot;&gt;%4&lt;/a&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Shape</source>
