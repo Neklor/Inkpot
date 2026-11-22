@@ -76,6 +76,65 @@
         <source>Rename object</source>
         <translation>Renombrar objeto</translation>
     </message>
+    <message>
+        <source>Set the line</source>
+        <translation>Definir la línea</translation>
+    </message>
+</context>
+<context>
+    <name>ExactLineDialog</name>
+    <message>
+        <source>Change the Line</source>
+        <translation>Modificar la línea</translation>
+    </message>
+    <message>
+        <source>Exact Line</source>
+        <translation>Línea exacta</translation>
+    </message>
+    <message>
+        <source> px</source>
+        <translation> px</translation>
+    </message>
+    <message>
+        <source> °</source>
+        <translation> °</translation>
+    </message>
+    <message>
+        <source>X</source>
+        <translation>X</translation>
+    </message>
+    <message>
+        <source>Y</source>
+        <translation>Y</translation>
+    </message>
+    <message>
+        <source>Starts at</source>
+        <translation>Empieza en</translation>
+    </message>
+    <message>
+        <source>Direction</source>
+        <translation>Dirección</translation>
+    </message>
+    <message>
+        <source>Length</source>
+        <translation>Longitud</translation>
+    </message>
+    <message>
+        <source>Zero degrees points to the right, and the count runs anticlockwise, so ninety degrees points up.</source>
+        <translation>Cero grados apunta a la derecha y la cuenta avanza en sentido antihorario: noventa grados apunta, por tanto, hacia arriba.</translation>
+    </message>
+    <message>
+        <source>Change</source>
+        <translation>Modificar</translation>
+    </message>
+    <message>
+        <source>Draw</source>
+        <translation>Dibujar</translation>
+    </message>
+    <message>
+        <source>Ends at X %1, Y %2</source>
+        <translation>Termina en X %1, Y %2</translation>
+    </message>
 </context>
 <context>
     <name>FillItem</name>
@@ -542,6 +601,22 @@ Do you want to save your changes?</source>
     <message>
         <source>%1 %</source>
         <translation>%1 %</translation>
+    </message>
+    <message>
+        <source>Exact Line</source>
+        <translation>Línea exacta</translation>
+    </message>
+    <message>
+        <source>Draw a line by its direction and length, or change a selected one</source>
+        <translation>Dibujar una línea por su dirección y longitud, o modificar la seleccionada</translation>
+    </message>
+    <message>
+        <source>Give a line an exact direction and length</source>
+        <translation>Dar a una línea una dirección y una longitud exactas</translation>
+    </message>
+    <message>
+        <source>Draw line</source>
+        <translation>Dibujar línea</translation>
     </message>
 </context>
 <context>

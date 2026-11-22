@@ -76,6 +76,29 @@ void StrokeItem::setLineEnd(const QPointF &scenePos)
     rebuildPath();
 }
 
+QPointF StrokeItem::lineStart() const
+{
+    if (m_points.isEmpty())
+        return pos();
+    return mapToScene(m_points.first());
+}
+
+QPointF StrokeItem::lineEnd() const
+{
+    if (m_points.isEmpty())
+        return pos();
+    return mapToScene(m_points.last());
+}
+
+void StrokeItem::setLine(const QPointF &from, const QPointF &to)
+{
+    prepareGeometryChange();
+    setPlacement(0.0, 1.0, 1.0);
+    beginAt(from);
+    setLineEnd(to);
+    applyPlacement();
+}
+
 qreal StrokeItem::length() const
 {
     qreal total = 0.0;

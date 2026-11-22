@@ -19,6 +19,10 @@ QIcon pointer(const QColor &color);   // Selection: mouse pointer
 QIcon brush(const QColor &accent, const QColor &outline);
 QIcon line(const QColor &color);      // Line
 
+// A line given by numbers: the line with the angle it makes marked at its
+// foot, the way a drawing is dimensioned.
+QIcon exactLine(const QColor &color);
+
 // Two-tone eraser in the style of a classic Pelikan block. The colour given
 // is used for the outline, so it follows the theme.
 QIcon eraser(const QColor &outline);

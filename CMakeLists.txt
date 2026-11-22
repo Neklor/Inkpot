@@ -70,6 +70,8 @@ set(INKPOT_SOURCES
     src/ShapeItem.h
     src/ShortcutsDialog.cpp
     src/ShortcutsDialog.h
+    src/ExactLineDialog.cpp
+    src/ExactLineDialog.h
     src/Commands.cpp
     src/Commands.h
     src/FillItem.cpp

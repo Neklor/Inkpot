@@ -191,3 +191,25 @@ private:
     QList<qreal> m_before;
     QList<qreal> m_after;
 };
+
+// Putting both ends of a straight line somewhere exact. The ends are kept in
+// canvas coordinates on both sides, which is what the user typed and what
+// they see.
+class LineCommand : public QUndoCommand
+{
+public:
+    LineCommand(CanvasScene *scene, class StrokeItem *item,
+                const QPointF &fromBefore, const QPointF &toBefore,
+                const QPointF &fromAfter, const QPointF &toAfter);
+
+    void undo() override;
+    void redo() override;
+
+private:
+    CanvasScene *m_scene;
+    class StrokeItem *m_item;
+    QPointF m_fromBefore;
+    QPointF m_toBefore;
+    QPointF m_fromAfter;
+    QPointF m_toAfter;
+};

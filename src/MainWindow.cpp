@@ -45,6 +45,8 @@
 #include "ObjectListDock.h"
 #include "HeifImage.h"
 #include "ShapeItem.h"
+#include "StrokeItem.h"
+#include "ExactLineDialog.h"
 #include "ShortcutsDialog.h"
 #include "TextItem.h"
 
@@ -462,6 +464,14 @@ void MainWindow::createToolBar()
     createToolAction(toolBar, tr("Line"), Icons::line(symbolColor), QStringLiteral("L"),
                      tr("Drag a straight line"),
                      int(CanvasView::Tool::Line));
+    // Not a tool but a single step, so it is a plain button rather than one
+    // of the tools that stay pressed. It sits beside the line tool because
+    // that is what it is about.
+    QAction *exactLine = toolBar->addAction(Icons::exactLine(symbolColor), tr("Exact Line"));
+    exactLine->setToolTip(tr("Draw a line by its direction and length, or change a selected one"));
+    exactLine->setStatusTip(tr("Give a line an exact direction and length"));
+    connect(exactLine, &QAction::triggered, this, &MainWindow::drawExactLine);
+
     createToolAction(toolBar, tr("Eraser"), Icons::eraser(symbolColor), QStringLiteral("E"),
                      tr("Erase inside objects"),
                      int(CanvasView::Tool::Eraser));
@@ -1001,6 +1011,54 @@ void MainWindow::chooseToolColor()
         statusBar()->showMessage(tr("Changed the colour of %n object(s)", nullptr, count), 3000);
     }
     updateColorButton();
+}
+
+void MainWindow::drawExactLine()
+{
+    // A straight line that is selected is the one being changed. A brush
+    // stroke has more than two points and cannot be described this way.
+    StrokeItem *chosen = nullptr;
+    if (QGraphicsItem *only = m_scene->singleSelectedObject()) {
+        if (auto *stroke = dynamic_cast<StrokeItem *>(only)) {
+            if (stroke->isStraightLine())
+                chosen = stroke;
+        }
+    }
+
+    QPointF from;
+    qreal angle = 0.0;
+    qreal length = 100.0;
+
+    if (chosen) {
+        const QLineF existing(chosen->lineStart(), chosen->lineEnd());
+        from = existing.p1();
+        angle = existing.angle();
+        length = existing.length();
+    } else if (m_haveLastLineEnd) {
+        from = m_lastLineEnd;   // carry on where the last one stopped
+    } else {
+        from = m_scene->pageRect().center();
+    }
+
+    ExactLineDialog dialog(from, angle, length, chosen != nullptr, this);
+    if (dialog.exec() != QDialog::Accepted)
+        return;
+
+    const QPointF start = dialog.start();
+    const QPointF end = dialog.end();
+
+    if (chosen) {
+        m_scene->undoStack()->push(new LineCommand(m_scene, chosen,
+                                                   chosen->lineStart(), chosen->lineEnd(),
+                                                   start, end));
+    } else {
+        auto *line = new StrokeItem(m_view->toolColor(), m_view->toolSize());
+        line->setLine(start, end);
+        m_scene->addObjectUndoable(line, tr("Draw line"));
+    }
+
+    m_lastLineEnd = end;
+    m_haveLastLineEnd = true;
 }
 
 void MainWindow::applyOpacity(int percent)

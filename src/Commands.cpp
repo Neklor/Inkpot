@@ -5,6 +5,7 @@
 
 #include "CanvasScene.h"
 #include "InkObject.h"
+#include "StrokeItem.h"
 #include "TextItem.h"
 
 bool Placement::operator==(const Placement &other) const
@@ -279,4 +280,29 @@ void StackCommand::undo()
 void StackCommand::redo()
 {
     apply(m_after);
+}
+
+LineCommand::LineCommand(CanvasScene *scene, StrokeItem *item,
+                         const QPointF &fromBefore, const QPointF &toBefore,
+                         const QPointF &fromAfter, const QPointF &toAfter)
+    : QUndoCommand(QCoreApplication::translate("Commands", "Set the line"))
+    , m_scene(scene)
+    , m_item(item)
+    , m_fromBefore(fromBefore)
+    , m_toBefore(toBefore)
+    , m_fromAfter(fromAfter)
+    , m_toAfter(toAfter)
+{
+}
+
+void LineCommand::undo()
+{
+    m_item->setLine(m_fromBefore, m_toBefore);
+    m_scene->objectsWereChanged();
+}
+
+void LineCommand::redo()
+{
+    m_item->setLine(m_fromAfter, m_toAfter);
+    m_scene->objectsWereChanged();
 }

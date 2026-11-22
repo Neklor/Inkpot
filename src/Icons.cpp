@@ -469,6 +469,32 @@ QIcon stackArrow(const QColor &color, bool forward)
 
 }   // namespace
 
+QIcon exactLine(const QColor &color)
+{
+    QPixmap pixmap = createPixmap();
+    QPainter painter(&pixmap);
+    painter.setRenderHint(QPainter::Antialiasing, true);
+
+    QPen pen(color, 5.0);
+    pen.setCapStyle(Qt::RoundCap);
+    painter.setPen(pen);
+
+    // The base line and the slanted one that rises from it.
+    painter.drawLine(QPointF(10.0, 52.0), QPointF(50.0, 52.0));
+    painter.drawLine(QPointF(10.0, 52.0), QPointF(48.0, 20.0));
+
+    // The arc between them, which is what makes it an angle rather than a
+    // corner.
+    QPen thin(color, 3.5);
+    thin.setCapStyle(Qt::RoundCap);
+    painter.setPen(thin);
+    painter.setBrush(Qt::NoBrush);
+    painter.drawArc(QRectF(-2.0, 40.0, 48.0, 24.0), 0 * 16, 40 * 16);
+
+    painter.end();
+    return QIcon(pixmap);
+}
+
 QIcon swatch(const QColor &color, int size)
 {
     QPixmap pixmap(size, size);

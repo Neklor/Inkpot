@@ -3,6 +3,7 @@
 #include <QIcon>
 #include <QList>
 #include <QMainWindow>
+#include <QPointF>
 #include <QSize>
 #include <QString>
 
@@ -74,6 +75,7 @@ private:
     void createShapeTool(QToolBar *toolBar, const QColor &symbolColor);
     void updateShapeAction();
     void chooseToolColor();
+    void drawExactLine();
     void applyOpacity(int percent);
     void updateOpacityMenu(const QColor &shown);
     void updateColorButton();
@@ -99,6 +101,11 @@ private:
     QAction *m_pasteAction = nullptr;
     QToolButton *m_colorButton = nullptr;
     QMenu *m_opacityMenu = nullptr;
+
+    // Where the last exact line ended, so the next one can carry on from
+    // there. That is what makes a run of walls or a frame bearable.
+    QPointF m_lastLineEnd;
+    bool m_haveLastLineEnd = false;
     QList<QAction *> m_opacityActions;
     QDoubleSpinBox *m_toolSizeSpin = nullptr;
     QDoubleSpinBox *m_fontSizeSpin = nullptr;
