@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
+<?xml version='1.0' encoding='utf-8'?>
 <TS version="2.1" language="de_DE">
 <context>
     <name>CanvasScene</name>
@@ -122,7 +121,7 @@
     </message>
     <message>
         <source>Zero degrees points to the right, and the count runs anticlockwise, so ninety degrees points up.</source>
-        <translation>Null Grad zeigt nach rechts, gezählt wird gegen den Uhrzeigersinn — neunzig Grad zeigt also nach oben.</translation>
+        <translation>Null Grad zeigt nach rechts, gezählt wird gegen den Uhrzeigersinn — neunzig Grad zeigt nach oben.</translation>
     </message>
     <message>
         <source>Change</source>
@@ -274,8 +273,8 @@
         <translation>Über Inkpot</translation>
     </message>
     <message>
-        <source>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;A small paint program in which everything you draw stays an object of its own.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Licensed under the GNU General Public License, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;%4&quot;&gt;%4&lt;/a&gt;&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;Ein kleines Malprogramm, in dem alles Gemalte ein eigenes Objekt bleibt.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Veröffentlicht unter der GNU General Public License, Fassung 3.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;%4&quot;&gt;%4&lt;/a&gt;&lt;/p&gt;</translation>
+        <source>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;A small paint program in which everything you draw stays an object of its own.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Licensed under the GNU General Public License, version 3.&lt;/p&gt;&lt;p&gt;&lt;a href="%4"&gt;%4&lt;/a&gt;&lt;/p&gt;</source>
+        <translation>&lt;h3&gt;Inkpot %1&lt;/h3&gt;&lt;p&gt;Ein kleines Malprogramm, in dem alles Gemalte ein eigenes Objekt bleibt.&lt;/p&gt;&lt;p&gt;Copyright © %2 %3&lt;/p&gt;&lt;p&gt;Veröffentlicht unter der GNU General Public License, Fassung 3.&lt;/p&gt;&lt;p&gt;&lt;a href="%4"&gt;%4&lt;/a&gt;&lt;/p&gt;</translation>
     </message>
     <message>
         <source>Shape</source>
